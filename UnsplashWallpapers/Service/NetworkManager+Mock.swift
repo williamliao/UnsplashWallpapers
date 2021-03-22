@@ -8,6 +8,7 @@
 import Foundation
 
 class MockURLSessionDataTask: URLSessionDataTaskProtocol {
+    func cancel() {}
     func resume() {}
 }
 

@@ -34,4 +34,5 @@ struct User: Codable, Identifiable, Hashable {
     let total_likes: Int
     let total_photos: Int
     let accepted_tos: Bool
+    let for_hire: Bool
 }

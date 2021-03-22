@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "FD2882F2-9B18-4ABB-A1BB-DFE216FDBB96"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "17F439A7-054E-4253-93F3-A896183C6700"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "UnsplashWallpapers/View/PhotoListView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "85"
+            endingLineNumber = "85"
+            landmarkName = "makeDateSourceForCollectionView()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "61438BD1-F0E4-4D52-A61D-BE4C356A3599"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "UnsplashWallpapers/Service/UnsplashPagedRequest.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "37"
+            endingLineNumber = "37"
+            landmarkName = "nextCursor()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8622C34E-15ED-4F28-A9B2-9242679B61D4"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "UnsplashWallpapers/Service/UnsplashService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "27"
+            endingLineNumber = "27"
+            landmarkName = "search(keyword:pageRequest:completion:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "8622C34E-15ED-4F28-A9B2-9242679B61D4 - 323e2e0a5d9d75a0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "UnsplashWallpapers.UnsplashService.search(keyword: Swift.String, pageRequest: UnsplashWallpapers.UnsplashPagedRequest, completion: (UnsplashWallpapers.APIResult&lt;UnsplashWallpapers.SearchRespone, UnsplashWallpapers.ServerError&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "UnsplashWallpapers"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Volumes/Macintosh%20HD%20-%20%E8%B3%87%E6%96%99/iOS_Practice/UnsplashWallpapers/UnsplashWallpapers/Service/UnsplashService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "27"
+                  endingLineNumber = "27"
+                  offsetFromSymbolStart = "182">
+               </Location>
+               <Location
+                  uuid = "8622C34E-15ED-4F28-A9B2-9242679B61D4 - f18fbb583de89fff"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Decodable) -&gt; Swift.Optional&lt;UnsplashWallpapers.SearchRespone&gt; in UnsplashWallpapers.UnsplashService.search(keyword: Swift.String, pageRequest: UnsplashWallpapers.UnsplashPagedRequest, completion: (UnsplashWallpapers.APIResult&lt;UnsplashWallpapers.SearchRespone, UnsplashWallpapers.ServerError&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "UnsplashWallpapers"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Volumes/Macintosh%20HD%20-%20%E8%B3%87%E6%96%99/iOS_Practice/UnsplashWallpapers/UnsplashWallpapers/Service/UnsplashService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "28"
+                  endingLineNumber = "28"
+                  offsetFromSymbolStart = "67">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BE084053-052E-410B-AFBF-BBBB85723CD2"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "UnsplashWallpapers/View/PhotoListView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "81"
+            endingLineNumber = "81"
+            landmarkName = "makeDateSourceForCollectionView()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

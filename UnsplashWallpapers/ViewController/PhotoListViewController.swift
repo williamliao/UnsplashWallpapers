@@ -16,7 +16,43 @@ class PhotoListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        photoListView = PhotoListView(viewModel: viewModel, coordinator: viewModel.coordinator)
+        photoListView.configureCollectionView(Add: self.view)
+        //photoListView.createSearchBarItem(navItem: self.navigationItem)
+        
+        viewModel.respone.bind { [weak self] (_) in
+            if #available(iOS 13.0, *) {
+                self?.photoListView.applyInitialSnapshots()
+            } else {
+                self?.photoListView.reloadData()
+            }
+        }
+        
+        viewModel.searchRespone.bind { [weak self] (_) in
+            if #available(iOS 13.0, *) {
+                self?.photoListView.applyInitialSnapshots()
+            } else {
+                self?.photoListView.reloadData()
+            }
+        }
+        
+        viewModel.error.bind { (error) in
+            guard let error = error else {
+                return
+            }
+            
+            print("error", error)
+        }
+        
+        let searchController = SearchViewController(viewModel: viewModel)
+        
+        if #available(iOS 11.0, *) {
+            
+            self.navigationItem.searchController = searchController
+            searchController.hidesNavigationBarDuringPresentation = false
+        }
+        
+        viewModel.fetchData()
     }
     
 }

@@ -44,6 +44,7 @@ extension PhotoListCollectionViewCell {
         titleLabel.textAlignment = .center
      
         thumbnailImageView = UIImageView()
+        thumbnailImageView.contentMode = .scaleAspectFill
     
         contentView.addSubview(thumbnailImageView)
         contentView.addSubview(act)
@@ -58,14 +59,13 @@ extension PhotoListCollectionViewCell {
         NSLayoutConstraint.activate([
             
             thumbnailImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            thumbnailImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             thumbnailImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            thumbnailImageView.widthAnchor.constraint(equalToConstant: 100),
-            thumbnailImageView.heightAnchor.constraint(equalToConstant: 100),
-            
+            thumbnailImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+         
             titleLabel.leadingAnchor.constraint(equalTo: thumbnailImageView.leadingAnchor, constant: 5),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
-            titleLabel.topAnchor.constraint(equalTo: thumbnailImageView.topAnchor, constant: 5),
             titleLabel.bottomAnchor.constraint(equalTo: thumbnailImageView.bottomAnchor, constant: -5),
+            titleLabel.heightAnchor.constraint(equalToConstant: 16),
             
             act.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             act.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
@@ -88,11 +88,33 @@ extension PhotoListCollectionViewCell {
     private func showImage(image: UIImage?) {
         DispatchQueue.main.async {
             self.thumbnailImageView.alpha = 0.0
-            self.thumbnailImageView.image = image
+           // self.thumbnailImageView.image = image
             
-            self.animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: .curveLinear, animations: {
+//            if let width = image?.size.width, let height = image?.size.height {
+//                let at = width / height
+//                self.thumbnailImageView.widthAnchor.constraint(equalTo: self.thumbnailImageView.heightAnchor, multiplier: at).isActive = true
+//            } else {
+//                return
+//            }
+            
+            guard let image = image else {
+                return
+            }
+
+            let resizeImage = self.resizedImage(at: image, for: CGSize(width: UIScreen.main.bounds.size.width, height: 300))
+            self.thumbnailImageView.image = resizeImage
+            
+            self.animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: [.curveEaseOut, .transitionCrossDissolve], animations: {
                 self.thumbnailImageView.alpha = 1.0
             })
+        }
+    }
+    
+    func resizedImage(at image: UIImage, for size: CGSize) -> UIImage? {
+       
+        let renderer = UIGraphicsImageRenderer(size: size)
+        return renderer.image { (context) in
+            image.draw(in: CGRect(origin: .zero, size: size))
         }
     }
 
@@ -122,3 +144,5 @@ extension PhotoListCollectionViewCell {
         cancellable?.cancel()
     }
 }
+
+

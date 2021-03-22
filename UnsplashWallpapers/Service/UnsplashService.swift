@@ -7,41 +7,59 @@
 
 import Foundation
 
-class UnsplashService {
+class UnsplashService: NetworkManager {
     
-    var networkManager: NetworkManager = NetworkManager(resourceURL: .random)
-    var respone: Observable<[Response]?> = Observable(nil)
-    var error: Observable<Error?> = Observable(nil)
+    var networkManager: NetworkManager!
 }
 
 extension UnsplashService {
     
-    func fetchData() {
-        fetchDataWithNetworkManager { (result) in
-            switch result {
-                case .success(let user):
-                   
-                    self.respone.value = user
+    func fetchDataWithNetworkManager(completion: @escaping (APIResult<[UnsplashPhoto], ServerError>) -> Void) {
         
-                case .failure(let error):
-                    
-                    switch error {
-                        case .statusCodeError(let code):
-                            print(code)
-                        default:
-                            self.error.value = error
-                    }
-            }
-        }
-    }
-   
-    private func fetchDataWithNetworkManager(completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
-        
-        let request = networkManager.createURLRequest(method: .get)
-        
-        networkManager.fetch(with: request as URLRequest , decode: { json -> [Response]? in
-            guard let feedResult = json as? [Response] else { return  nil }
+        networkManager.fetch(method: .get, decode: { json -> [UnsplashPhoto]? in
+            guard let feedResult = json as? [UnsplashPhoto] else { return  nil }
             return feedResult
         }, completion: completion)
+    }
+    
+    func search(keyword: String, pageRequest: UnsplashPagedRequest, completion: @escaping (APIResult<SearchRespone, ServerError>) -> Void) {
+        
+        networkManager.query(query: keyword, pageRequest: pageRequest, method: .get, decode: { json -> SearchRespone? in
+            guard let feedResult = json as? SearchRespone else { return  nil }
+            return feedResult
+        }, completion: completion)
+    }
+}
+
+extension UnsplashService {
+    
+    func createSearchEndpoint(query: String, page: NSInteger, perPage: NSInteger = 10) {
+        var components = URLComponents()
+        components.scheme = UnsplashAPI.scheme
+        components.host = UnsplashAPI.host
+          components.path = "/search/photos"
+        
+        print("prepareURLComponents \(page)")
+        
+        components.queryItems = [
+            URLQueryItem(name: "query", value: query),
+            URLQueryItem(name: "per_page", value: String(perPage)),
+            URLQueryItem(name: "page", value: String(page)),
+            URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey)
+        ]
+    }
+    
+    func createCollectionEndpoint(identifier: String) {
+        var components = URLComponents()
+        components.scheme = UnsplashAPI.scheme
+        components.host = UnsplashAPI.host
+          components.path = "/search/photos"
+        
+        components.queryItems = [
+            URLQueryItem(name: "identifier", value: identifier),
+            URLQueryItem(name: "per_page", value: "20"),
+            URLQueryItem(name: "page", value: "1"),
+            URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey)
+        ]
     }
 }

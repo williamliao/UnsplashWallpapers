@@ -8,6 +8,7 @@
 import Foundation
 
 struct Response: Codable, Identifiable {
+    let sponsorship: String?
     let id: String
     let created_at: String
     let updated_at: String
@@ -18,15 +19,18 @@ struct Response: Codable, Identifiable {
     let alt_description: String?
     let urls: Urls
     let links: Links
-    let categories: Categories?
+    let categories: [Categories]?
     let likes: Int?
     let liked_by_user: Bool
-    let current_user_collections: Current_user_collections?
+    let current_user_collections: [Current_user_collections]?
     let user: User?
     let exif: Exif?
     let location: Location?
     let views: Int
     let downloads: Int
+    let promoted_at: String?
+    let blur_hash: String
+    let viewsCount: Int?
 }
 
 extension Response: Hashable {
@@ -49,6 +53,9 @@ extension Response: Hashable {
         hasher.combine(location)
         hasher.combine(views)
         hasher.combine(downloads)
+        hasher.combine(promoted_at)
+        hasher.combine(blur_hash)
+        hasher.combine(viewsCount)
     }
 }
 
