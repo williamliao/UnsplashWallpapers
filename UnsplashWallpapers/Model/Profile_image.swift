@@ -12,3 +12,13 @@ struct Profile_image: Codable {
     let medium: String
     let large: String
 }
+
+extension Profile_image: Hashable, Equatable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(small)
+    }
+    
+    public static func == (lhs: Profile_image, rhs: Profile_image) -> Bool {
+        return lhs.small == rhs.small
+    }
+}

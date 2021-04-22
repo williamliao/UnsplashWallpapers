@@ -14,7 +14,7 @@ class UnsplashService: NetworkManager {
 
 extension UnsplashService {
     
-    func fetchDataWithNetworkManager(completion: @escaping (APIResult<[UnsplashPhoto], ServerError>) -> Void) {
+    func fetchDataWithNetworkManager(pageRequest: UnsplashPagedRequest, completion: @escaping (APIResult<[UnsplashPhoto], ServerError>) -> Void) {
         
         networkManager.fetch(method: .get, decode: { json -> [UnsplashPhoto]? in
             guard let feedResult = json as? [UnsplashPhoto] else { return  nil }
@@ -22,7 +22,7 @@ extension UnsplashService {
         }, completion: completion)
     }
     
-    func search(keyword: String, pageRequest: UnsplashPagedRequest, completion: @escaping (APIResult<SearchRespone, ServerError>) -> Void) {
+    func search(keyword: String, pageRequest: UnsplashSearchPagedRequest, completion: @escaping (APIResult<SearchRespone, ServerError>) -> Void) {
         
         networkManager.query(query: keyword, pageRequest: pageRequest, method: .get, decode: { json -> SearchRespone? in
             guard let feedResult = json as? SearchRespone else { return  nil }

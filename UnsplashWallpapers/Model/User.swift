@@ -7,16 +7,8 @@
 
 import Foundation
 
-struct User: Codable, Identifiable, Hashable {
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-    
-    static func == (lhs: User, rhs: User) -> Bool {
-        return lhs.id == rhs.id
-    }
-    
+struct User: Codable, Identifiable {
+   
     let id: String
     let updated_at: String
     let username: String
@@ -35,4 +27,14 @@ struct User: Codable, Identifiable, Hashable {
     let total_photos: Int
     let accepted_tos: Bool
     let for_hire: Bool
+}
+
+extension User: Hashable, Equatable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: User, rhs: User) -> Bool {
+        return lhs.id == rhs.id
+    }
 }

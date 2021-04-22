@@ -8,7 +8,7 @@
 import Foundation
 
 struct Cursor {
-    let query: String
+    let query: String?
     let page: Int
     let perPage: Int
     let parameters: [String: Any]?

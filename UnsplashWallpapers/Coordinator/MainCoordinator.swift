@@ -10,11 +10,11 @@ import UIKit
 class MainCoordinator: Coordinator {
     
     // MARK: - Properties
-    var rootViewController: UINavigationController
+    var rootViewController: UITabBarController
   
     
     // MARK: - Coordinator
-    init(rootViewController: UINavigationController) {
+    init(rootViewController: UITabBarController) {
         self.rootViewController = rootViewController
     }
     
@@ -23,28 +23,64 @@ class MainCoordinator: Coordinator {
         return viewdModel
     }()
     
+    lazy var detailViewModel: DetailViewModel! = {
+        let viewdModel = DetailViewModel()
+        return viewdModel
+    }()
+    
+    lazy var favoriteViewModel: FavoriteViewModel! = {
+        let viewdModel = FavoriteViewModel()
+        return viewdModel
+    }()
+
     override func start() {
         let main = createPhotoListView()
-        self.rootViewController.pushViewController(main, animated: true)
+        let fav = createFavoriteView()
+
+        self.rootViewController.setViewControllers([main, fav], animated: false)
+        
+        if #available(iOS 13.0, *) {
+            self.rootViewController.tabBar.items?[0].image = UIImage(systemName: "square")?.withRenderingMode(.alwaysOriginal)
+            self.rootViewController.tabBar.items?[0].selectedImage = UIImage(systemName: "square.fill")?.withRenderingMode(.alwaysOriginal)
+     
+            self.rootViewController.tabBar.items?[1].image = UIImage(systemName: "heart")?.withRenderingMode(.alwaysOriginal)
+            self.rootViewController.tabBar.items?[1].selectedImage = UIImage(systemName: "heart.fill")?.withRenderingMode(.alwaysOriginal)
+        } else {
+            // Fallback on earlier versions
+        }
     }
     
     override func finish() {
         
     }
     
-    func createPhotoListView() -> UIViewController {
+    func createPhotoListView() -> UINavigationController {
         let photo = PhotoListViewController()
         photo.title = "Photo"
         photo.viewModel = photoListViewModel
         photo.viewModel.coordinator = self
-        return photo
+        let nav = UINavigationController(rootViewController: photo)
+        return nav
     }
     
-    func goToDetailView(respone: Response) {
-        //let topDetailVC = createDetailView()
-        
-        //topDetailVC.viewModel.respone.value = respone
-        
-        //rootViewController.pushViewController(topDetailVC, animated: true)
+    func createDetailView() -> DetailViewController {
+        let detail = DetailViewController()
+        detail.viewModel = detailViewModel
+        detail.title = "Detail"
+        return detail
+    }
+    
+    func goToDetailView(respone: UnsplashPhoto) {
+        let topDetailVC = createDetailView()
+        topDetailVC.viewModel.respone.value = respone
+        rootViewController.navigationController?.pushViewController(topDetailVC, animated: true)
+    }
+    
+    func createFavoriteView() -> UINavigationController {
+        let favorite = FavoriteViewController()
+        favorite.viewModel = favoriteViewModel
+        favorite.title = "Favorite"
+        let nav = UINavigationController(rootViewController: favorite)
+        return nav
     }
 }

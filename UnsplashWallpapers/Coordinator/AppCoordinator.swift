@@ -11,19 +11,19 @@ import UIKit
 class AppCoordinator: Coordinator {
     // MARK: - Properties
     let window: UIWindow?
-    var navController: UINavigationController
-    lazy var rootViewController: UINavigationController = {
-        return UINavigationController()
+    var tabController: UITabBarController
+    lazy var rootViewController: UITabBarController = {
+        return UITabBarController()
     }()
 
     // MARK: - Coordinator
-    init(navController: UINavigationController, window: UIWindow?) {
-        self.navController = navController
+    init(navController: UITabBarController, window: UIWindow?) {
+        self.tabController = navController
         self.window = window
     }
 
     override func start() {
-        let coordinator = MainCoordinator(rootViewController: navController)
+        let coordinator = MainCoordinator(rootViewController: tabController)
         coordinator.start()
     }
     

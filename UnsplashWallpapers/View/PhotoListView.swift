@@ -31,6 +31,11 @@ class PhotoListView: UIView {
     // MARK:- property
     var firstLoad = true
     
+    var currentIndex = 0;
+    //var currentOffset:CGPoint = CGPoint.zero;
+    var previousContentHeight:CGFloat = 0.0
+    var previousContentOffset:CGFloat = 0.0
+    
     init(viewModel: PhotoListViewModel, coordinator: MainCoordinator?) {
         self.viewModel = viewModel
         self.coordinator = viewModel.coordinator
@@ -50,7 +55,9 @@ extension PhotoListView {
         to.backgroundColor = .systemBackground
         
         let flowLayout = UICollectionViewFlowLayout()
-       
+        flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        flowLayout.estimatedItemSize = .zero
+
         
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         
@@ -62,6 +69,8 @@ extension PhotoListView {
         
         collectionView.register(PhotoListCollectionViewCell.self
                                 , forCellWithReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier)
+        
+        
         
         to.addSubview(collectionView)
         
@@ -214,13 +223,18 @@ extension PhotoListView {
                 snapshot.appendItems([respone], toSection: .main)
             }
             
-            //Force the update on the main thread to silence a warning about tableview not being in the hierarchy!
+            //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
             DispatchQueue.main.async {
                 self.dataSource.apply(snapshot, animatingDifferences: false)
+                
+                if (self.currentIndex > 0) {
+                    UIView.animate(withDuration: 0.25) {
+                        self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: Section.main.rawValue), at: .bottom, animated: false)
+                    }
+                }
+                
             }
         }
-        
-        
     }
 }
 
@@ -258,34 +272,35 @@ extension PhotoListView: UICollectionViewDelegate {
             guard let res = dataSource.itemIdentifier(for: indexPath) else {
               return
             }
-           // coordinator?.goToDetailView(respone: res)
+            coordinator?.goToDetailView(respone: res)
         } else {
             guard let res = viewModel.respone.value?[indexPath.row] else {
                 return
             }
-            //coordinator?.goToDetailView(respone: res)
+            coordinator?.goToDetailView(respone: res)
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
-        guard let result = viewModel.searchRespone.value?.results else {
-            return
-        }
+//        guard let result = viewModel.searchRespone.value?.results else {
+//            return
+//        }
         
-        print("indexPath row, \(indexPath.row)")
+    //    print("indexPath row, \(indexPath.row)")
         
         let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
         if !viewModel.isLoading.value && indexPath.row == lastElement {
            // indicator.startAnimating()
-            viewModel.isLoading.value = true
             //currentPage =  currentPage + 1
             
             let spinner = UIActivityIndicatorView(style: .medium)
             spinner.startAnimating()
             spinner.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: collectionView.bounds.width, height: CGFloat(44))
 
-            
+            currentIndex = lastElement
+            previousContentHeight = collectionView.contentSize.height
+            previousContentOffset = collectionView.contentOffset.y
             viewModel.fetchNextPage()
             
         }

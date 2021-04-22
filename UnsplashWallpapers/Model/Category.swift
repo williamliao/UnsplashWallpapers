@@ -11,3 +11,13 @@ struct Category: Codable {
     let slug: String
     let pretty_slug: String
 }
+
+extension Category: Hashable, Equatable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(slug)
+    }
+    
+    public static func == (lhs: Category, rhs: Category) -> Bool {
+        return lhs.slug == rhs.slug
+    }
+}

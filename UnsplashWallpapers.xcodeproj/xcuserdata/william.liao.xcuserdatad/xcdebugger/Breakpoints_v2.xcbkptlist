@@ -14,8 +14,8 @@
             filePath = "UnsplashWallpapers/View/PhotoListView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "85"
-            endingLineNumber = "85"
+            startingLineNumber = "94"
+            endingLineNumber = "94"
             landmarkName = "makeDateSourceForCollectionView()"
             landmarkType = "7">
          </BreakpointContent>
@@ -39,54 +39,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "8622C34E-15ED-4F28-A9B2-9242679B61D4"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "UnsplashWallpapers/Service/UnsplashService.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "27"
-            endingLineNumber = "27"
-            landmarkName = "search(keyword:pageRequest:completion:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "8622C34E-15ED-4F28-A9B2-9242679B61D4 - 323e2e0a5d9d75a0"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "UnsplashWallpapers.UnsplashService.search(keyword: Swift.String, pageRequest: UnsplashWallpapers.UnsplashPagedRequest, completion: (UnsplashWallpapers.APIResult&lt;UnsplashWallpapers.SearchRespone, UnsplashWallpapers.ServerError&gt;) -&gt; ()) -&gt; ()"
-                  moduleName = "UnsplashWallpapers"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Volumes/Macintosh%20HD%20-%20%E8%B3%87%E6%96%99/iOS_Practice/UnsplashWallpapers/UnsplashWallpapers/Service/UnsplashService.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "27"
-                  endingLineNumber = "27"
-                  offsetFromSymbolStart = "182">
-               </Location>
-               <Location
-                  uuid = "8622C34E-15ED-4F28-A9B2-9242679B61D4 - f18fbb583de89fff"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Decodable) -&gt; Swift.Optional&lt;UnsplashWallpapers.SearchRespone&gt; in UnsplashWallpapers.UnsplashService.search(keyword: Swift.String, pageRequest: UnsplashWallpapers.UnsplashPagedRequest, completion: (UnsplashWallpapers.APIResult&lt;UnsplashWallpapers.SearchRespone, UnsplashWallpapers.ServerError&gt;) -&gt; ()) -&gt; ()"
-                  moduleName = "UnsplashWallpapers"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Volumes/Macintosh%20HD%20-%20%E8%B3%87%E6%96%99/iOS_Practice/UnsplashWallpapers/UnsplashWallpapers/Service/UnsplashService.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "28"
-                  endingLineNumber = "28"
-                  offsetFromSymbolStart = "67">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "BE084053-052E-410B-AFBF-BBBB85723CD2"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -94,8 +46,8 @@
             filePath = "UnsplashWallpapers/View/PhotoListView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "81"
-            endingLineNumber = "81"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
             landmarkName = "makeDateSourceForCollectionView()"
             landmarkType = "7">
          </BreakpointContent>

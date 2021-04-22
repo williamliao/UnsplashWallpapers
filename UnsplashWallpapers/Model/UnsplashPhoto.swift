@@ -87,12 +87,27 @@ public struct UnsplashPhoto: Codable {
 extension UnsplashPhoto: Hashable, Equatable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(identifier)
+        hasher.combine(height)
+        hasher.combine(width)
+        hasher.combine(color)
+        hasher.combine(user)
+        hasher.combine(urls)
+        hasher.combine(links)
+        hasher.combine(likesCount)
+        hasher.combine(downloadsCount)
+        hasher.combine(viewsCount)
     }
     
     public static func == (lhs: UnsplashPhoto, rhs: UnsplashPhoto) -> Bool {
         return lhs.identifier == rhs.identifier
     }
 }
+extension UnsplashPhoto:Comparable {
+    public static func < (lhs: UnsplashPhoto, rhs: UnsplashPhoto) -> Bool {
+        return lhs.identifier == rhs.identifier
+    }
+}
+
 
 extension Dictionary {
     public func convert<T, U>(_ transform: ((key: Key, value: Value)) throws -> (T, U)) rethrows -> [T: U] {

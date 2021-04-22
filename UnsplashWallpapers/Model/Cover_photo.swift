@@ -24,3 +24,13 @@ struct Cover_photo: Codable {
     let current_user_collections: Current_user_collections?
     let user: User
 }
+
+extension Cover_photo: Hashable, Equatable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    public static func == (lhs: Cover_photo, rhs: Cover_photo) -> Bool {
+        return lhs.id == rhs.id
+    }
+}

@@ -44,7 +44,10 @@ extension PhotoListCollectionViewCell {
         titleLabel.textAlignment = .center
      
         thumbnailImageView = UIImageView()
-        thumbnailImageView.contentMode = .scaleAspectFill
+        thumbnailImageView.contentMode = .scaleAspectFit
+        thumbnailImageView.clipsToBounds = true
+        
+        act.color = .systemBackground
     
         contentView.addSubview(thumbnailImageView)
         contentView.addSubview(act)
@@ -100,7 +103,14 @@ extension PhotoListCollectionViewCell {
             guard let image = image else {
                 return
             }
-
+            
+//            if image.size.height > image.size.width {
+//                self.thumbnailImageView.image = image
+//            } else {
+//                let resizeImage = self.resizedImage(at: image, for: CGSize(width: UIScreen.main.bounds.size.width, height: 300))
+//                self.thumbnailImageView.image = resizeImage
+//            }
+            
             let resizeImage = self.resizedImage(at: image, for: CGSize(width: UIScreen.main.bounds.size.width, height: 300))
             self.thumbnailImageView.image = resizeImage
             
@@ -143,6 +153,7 @@ extension PhotoListCollectionViewCell {
         animator?.stopAnimation(true)
         cancellable?.cancel()
     }
+    
 }
 
 

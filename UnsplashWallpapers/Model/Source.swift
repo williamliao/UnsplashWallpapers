@@ -15,3 +15,13 @@ struct Source: Codable {
     let meta_description: String
     let cover_photo: Cover_photo
 }
+
+extension Source: Hashable, Equatable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(title)
+    }
+    
+    public static func == (lhs: Source, rhs: Source) -> Bool {
+        return lhs.title == rhs.title
+    }
+}

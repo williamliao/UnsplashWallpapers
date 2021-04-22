@@ -137,7 +137,7 @@ class NetworkManager {
                   components.path = "/photos/random"
                 
                 components.queryItems = [
-                    URLQueryItem(name: "count", value: "30"),
+                    URLQueryItem(name: "count", value: "10"),
                 ]
                 
                 return components
@@ -203,7 +203,7 @@ class NetworkManager {
         task?.resume()
     }
     
-    func query<T: Decodable>(query: String, pageRequest: UnsplashPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+    func query<T: Decodable>(query: String, pageRequest: UnsplashSearchPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
         
         var components = prepareURLComponents()
         

@@ -12,3 +12,13 @@ struct Tags: Codable {
     let title: String
     let source: Source?
 }
+
+extension Tags: Hashable, Equatable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(title)
+    }
+    
+    public static func == (lhs: Tags, rhs: Tags) -> Bool {
+        return lhs.title == rhs.title
+    }
+}

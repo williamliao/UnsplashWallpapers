@@ -28,3 +28,13 @@ public struct UnsplashPhotoExif: Codable {
     }
 
 }
+
+extension UnsplashPhotoExif: Hashable, Equatable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(make)
+    }
+    
+    public static func == (lhs: UnsplashPhotoExif, rhs: UnsplashPhotoExif) -> Bool {
+        return lhs.make == rhs.make
+    }
+}

@@ -91,6 +91,12 @@ public struct UnsplashUser: Codable {
 
 }
 
+extension UnsplashUser: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
+    }
+}
+
 // MARK: - Convenience
 extension UnsplashUser {
     var displayName: String {
