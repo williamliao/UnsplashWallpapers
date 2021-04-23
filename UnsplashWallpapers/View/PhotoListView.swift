@@ -153,7 +153,7 @@ extension PhotoListView: UICollectionViewDelegateFlowLayout {
 extension PhotoListView {
     
     @available(iOS 13.0, *)
-    private func getDatasource() -> UICollectionViewDiffableDataSource<Section, UnsplashPhoto> {
+    private func getDatasource() -> UICollectionViewDiffableDataSource<Section, Response> {
         return dataSource
     }
     
@@ -162,9 +162,9 @@ extension PhotoListView {
         return searchDataSource
     }
     
-    func makeDataSource() -> UICollectionViewDiffableDataSource<Section, UnsplashPhoto> {
+    func makeDataSource() -> UICollectionViewDiffableDataSource<Section, Response> {
         
-        return UICollectionViewDiffableDataSource<Section, UnsplashPhoto>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+        return UICollectionViewDiffableDataSource<Section, Response>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
             let cell = self.configureCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
             return cell
         }
@@ -211,7 +211,7 @@ extension PhotoListView {
                 dataSource = getDatasource()
             }
             
-            var snapshot = NSDiffableDataSourceSnapshot<Section, UnsplashPhoto>()
+            var snapshot = NSDiffableDataSourceSnapshot<Section, Response>()
             
             //Append available sections
             Section.allCases.forEach { snapshot.appendSections([$0]) }
@@ -272,6 +272,7 @@ extension PhotoListView: UICollectionViewDelegate {
             guard let res = dataSource.itemIdentifier(for: indexPath) else {
               return
             }
+            
             coordinator?.goToDetailView(respone: res)
         } else {
             guard let res = viewModel.respone.value?[indexPath.row] else {
@@ -311,12 +312,12 @@ extension PhotoListView: UICollectionViewDelegate {
 // MARK: - Private
 extension PhotoListView {
     
-    func configureCell(collectionView: UICollectionView, respone: UnsplashPhoto, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
+    func configureCell(collectionView: UICollectionView, respone: Response, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier, for: indexPath) as? PhotoListCollectionViewCell
         
-        cell?.titleLabel.text = respone.user.name
+        cell?.titleLabel.text = respone.user?.name
         
-        if let url = respone.urls[.thumb] {
+        if let url = URL(string: respone.urls.thumb) {
             cell?.configureImage(with: url)
         }
         
@@ -328,7 +329,7 @@ extension PhotoListView {
         
         cell?.titleLabel.text = respone.user.name
         
-        if let url = respone.urls[.thumb] {
+        if let url = URL(string: respone.urls.thumb) {
             cell?.configureImage(with: url)
         }
         

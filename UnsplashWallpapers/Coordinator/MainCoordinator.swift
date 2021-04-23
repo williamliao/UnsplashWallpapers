@@ -70,17 +70,22 @@ class MainCoordinator: Coordinator {
         return detail
     }
     
-    func goToDetailView(respone: UnsplashPhoto) {
-        let topDetailVC = createDetailView()
-        topDetailVC.viewModel.respone.value = respone
-        rootViewController.navigationController?.pushViewController(topDetailVC, animated: true)
-    }
-    
     func createFavoriteView() -> UINavigationController {
         let favorite = FavoriteViewController()
         favorite.viewModel = favoriteViewModel
         favorite.title = "Favorite"
         let nav = UINavigationController(rootViewController: favorite)
         return nav
+    }
+}
+
+extension MainCoordinator {
+    func goToDetailView(respone: Response) {
+        let topDetailVC = createDetailView()
+        topDetailVC.viewModel.respone.value = respone
+       
+        if let currentNavController = self.rootViewController.selectedViewController as? UINavigationController {
+            currentNavController.pushViewController(topDetailVC, animated: true)
+        }
     }
 }

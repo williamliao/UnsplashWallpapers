@@ -14,10 +14,10 @@ class UnsplashService: NetworkManager {
 
 extension UnsplashService {
     
-    func fetchDataWithNetworkManager(pageRequest: UnsplashPagedRequest, completion: @escaping (APIResult<[UnsplashPhoto], ServerError>) -> Void) {
+    func fetchDataWithNetworkManager(pageRequest: UnsplashPagedRequest, completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
         
-        networkManager.fetch(method: .get, decode: { json -> [UnsplashPhoto]? in
-            guard let feedResult = json as? [UnsplashPhoto] else { return  nil }
+        networkManager.fetch(method: .get, decode: { json -> [Response]? in
+            guard let feedResult = json as? [Response] else { return  nil }
             return feedResult
         }, completion: completion)
     }

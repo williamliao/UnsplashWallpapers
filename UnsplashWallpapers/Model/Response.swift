@@ -10,8 +10,8 @@ import Foundation
 struct Response: Codable, Identifiable {
     let sponsorship: String?
     let id: String
-    let created_at: String
-    let updated_at: String
+    let created_at: String?
+    let updated_at: String?
     let width: Int
     let height: Int
     let color: String

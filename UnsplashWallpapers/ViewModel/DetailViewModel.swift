@@ -10,12 +10,16 @@ import Combine
 
 class DetailViewModel {
     // MARK:- property
-    var respone: Observable<UnsplashPhoto?> = Observable(nil)
+    var respone: Observable<Response?> = Observable(nil)
     var isLoading: Observable<Bool> = Observable(false)
     var restultImage: Observable<UIImage?> = Observable(nil)
     
     // MARK: - component
     private var cancellable: AnyCancellable?
+    private var isFavorite: Bool = false
+    
+    var navItem: UINavigationItem!
+    let favoriteManager = FavoriteManager.sharedInstance
 }
 
 // MARK: - Public
@@ -35,5 +39,47 @@ extension DetailViewModel {
             return ImageLoader.shared.loadImage(from: url)
         })
         .eraseToAnyPublisher()
+    }
+}
+
+extension DetailViewModel {
+    func createBarItem() {
+        let backButton = UIButton(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
+        backButton.setImage(UIImage(systemName: "heart"), for: .normal)
+        backButton.setImage(UIImage(systemName: "heart.fill"), for: .selected)
+        backButton.addTarget(self, action: #selector(favoriteAction), for: .touchUpInside)
+        navItem.rightBarButtonItem = UIBarButtonItem(customView: backButton)
+    }
+    
+    @objc func favoriteAction() {
+        isFavorite = !isFavorite
+        let backButton = navItem.rightBarButtonItem?.customView as! UIButton
+        backButton.isSelected = isFavorite
+        navItem.rightBarButtonItem = UIBarButtonItem(customView: backButton)
+        
+        guard let photo = respone.value  else {
+            return
+        }
+        
+        favoriteManager.handleSaveAction(photo: photo, isFavorite: isFavorite)
+    }
+    
+    func loadFavorite() {
+        
+        favoriteManager.loadFavorite(key: "favorites") { (success) in
+            if (success) {
+                guard let photo = respone.value  else {
+                    return
+                }
+                
+                if (favoriteManager.favorites.value.contains(photo)) {
+                    let backButton = navItem.rightBarButtonItem?.customView as! UIButton
+                    backButton.isSelected = true
+                    navItem.rightBarButtonItem = UIBarButtonItem(customView: backButton)
+                }
+            } else {
+                
+            }
+        }
     }
 }

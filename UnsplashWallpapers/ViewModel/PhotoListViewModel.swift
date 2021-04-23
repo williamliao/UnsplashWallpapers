@@ -9,7 +9,7 @@ import Foundation
 
 class PhotoListViewModel  {
     var coordinator: MainCoordinator?
-    var respone: Observable<[UnsplashPhoto]?> = Observable([])
+    var respone: Observable<[Response]?> = Observable([])
     var searchRespone: Observable<SearchRespone?> = Observable(nil)
     var error: Observable<Error?> = Observable(nil)
     private(set) var isFetching = false

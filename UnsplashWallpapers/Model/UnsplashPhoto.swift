@@ -75,13 +75,14 @@ public struct UnsplashPhoto: Codable {
         try? container.encode(color?.hexString, forKey: .color)
         try? container.encode(exif, forKey: .exif)
         try container.encode(user, forKey: .user)
-        try container.encode(urls.convert({ ($0.key.rawValue, $0.value.absoluteString) }), forKey: .urls)
-        try container.encode(links.convert({ ($0.key.rawValue, $0.value.absoluteString) }), forKey: .links)
+        try container.encode(urls, forKey: .urls)
+        try container.encode(links, forKey: .links)
+//        try container.encode(urls.convert({ ($0.key.rawValue, $0.value.absoluteString) }), forKey: .urls)
+//        try container.encode(links.convert({ ($0.key.rawValue, $0.value.absoluteString) }), forKey: .links)
         try container.encode(likesCount, forKey: .likesCount)
         try? container.encode(downloadsCount, forKey: .downloadsCount)
         try? container.encode(viewsCount, forKey: .viewsCount)
     }
-
 }
 
 extension UnsplashPhoto: Hashable, Equatable {
@@ -179,6 +180,7 @@ extension UIColor {
 }
 
 extension KeyedDecodingContainer {
+    
     func decode(_ type: UIColor.Type, forKey key: Key) throws -> UIColor {
         let hexColor = try self.decode(String.self, forKey: key)
         return UIColor(hexString: hexColor)

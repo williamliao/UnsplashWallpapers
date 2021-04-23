@@ -16,8 +16,8 @@ struct Results: Codable, Identifiable {
     let color: String
     let description: String?
     let alt_description: String?
-    let urls: [UnsplashPhoto.URLKind: URL]
-    let links: [UnsplashPhoto.LinkKind: URL]
+    let urls: Urls
+    let links: Links
     let categories: [Categories]?
     let likes: Int
     let liked_by_user: Bool
@@ -30,10 +30,10 @@ struct Results: Codable, Identifiable {
 }
 
 struct Sponsorship: Codable {
-    let tagline_url: String
-    let sponsor: Sponsor
-    let impression_urls: [URL]
-    let tagline: String
+    let tagline_url: String?
+    let sponsor: Sponsor?
+    let impression_urls: [URL]?
+    let tagline: String?
 }
 
 struct Sponsor: Codable {
@@ -49,8 +49,8 @@ struct Sponsor: Codable {
     let first_name: String?
     let updated_at: String
     let username: String
-    let link: [UnsplashPhoto.LinkKind: URL]?
-    let profile_image: [UnsplashUser.ProfileImageSize: URL]
+    let link: Links
+    let profile_image: Profile_image
     let last_name: String?
     let name: String?
     let total_likes: NSInteger

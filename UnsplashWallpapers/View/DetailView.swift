@@ -51,9 +51,9 @@ extension DetailView {
         ])
     }
     
-    func configureView(photo: UnsplashPhoto) {
+    func configureView(photo: Response) {
         
-        guard let url = photo.urls[.full] else {
+        guard let url = URL(string: photo.urls.full) else {
             return
         }
         

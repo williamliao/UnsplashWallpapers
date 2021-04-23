@@ -32,6 +32,10 @@ class DetailViewController: UIViewController {
             detailView.bottomAnchor.constraint(equalTo: guide.bottomAnchor),
          
         ])
+        
+        self.viewModel.navItem = self.navigationItem
+        self.viewModel.createBarItem()
+        self.viewModel.loadFavorite()
     }
     
 
