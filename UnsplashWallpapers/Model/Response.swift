@@ -29,7 +29,7 @@ struct Response: Codable, Identifiable {
     let views: Int
     let downloads: Int
     let promoted_at: String?
-    let blur_hash: String
+    let blur_hash: String?
     let viewsCount: Int?
 }
 

@@ -24,7 +24,7 @@ struct Results: Codable, Identifiable {
     let current_user_collections: Current_user_collections?
     let user: User
     let tags: [Tags]
-    let blur_hash: String
+    let blur_hash: String?
     let promoted_at: String?
     let sponsorship: Sponsorship?
 }
