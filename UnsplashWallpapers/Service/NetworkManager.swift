@@ -136,20 +136,30 @@ class NetworkManager {
                 var components = URLComponents()
                 components.scheme = UnsplashAPI.scheme
                 components.host = UnsplashAPI.host
-                  components.path = "/photos/random"
+                components.path = "/photos/random"
                 
                 components.queryItems = [
                     URLQueryItem(name: "count", value: "10"),
+                    
                 ]
                 
                 return components
                 
             case .nature:
+                var components = URLComponents()
+                components.scheme = UnsplashAPI.scheme
+                components.host = UnsplashAPI.host
+                components.path = "/topics"
                 
-                break
+                return components
+                
             case .wallpapers:
+                var components = URLComponents()
+                components.scheme = UnsplashAPI.scheme
+                components.host = UnsplashAPI.host
+                components.path = "/topics"
                 
-                break
+                return components
             
             case .search:
                 var components = URLComponents()
@@ -219,6 +229,41 @@ class NetworkManager {
         
         components?.queryItems = [
             URLQueryItem(name: "query", value: query),
+            URLQueryItem(name: "per_page", value: String(pageRequest.cursor.perPage)),
+            URLQueryItem(name: "page", value: String(pageRequest.cursor.page)),
+            URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey)
+        ]
+        
+        guard let url = components?.url else {
+            return
+        }
+        
+        let mutableRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: timeoutInterval)
+        
+        let task = decodingTask(with: mutableRequest, decodingType: T.self) { (json , error) in
+            
+            DispatchQueue.main.async {
+                guard let json = json else {
+                    if let error = error {
+                        completion(APIResult.failure(error))
+                    }
+                    return
+                }
+
+                if let value = decode(json) {
+                    completion(.success(value))
+                }
+            }
+        }
+        task?.resume()
+    }
+    
+    func topic<T: Decodable>(query: String, pageRequest: UnsplashTopicRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+        
+        var components = prepareURLComponents()
+        
+        components?.queryItems = [
+            URLQueryItem(name: "ids", value: query),
             URLQueryItem(name: "per_page", value: String(pageRequest.cursor.perPage)),
             URLQueryItem(name: "page", value: String(pageRequest.cursor.page)),
             URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey)

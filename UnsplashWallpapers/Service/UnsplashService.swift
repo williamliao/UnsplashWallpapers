@@ -29,6 +29,14 @@ extension UnsplashService {
             return feedResult
         }, completion: completion)
     }
+    
+    func topic(keyword: String, pageRequest: UnsplashTopicRequest, completion: @escaping (APIResult<Topic, ServerError>) -> Void) {
+        
+        networkManager.topic(query: keyword, pageRequest: pageRequest, method: .get, decode: { json -> Topic? in
+            guard let feedResult = json as? Topic else { return  nil }
+            return feedResult
+        }, completion: completion)
+    }
 }
 
 extension UnsplashService {
