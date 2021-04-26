@@ -18,6 +18,7 @@ class PhotoListViewController: UIViewController {
 
         photoListView = PhotoListView(viewModel: viewModel, coordinator: viewModel.coordinator)
         photoListView.configureCollectionView(Add: self.view)
+        photoListView.createSegmentView(view: self.view)
         //photoListView.createSearchBarItem(navItem: self.navigationItem)
         
         viewModel.respone.bind { [weak self] (_) in
@@ -52,7 +53,7 @@ class PhotoListViewController: UIViewController {
             searchController.hidesNavigationBarDuringPresentation = false
         }
         
-        viewModel.fetchData()
+        //viewModel.fetchPhotoData(index: .random)
     }
     
 }

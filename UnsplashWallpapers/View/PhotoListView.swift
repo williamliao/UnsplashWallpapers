@@ -36,6 +36,9 @@ class PhotoListView: UIView {
     var previousContentHeight:CGFloat = 0.0
     var previousContentOffset:CGFloat = 0.0
     
+    let items = ["Random", "Nature", "Wallpapers"]
+    lazy var segmentedControl = UISegmentedControl(items: items)
+    
     init(viewModel: PhotoListViewModel, coordinator: MainCoordinator?) {
         self.viewModel = viewModel
         self.coordinator = viewModel.coordinator
@@ -58,11 +61,10 @@ extension PhotoListView {
         flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         flowLayout.estimatedItemSize = .zero
 
-        
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         
         collectionView.delegate = self
-        collectionView.contentInsetAdjustmentBehavior = .always
+        //collectionView.contentInsetAdjustmentBehavior = .always
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         makeDateSourceForCollectionView()
@@ -78,7 +80,7 @@ extension PhotoListView {
             collectionView.leadingAnchor.constraint(equalTo: to.safeAreaLayoutGuide.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: to.safeAreaLayoutGuide.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: to.safeAreaLayoutGuide.bottomAnchor),
-            collectionView.topAnchor.constraint(equalTo: to.safeAreaLayoutGuide.topAnchor),
+            collectionView.topAnchor.constraint(equalTo: to.safeAreaLayoutGuide.topAnchor, constant: 44),
         ])
     }
     
@@ -99,6 +101,38 @@ extension PhotoListView {
         }
     }
     
+    func createSegmentView(view : UIView) {
+        segmentedControl.frame = CGRect.zero
+        segmentedControl.addTarget(self, action: #selector(segmentAction(_:)), for: .valueChanged)
+        segmentedControl.selectedSegmentIndex = 0
+        view.addSubview(segmentedControl)
+        
+        segmentedControl.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            segmentedControl.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            segmentedControl.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            segmentedControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            segmentedControl.heightAnchor.constraint(equalToConstant: 44),
+        ])
+    }
+    
+    @objc func segmentAction(_ segmentedControl: UISegmentedControl) {
+            switch (segmentedControl.selectedSegmentIndex) {
+            case 0:
+                print("Random")
+                break // Random
+            case 1:
+                print("Nature")
+                break // Nature
+            case 2:
+                print("Wallpapers")
+                break // Wallpapers
+            default:
+                break
+            }
+    }
+    
     func createSearchBarItem(navItem: UINavigationItem) {
         
         let barButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(searchButtonTapped))
@@ -115,6 +149,7 @@ extension PhotoListView {
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
+
 extension PhotoListView: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView,
@@ -126,7 +161,7 @@ extension PhotoListView: UICollectionViewDelegateFlowLayout {
         let marginsAndInsets = flowLayout.sectionInset.left + flowLayout.sectionInset.right + collectionView.safeAreaInsets.left + collectionView.safeAreaInsets.right + flowLayout.minimumInteritemSpacing * CGFloat(cellsPerRow - 1)
         let itemWidth = ((collectionView.bounds.size.width - marginsAndInsets) / CGFloat(cellsPerRow)).rounded(.down)
         return CGSize(width: itemWidth, height: 300)*/
-        
+       
         return CGSize(width: collectionView.bounds.size.width, height: 300)
     }
     
@@ -180,7 +215,6 @@ extension PhotoListView {
     
     @available(iOS 13.0, *)
     func applyInitialSnapshots() {
-        
         
         if (viewModel.isSearching.value) {
             

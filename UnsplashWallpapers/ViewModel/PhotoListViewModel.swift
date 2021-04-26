@@ -7,6 +7,12 @@
 
 import Foundation
 
+enum SegmentedIndex: Int, CaseIterable {
+    case random
+    case nature
+    case wallpapers
+}
+
 class PhotoListViewModel  {
     var coordinator: MainCoordinator?
     var respone: Observable<[Response]?> = Observable([])
@@ -24,12 +30,54 @@ class PhotoListViewModel  {
     var fetchCursor: Cursor!
     var unsplashPagedRequest: UnsplashPagedRequest!
     var unsplashSearchPagedRequest: UnsplashSearchPagedRequest!
+    
+    var segmentedIndex = SegmentedIndex.random
 }
 
 extension PhotoListViewModel {
     func fetchData() {
         
         service.networkManager = NetworkManager(endPoint: .random)
+        
+        isLoading.value = true
+        
+        if fetchCursor == nil {
+            fetchCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+            unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
+        }
+        
+        service.fetchDataWithNetworkManager(pageRequest: unsplashPagedRequest) { (result) in
+            self.isLoading.value = false
+            switch result {
+                case .success(let respone):
+                   
+                    self.respone.value = respone
+        
+                case .failure(let error):
+                    
+                    switch error {
+                        case .statusCodeError(let code):
+                            print(code)
+                        default:
+                            self.error.value = error
+                    }
+            }
+        }
+    }
+    
+    func fetchPhotoData(index: SegmentedIndex = .nature) {
+        switch index {
+            case .random:
+                service.networkManager = NetworkManager(endPoint: .random)
+                print("random")
+                break
+            case .nature:
+                print("nature")
+                break
+            case .wallpapers:
+                print("wallpapers")
+                break
+        }
         
         isLoading.value = true
         
