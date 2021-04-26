@@ -134,7 +134,11 @@ extension PhotoListView {
             switch (segmentedControl.selectedSegmentIndex) {
             case 0:
                 print("Random")
+                dataSource = makeDataSource()
+                collectionView.dataSource = dataSource
+                viewModel.fetchData()
                 section = .random
+                
                 break // Random
             case 1:
                 print("Nature")
@@ -223,12 +227,12 @@ extension PhotoListView {
     }
     
     @available(iOS 13.0, *)
-    private func getNatureDatasource() -> UICollectionViewDiffableDataSource<Section, Topic> {
+    private func getNatureDatasource() -> UICollectionViewDiffableDataSource<Section, Preview_Photos> {
         return natureDataSource
     }
     
     @available(iOS 13.0, *)
-    private func getWallpapersDatasource() -> UICollectionViewDiffableDataSource<Section, Topic> {
+    private func getWallpapersDatasource() -> UICollectionViewDiffableDataSource<Section, Preview_Photos> {
         return wallpapersDataSource
     }
     
@@ -248,17 +252,17 @@ extension PhotoListView {
         }
     }
     
-    func makeNatureDataSource() -> UICollectionViewDiffableDataSource<Section, Topic> {
+    func makeNatureDataSource() -> UICollectionViewDiffableDataSource<Section, Preview_Photos> {
         
-        return UICollectionViewDiffableDataSource<Section, Topic>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+        return UICollectionViewDiffableDataSource<Section, Preview_Photos>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
             let cell = self.configureTopicCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
             return cell
         }
     }
     
-    func makeWallpapersDataSource() -> UICollectionViewDiffableDataSource<Section, Topic> {
+    func makeWallpapersDataSource() -> UICollectionViewDiffableDataSource<Section, Preview_Photos> {
 
-        return UICollectionViewDiffableDataSource<Section, Topic>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+        return UICollectionViewDiffableDataSource<Section, Preview_Photos>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
             let cell = self.configureTopicCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
             return cell
         }
@@ -321,7 +325,7 @@ extension PhotoListView {
                     }
                     
                 case .nature:
-                    var snapshot = NSDiffableDataSourceSnapshot<Section, Topic>()
+                    var snapshot = NSDiffableDataSourceSnapshot<Section, Preview_Photos>()
                     natureDataSource.apply(snapshot, animatingDifferences: false)
                     if (!firstLoad) {
                         natureDataSource = makeNatureDataSource()
@@ -334,8 +338,12 @@ extension PhotoListView {
                     
                     //Append annotations to their corresponding sections
                     
-                    viewModel.natureTopic.value?.forEach { (preview) in
-                        snapshot.appendItems([preview], toSection: .main)
+                    guard let topics = viewModel.natureTopic.value else {
+                        return
+                    }
+                    
+                    topics.forEach { (topic) in
+                        snapshot.appendItems(topic.preview_photos, toSection: .main)
                     }
                     
                     //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
@@ -351,7 +359,7 @@ extension PhotoListView {
                     }
                     
                 case .wallpapers:
-                    var snapshot = NSDiffableDataSourceSnapshot<Section, Topic>()
+                    var snapshot = NSDiffableDataSourceSnapshot<Section, Preview_Photos>()
                     wallpapersDataSource.apply(snapshot, animatingDifferences: false)
                     if (!firstLoad) {
                         wallpapersDataSource = makeWallpapersDataSource()
@@ -364,8 +372,12 @@ extension PhotoListView {
                     
                     //Append annotations to their corresponding sections
                     
-                    viewModel.wallpapersTopic.value?.forEach { (respone) in
-                        snapshot.appendItems([respone], toSection: .main)
+                    guard let topics = viewModel.wallpapersTopic.value else {
+                        return
+                    }
+                    
+                    topics.forEach { (topic) in
+                        snapshot.appendItems(topic.preview_photos, toSection: .main)
                     }
                     
                     //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
@@ -484,12 +496,20 @@ extension PhotoListView {
         return cell
     }
     
-    func configureTopicCell(collectionView: UICollectionView, respone: Topic, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
+    func configureTopicCell(collectionView: UICollectionView, respone: Preview_Photos, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier, for: indexPath) as? PhotoListCollectionViewCell
         
-        cell?.titleLabel.text = respone.title
+        if section == .nature {
+            
+            cell?.titleLabel.text = "Nature"
+            
+            
+        }else if section == .wallpapers {
+            
+            cell?.titleLabel.text = "Wallpapers"
+        }
         
-        if let url = URL(string: respone.preview_photos[indexPath.row].urls.thumb) {
+        if let url = URL(string: respone.urls.thumb) {
             cell?.configureImage(with: url)
         }
         

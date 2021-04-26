@@ -30,6 +30,10 @@ class PhotoListViewModel  {
     
     var searchCursor: Cursor!
     var fetchCursor: Cursor!
+    var fetchNatureCursor: Cursor!
+    var fetchWallpapersCursor: Cursor!
+    
+    
     var unsplashPagedRequest: UnsplashPagedRequest!
     var unsplashSearchPagedRequest: UnsplashSearchPagedRequest!
     var unsplashTopicRequest: UnsplashTopicRequest!
@@ -73,9 +77,9 @@ extension PhotoListViewModel {
         
         isLoading.value = true
         
-        if fetchCursor == nil {
-            fetchCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
-            unsplashTopicRequest = UnsplashTopicRequest(with: fetchCursor)
+        if fetchNatureCursor == nil {
+            fetchNatureCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+            unsplashTopicRequest = UnsplashTopicRequest(with: fetchNatureCursor)
         }
         
         service.topic(keyword: "nature", pageRequest: unsplashTopicRequest) { (result) in
@@ -103,9 +107,9 @@ extension PhotoListViewModel {
         
         isLoading.value = true
         
-        if fetchCursor == nil {
-            fetchCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
-            unsplashTopicRequest = UnsplashTopicRequest(with: fetchCursor)
+        if fetchWallpapersCursor == nil {
+            fetchWallpapersCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+            unsplashTopicRequest = UnsplashTopicRequest(with: fetchWallpapersCursor)
         }
         
         service.topic(keyword: "wallpapers", pageRequest: unsplashTopicRequest) { (result) in

@@ -69,7 +69,7 @@ class PhotoListViewController: UIViewController {
             searchController.hidesNavigationBarDuringPresentation = false
         }
         
-        //viewModel.fetchPhotoData(index: .random)
+        viewModel.fetchData()
     }
     
 }
