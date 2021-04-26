@@ -101,6 +101,7 @@ extension FavoriteView {
         
         tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.backgroundColor = .systemBackground
         
         tableView.register(FavoriteTableViewCell.self, forCellReuseIdentifier: FavoriteTableViewCell.reuseIdentifier)
         

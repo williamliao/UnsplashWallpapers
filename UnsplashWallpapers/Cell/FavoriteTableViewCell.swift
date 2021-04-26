@@ -32,6 +32,10 @@ class FavoriteTableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+    }
 }
 
 extension FavoriteTableViewCell {
@@ -52,6 +56,10 @@ extension FavoriteTableViewCell {
         
         avatarImageView = UIImageView()
         avatarImageView.contentMode = .scaleAspectFit
+        avatarImageView.layer.borderWidth = 1
+        avatarImageView.layer.masksToBounds = false
+        avatarImageView.layer.borderColor = traitCollection.userInterfaceStyle == .light ? UIColor.black.cgColor : UIColor.white.cgColor
+        avatarImageView.clipsToBounds = true
         
         act.color = .systemBackground
     
@@ -69,18 +77,18 @@ extension FavoriteTableViewCell {
      
         NSLayoutConstraint.activate([
             
-            avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
             avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            avatarImageView.widthAnchor.constraint(equalToConstant: 32),
-            avatarImageView.heightAnchor.constraint(equalToConstant: 32),
+            avatarImageView.widthAnchor.constraint(equalToConstant: 48),
+            avatarImageView.heightAnchor.constraint(equalToConstant: 48),
             
             thumbnailImageView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor),
             thumbnailImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             thumbnailImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             thumbnailImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
          
-            titleLabel.leadingAnchor.constraint(equalTo: thumbnailImageView.leadingAnchor, constant: 5),
-            titleLabel.bottomAnchor.constraint(equalTo: thumbnailImageView.bottomAnchor, constant: -5),
+            titleLabel.leadingAnchor.constraint(equalTo: thumbnailImageView.leadingAnchor, constant: 15),
+            titleLabel.bottomAnchor.constraint(equalTo: thumbnailImageView.bottomAnchor, constant: -15),
             titleLabel.heightAnchor.constraint(equalToConstant: 16),
             
             act.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
@@ -115,7 +123,7 @@ extension FavoriteTableViewCell {
                 return
             }
 
-            let resizeImage = self.resizedImage(at: image, for: CGSize(width: UIScreen.main.bounds.size.width, height: 300))
+            let resizeImage = self.resizedImage(at: image, for: CGSize(width: self.contentView.frame.size.width - 80, height: 200))
             self.thumbnailImageView.image = resizeImage
             
             self.animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: [.curveEaseOut, .transitionCrossDissolve], animations: {
@@ -133,6 +141,7 @@ extension FavoriteTableViewCell {
             }
 
             self.avatarImageView.image = image
+            self.avatarImageView.layer.cornerRadius = image.size.height/2
             
             self.animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: [.curveEaseOut, .transitionCrossDissolve], animations: {
                 self.avatarImageView.alpha = 1.0
@@ -170,7 +179,10 @@ extension FavoriteTableViewCell {
         super.prepareForReuse()
         thumbnailImageView.image = nil
         thumbnailImageView.alpha = 0.0
+        avatarImageView.image = nil
+        avatarImageView.alpha = 0.0
         animator?.stopAnimation(true)
         cancellable?.cancel()
+        cancellable2?.cancel()
     }
 }
