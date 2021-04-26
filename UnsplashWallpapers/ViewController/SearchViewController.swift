@@ -15,7 +15,7 @@ class SearchViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        searchView = SearchView(viewModel: viewModel)
+        searchView = SearchView(viewModel: viewModel, coordinator: viewModel.coordinator)
         searchView.navItem = self.navigationItem
         searchView.createView()
         searchView.configureCollectionView()

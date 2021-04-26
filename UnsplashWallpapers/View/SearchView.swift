@@ -13,11 +13,11 @@ class SearchView: UIView {
     var collectionView: UICollectionView!
     var navItem: UINavigationItem!
     var viewModel: SearchViewModel
-    //var coordinator: MainCoordinator?
+    var coordinator: MainCoordinator?
     
-    init(viewModel: SearchViewModel) {
+    init(viewModel: SearchViewModel,coordinator: MainCoordinator? ) {
         self.viewModel = viewModel
-        //self.coordinator = viewModel.coordinator
+        self.coordinator = viewModel.coordinator
         super.init(frame: CGRect.zero)
     }
     
@@ -29,6 +29,7 @@ class SearchView: UIView {
     lazy var searchDataSource  = makeSearchDataSource()
     
     var firstLoad = true
+    var currentIndex = 0;
 }
 
 // MARK: - View
@@ -59,7 +60,7 @@ extension SearchView {
 
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         
-        //collectionView.delegate = self
+        collectionView.delegate = self
         //collectionView.contentInsetAdjustmentBehavior = .always
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -132,6 +133,9 @@ extension SearchView {
         //Force the update on the main thread to silence a warning about tableview not being in the hierarchy!
         DispatchQueue.main.async {
             dataSource.apply(snapshot, animatingDifferences: false)
+            
+            self.searchViewController.searchBar.text = ""
+            self.searchViewController.isActive = false
         }
     }
     
@@ -208,11 +212,44 @@ extension SearchView: UISearchBarDelegate {
     }
     
     func closeSearchView() {
-        //self.viewModel.didCloseSearchFunction()
+        self.viewModel.didCloseSearchFunction()
         self.endEditing(true)
     }
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
         
+    }
+}
+
+extension SearchView: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        if #available(iOS 13.0, *) {
+            guard let res = searchDataSource.itemIdentifier(for: indexPath) else {
+              return
+            }
+            
+            //coordinator?.goToDetailView(respone: res)
+        } else {
+//            guard let res = viewModel.respone.value?[indexPath.row] else {
+//                return
+//            }
+//            coordinator?.goToDetailView(respone: res)
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+
+        let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
+        if !viewModel.isLoading.value && indexPath.row == lastElement {
+        
+            let spinner = UIActivityIndicatorView(style: .medium)
+            spinner.startAnimating()
+            spinner.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: collectionView.bounds.width, height: CGFloat(44))
+
+            currentIndex = lastElement
+            viewModel.fetchNextPage()
+            
+        }
     }
 }

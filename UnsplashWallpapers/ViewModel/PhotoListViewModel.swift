@@ -174,83 +174,39 @@ extension PhotoListViewModel {
         
         isLoading.value = true
         
-        if isSearching.value {
-            
-            //cursor = unsplashPagedRequest.nextCursor()
-            unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: searchCursor)
-            
-            service.search(keyword: "nature", pageRequest: unsplashSearchPagedRequest) { [weak self] (result) in
-                self?.isLoading.value = false
-                
-                switch result {
-                    case .success(let respone):
-                       
-                        guard var new = self?.searchRespone.value  else {
-                            return
-                        }
-                        
-                        new.total = respone.total
-                        new.total_pages = respone.total_pages
-                        new.results.append(contentsOf: respone.results)
-                        
+        unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
+        
+        service.fetchDataWithNetworkManager(pageRequest: unsplashPagedRequest) { [weak self] (result) in
+            self?.isLoading.value = false
+            switch result {
+                case .success(let respone):
+                   
+                    guard var new = self?.respone.value  else {
+                        return
+                    }
                     
-                        self?.searchRespone.value = new
-                        
-                        guard let cursor = self?.searchCursor else {
-                            return
-                        }
-                        
-                        if new.results.count < cursor.perPage {
-                            self?.canFetchMore = false
-                        } else {
-                            self?.searchCursor = self?.unsplashSearchPagedRequest.nextCursor()
-                        }
-                        
-                    case .failure(let error):
-                        
-                        switch error {
-                            case .statusCodeError(let code):
-                                print(code)
-                            default:
-                                self?.error.value = error
-                        }
-                }
-            }
-        } else {
-            unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
-            
-            service.fetchDataWithNetworkManager(pageRequest: unsplashPagedRequest) { [weak self] (result) in
-                self?.isLoading.value = false
-                switch result {
-                    case .success(let respone):
-                       
-                        guard var new = self?.respone.value  else {
-                            return
-                        }
-                        
-                        new.append(contentsOf: respone)
-                        
-                        self?.respone.value = new
-                       
-                        guard let cursor = self?.fetchCursor ,let count = self?.respone.value?.count else {
-                            return
-                        }
+                    new.append(contentsOf: respone)
+                    
+                    self?.respone.value = new
+                   
+                    guard let cursor = self?.fetchCursor ,let count = self?.respone.value?.count else {
+                        return
+                    }
 
-                        if count < cursor.perPage {
-                            self?.canFetchMore = false
-                        } else {
-                            self?.fetchCursor = self?.unsplashPagedRequest.nextCursor()
-                        }
-            
-                    case .failure(let error):
-                        
-                        switch error {
-                            case .statusCodeError(let code):
-                                print(code)
-                            default:
-                                self?.error.value = error
-                        }
-                }
+                    if count < cursor.perPage {
+                        self?.canFetchMore = false
+                    } else {
+                        self?.fetchCursor = self?.unsplashPagedRequest.nextCursor()
+                    }
+        
+                case .failure(let error):
+                    
+                    switch error {
+                        case .statusCodeError(let code):
+                            print(code)
+                        default:
+                            self?.error.value = error
+                    }
             }
         }
         

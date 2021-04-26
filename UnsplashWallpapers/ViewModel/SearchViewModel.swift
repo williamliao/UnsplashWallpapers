@@ -19,12 +19,17 @@ class SearchViewModel {
     var unsplashSearchPagedRequest: UnsplashSearchPagedRequest!
     
     var coordinator: MainCoordinator?
+    private(set) var isFetching = false
+    private var canFetchMore = true
+    
+    var query = ""
 }
 
 extension SearchViewModel {
    
     func search(keyword: String) {
         isSearching.value = true
+        query = keyword
         
         service.networkManager = NetworkManager(endPoint: .search)
         
@@ -52,5 +57,66 @@ extension SearchViewModel {
                     }
             }
         }
+    }
+    
+    func fetchNextPage() {
+        if isLoading.value {
+            return
+        }
+        
+        if canFetchMore == false {
+            return
+        }
+        
+        isLoading.value = true
+        
+        //cursor = unsplashPagedRequest.nextCursor()
+        unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: searchCursor)
+        
+        service.search(keyword: query, pageRequest: unsplashSearchPagedRequest) { [weak self] (result) in
+            self?.isLoading.value = false
+            
+            switch result {
+                case .success(let respone):
+                   
+                    guard var new = self?.searchRespone.value  else {
+                        return
+                    }
+                    
+                    new.total = respone.total
+                    new.total_pages = respone.total_pages
+                    new.results.append(contentsOf: respone.results)
+                    
+                
+                    self?.searchRespone.value = new
+                    
+                    guard let cursor = self?.searchCursor else {
+                        return
+                    }
+                    
+                    if new.results.count < cursor.perPage {
+                        self?.canFetchMore = false
+                    } else {
+                        self?.searchCursor = self?.unsplashSearchPagedRequest.nextCursor()
+                    }
+                    
+                case .failure(let error):
+                    
+                    switch error {
+                        case .statusCodeError(let code):
+                            print(code)
+                        default:
+                            self?.error.value = error
+                    }
+            }
+        }
+    }
+    
+    func didCloseSearchFunction() {
+        isSearching.value = false
+        query = ""
+        isLoading.value = false
+        canFetchMore = false
+        searchCursor = nil
     }
 }

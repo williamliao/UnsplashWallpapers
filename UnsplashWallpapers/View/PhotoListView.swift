@@ -26,10 +26,7 @@ class PhotoListView: UIView {
     
     @available(iOS 13.0, *)
     lazy var dataSource  = makeDataSource()
-    
-    @available(iOS 13.0, *)
-    lazy var searchDataSource  = makeSearchDataSource()
-    
+
     @available(iOS 13.0, *)
     lazy var natureDataSource  = makeNatureDataSource()
     
@@ -220,12 +217,7 @@ extension PhotoListView {
     private func getDatasource() -> UICollectionViewDiffableDataSource<Section, Response> {
         return dataSource
     }
-    
-    @available(iOS 13.0, *)
-    private func getSearchDatasource() -> UICollectionViewDiffableDataSource<Section, Results> {
-        return searchDataSource
-    }
-    
+ 
     @available(iOS 13.0, *)
     private func getNatureDatasource() -> UICollectionViewDiffableDataSource<Section, Preview_Photos> {
         return natureDataSource
@@ -240,14 +232,6 @@ extension PhotoListView {
         
         return UICollectionViewDiffableDataSource<Section, Response>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
             let cell = self.configureCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
-            return cell
-        }
-    }
-    
-    func makeSearchDataSource() -> UICollectionViewDiffableDataSource<Section, Results> {
-        
-        return UICollectionViewDiffableDataSource<Section, Results>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
-            let cell = self.configureSearchCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
             return cell
         }
     }
@@ -271,129 +255,103 @@ extension PhotoListView {
     @available(iOS 13.0, *)
     func applyInitialSnapshots() {
         
-        if (viewModel.isSearching.value) {
-            
-            let dataSource = getSearchDatasource()
-            
-            var snapshot = NSDiffableDataSourceSnapshot<Section, Results>()
-            
-            //Append available sections
-            Section.allCases.forEach { snapshot.appendSections([$0]) }
-            dataSource.apply(snapshot, animatingDifferences: false)
-            
-            //Append annotations to their corresponding sections
-            
-            viewModel.searchRespone.value?.results.forEach { (result) in
-                snapshot.appendItems([result], toSection: .main)
-            }
-            
-            //Force the update on the main thread to silence a warning about tableview not being in the hierarchy!
-            DispatchQueue.main.async {
-                dataSource.apply(snapshot, animatingDifferences: false)
-            }
-            
-        } else {
-           
-            switch section {
-                case .random:
-                    var snapshot = NSDiffableDataSourceSnapshot<Section, Response>()
-                    if (!firstLoad) {
-                        dataSource = makeDataSource()
-                    } else {
-                        dataSource = getDatasource()
-                    }
+        switch section {
+            case .random:
+                var snapshot = NSDiffableDataSourceSnapshot<Section, Response>()
+                if (!firstLoad) {
+                    dataSource = makeDataSource()
+                } else {
+                    dataSource = getDatasource()
+                }
+                
+                //Append available sections
+                Section.allCases.forEach { snapshot.appendSections([$0]) }
+                
+                //Append annotations to their corresponding sections
+                
+                viewModel.respone.value?.forEach { (respone) in
+                    snapshot.appendItems([respone], toSection: .main)
+                }
+                
+                //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
+                DispatchQueue.main.async {
+                    self.dataSource.apply(snapshot, animatingDifferences: false)
                     
-                    //Append available sections
-                    Section.allCases.forEach { snapshot.appendSections([$0]) }
-                    
-                    //Append annotations to their corresponding sections
-                    
-                    viewModel.respone.value?.forEach { (respone) in
-                        snapshot.appendItems([respone], toSection: .main)
-                    }
-                    
-                    //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
-                    DispatchQueue.main.async {
-                        self.dataSource.apply(snapshot, animatingDifferences: false)
-                        
-                        if (self.currentIndex > 0) {
-                            UIView.animate(withDuration: 0.25) {
-                                self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: Section.main.rawValue), at: .bottom, animated: false)
-                            }
+                    if (self.currentIndex > 0) {
+                        UIView.animate(withDuration: 0.25) {
+                            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: Section.main.rawValue), at: .bottom, animated: false)
                         }
-                        
                     }
                     
-                case .nature:
-                    var snapshot = NSDiffableDataSourceSnapshot<Section, Preview_Photos>()
-                    natureDataSource.apply(snapshot, animatingDifferences: false)
-                    if (!firstLoad) {
-                        natureDataSource = makeNatureDataSource()
-                    } else {
-                        natureDataSource = getNatureDatasource()
-                    }
+                }
+                
+            case .nature:
+                var snapshot = NSDiffableDataSourceSnapshot<Section, Preview_Photos>()
+                natureDataSource.apply(snapshot, animatingDifferences: false)
+                if (!firstLoad) {
+                    natureDataSource = makeNatureDataSource()
+                } else {
+                    natureDataSource = getNatureDatasource()
+                }
+                
+                //Append available sections
+                Section.allCases.forEach { snapshot.appendSections([$0]) }
+                
+                //Append annotations to their corresponding sections
+                
+                guard let topics = viewModel.natureTopic.value else {
+                    return
+                }
+                
+                topics.forEach { (topic) in
+                    snapshot.appendItems(topic.preview_photos, toSection: .main)
+                }
+                
+                //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
+                DispatchQueue.main.async {
+                    self.natureDataSource.apply(snapshot, animatingDifferences: false)
                     
-                    //Append available sections
-                    Section.allCases.forEach { snapshot.appendSections([$0]) }
-                    
-                    //Append annotations to their corresponding sections
-                    
-                    guard let topics = viewModel.natureTopic.value else {
-                        return
-                    }
-                    
-                    topics.forEach { (topic) in
-                        snapshot.appendItems(topic.preview_photos, toSection: .main)
-                    }
-                    
-                    //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
-                    DispatchQueue.main.async {
-                        self.natureDataSource.apply(snapshot, animatingDifferences: false)
-                        
-                        if (self.currentIndex > 0) {
-                            UIView.animate(withDuration: 0.25) {
-                                self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .bottom, animated: false)
-                            }
+                    if (self.currentIndex > 0) {
+                        UIView.animate(withDuration: 0.25) {
+                            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .bottom, animated: false)
                         }
-                        
                     }
                     
-                case .wallpapers:
-                    var snapshot = NSDiffableDataSourceSnapshot<Section, Preview_Photos>()
-                    wallpapersDataSource.apply(snapshot, animatingDifferences: false)
-                    if (!firstLoad) {
-                        wallpapersDataSource = makeWallpapersDataSource()
-                    } else {
-                        wallpapersDataSource = getWallpapersDatasource()
-                    }
+                }
+                
+            case .wallpapers:
+                var snapshot = NSDiffableDataSourceSnapshot<Section, Preview_Photos>()
+                wallpapersDataSource.apply(snapshot, animatingDifferences: false)
+                if (!firstLoad) {
+                    wallpapersDataSource = makeWallpapersDataSource()
+                } else {
+                    wallpapersDataSource = getWallpapersDatasource()
+                }
+                
+                //Append available sections
+                Section.allCases.forEach { snapshot.appendSections([$0]) }
+                
+                //Append annotations to their corresponding sections
+                
+                guard let topics = viewModel.wallpapersTopic.value else {
+                    return
+                }
+                
+                topics.forEach { (topic) in
+                    snapshot.appendItems(topic.preview_photos, toSection: .main)
+                }
+                
+                //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
+                DispatchQueue.main.async {
+                    self.wallpapersDataSource.apply(snapshot, animatingDifferences: false)
                     
-                    //Append available sections
-                    Section.allCases.forEach { snapshot.appendSections([$0]) }
-                    
-                    //Append annotations to their corresponding sections
-                    
-                    guard let topics = viewModel.wallpapersTopic.value else {
-                        return
-                    }
-                    
-                    topics.forEach { (topic) in
-                        snapshot.appendItems(topic.preview_photos, toSection: .main)
-                    }
-                    
-                    //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
-                    DispatchQueue.main.async {
-                        self.wallpapersDataSource.apply(snapshot, animatingDifferences: false)
-                        
-                        if (self.currentIndex > 0) {
-                            UIView.animate(withDuration: 0.25) {
-                                self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .bottom, animated: false)
-                            }
+                    if (self.currentIndex > 0) {
+                        UIView.animate(withDuration: 0.25) {
+                            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .bottom, animated: false)
                         }
-                        
                     }
-            }
-            
-            
+                    
+                }
         }
     }
 }
