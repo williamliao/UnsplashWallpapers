@@ -63,6 +63,8 @@
 		C8BF2ABB2636994500BE7C51 /* Current_user_contributions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8BF2ABA2636994500BE7C51 /* Current_user_contributions.swift */; };
 		C8BF2AC82636998400BE7C51 /* Total_current_user_submissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8BF2AC72636998400BE7C51 /* Total_current_user_submissions.swift */; };
 		C8BF2ACD263699EE00BE7C51 /* Preview_Photos.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8BF2ACC263699EE00BE7C51 /* Preview_Photos.swift */; };
+		C8BF2AD52636B42C00BE7C51 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8BF2AD42636B42C00BE7C51 /* SearchViewModel.swift */; };
+		C8BF2ADD2636B6E700BE7C51 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8BF2ADC2636B6E700BE7C51 /* SearchView.swift */; };
 		C8C91EBF260884F1001EAA59 /* Cursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C91EBE260884F1001EAA59 /* Cursor.swift */; };
 		C8C91EC426088536001EAA59 /* UnsplashPageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C91EC326088536001EAA59 /* UnsplashPageRequest.swift */; };
 		C8C91EC926088F2C001EAA59 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C91EC826088F2C001EAA59 /* SearchViewController.swift */; };
@@ -154,6 +156,8 @@
 		C8BF2ABA2636994500BE7C51 /* Current_user_contributions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Current_user_contributions.swift; sourceTree = "<group>"; };
 		C8BF2AC72636998400BE7C51 /* Total_current_user_submissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Total_current_user_submissions.swift; sourceTree = "<group>"; };
 		C8BF2ACC263699EE00BE7C51 /* Preview_Photos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preview_Photos.swift; sourceTree = "<group>"; };
+		C8BF2AD42636B42C00BE7C51 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		C8BF2ADC2636B6E700BE7C51 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		C8C91EBE260884F1001EAA59 /* Cursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cursor.swift; sourceTree = "<group>"; };
 		C8C91EC326088536001EAA59 /* UnsplashPageRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsplashPageRequest.swift; sourceTree = "<group>"; };
 		C8C91EC826088F2C001EAA59 /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -301,6 +305,7 @@
 				C89A724626034929003E188F /* PhotoListViewModel.swift */,
 				C8C91ED22608959A001EAA59 /* DetailViewModel.swift */,
 				C8A8FD3B2631694600C38FAF /* FavoriteViewModel.swift */,
+				C8BF2AD42636B42C00BE7C51 /* SearchViewModel.swift */,
 				C8A8FD4A263175C200C38FAF /* FavoriteManager.swift */,
 			);
 			path = ViewModel;
@@ -312,6 +317,7 @@
 				C89A725526034972003E188F /* PhotoListView.swift */,
 				C8C91ECD26089543001EAA59 /* DetailView.swift */,
 				C8A8FD31263168B200C38FAF /* FavoriteView.swift */,
+				C8BF2ADC2636B6E700BE7C51 /* SearchView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -510,6 +516,7 @@
 				C8A8FD412631695A00C38FAF /* Favorite.swift in Sources */,
 				C8BF2AB1263696FF00BE7C51 /* Topic.swift in Sources */,
 				C89A727526034C89003E188F /* Cover_photo.swift in Sources */,
+				C8BF2AD52636B42C00BE7C51 /* SearchViewModel.swift in Sources */,
 				C8BF2ACD263699EE00BE7C51 /* Preview_Photos.swift in Sources */,
 				C89A723D260348BD003E188F /* Coordinator.swift in Sources */,
 				C8C91ED32608959A001EAA59 /* DetailViewModel.swift in Sources */,
@@ -538,6 +545,7 @@
 				C89A72AC26034DB0003E188F /* Tags.swift in Sources */,
 				C89A72342603489C003E188F /* ImageCache.swift in Sources */,
 				C89A728926034D03003E188F /* Location.swift in Sources */,
+				C8BF2ADD2636B6E700BE7C51 /* SearchView.swift in Sources */,
 				C89A729826034D52003E188F /* Response.swift in Sources */,
 				C8C91EC426088536001EAA59 /* UnsplashPageRequest.swift in Sources */,
 				C89A72362603489C003E188F /* Observable.swift in Sources */,

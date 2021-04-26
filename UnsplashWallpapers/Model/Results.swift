@@ -21,7 +21,7 @@ struct Results: Codable, Identifiable {
     let categories: [Categories]?
     let likes: Int
     let liked_by_user: Bool
-    let current_user_collections: Current_user_collections?
+    let current_user_collections: [Current_user_collections]?
     let user: User
     let tags: [Tags]
     let blur_hash: String?
@@ -42,14 +42,14 @@ struct Sponsor: Codable {
     let for_hire: Bool
     let twitter_username: String?
     let instagram_username: String?
-    let portfolio_url: String
+    let portfolio_url: String?
     let bio: String?
     let accepted_tos: Bool
-    let location: String
+    let location: String?
     let first_name: String?
     let updated_at: String
     let username: String
-    let link: Links
+    let link: Links?
     let profile_image: Profile_image
     let last_name: String?
     let name: String?

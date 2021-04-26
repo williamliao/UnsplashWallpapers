@@ -10,6 +10,7 @@ import Foundation
 struct Source: Codable {
     let ancestry: Ancestry
     let title: String
+    let subtitle: String
     let description: String?
     let meta_title: String
     let meta_description: String

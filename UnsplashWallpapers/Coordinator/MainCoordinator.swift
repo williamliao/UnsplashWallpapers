@@ -28,6 +28,11 @@ class MainCoordinator: Coordinator {
         return viewdModel
     }()
     
+    lazy var searchViewModel: SearchViewModel! = {
+        let viewdModel = SearchViewModel()
+        return viewdModel
+    }()
+    
     lazy var favoriteViewModel: FavoriteViewModel! = {
         let viewdModel = FavoriteViewModel()
         return viewdModel
@@ -36,15 +41,22 @@ class MainCoordinator: Coordinator {
     override func start() {
         let main = createPhotoListView()
         let fav = createFavoriteView()
+        let search = createSearchView()
 
-        self.rootViewController.setViewControllers([main, fav], animated: false)
+        self.rootViewController.setViewControllers([main, search, fav], animated: false)
         
         if #available(iOS 13.0, *) {
-            self.rootViewController.tabBar.items?[0].image = UIImage(systemName: "square")?.withRenderingMode(.alwaysOriginal)
-            self.rootViewController.tabBar.items?[0].selectedImage = UIImage(systemName: "square.fill")?.withRenderingMode(.alwaysOriginal)
+            
+            let tintColor = self.rootViewController.traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
+            
+            self.rootViewController.tabBar.items?[0].image = UIImage(systemName: "square")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            self.rootViewController.tabBar.items?[0].selectedImage = UIImage(systemName: "square.fill")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            
+            self.rootViewController.tabBar.items?[1].image = UIImage(systemName: "magnifyingglass")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            self.rootViewController.tabBar.items?[1].selectedImage = UIImage(systemName: "magnifyingglass.circle.fill")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
      
-            self.rootViewController.tabBar.items?[1].image = UIImage(systemName: "heart")?.withRenderingMode(.alwaysOriginal)
-            self.rootViewController.tabBar.items?[1].selectedImage = UIImage(systemName: "heart.fill")?.withRenderingMode(.alwaysOriginal)
+            self.rootViewController.tabBar.items?[2].image = UIImage(systemName: "heart")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            self.rootViewController.tabBar.items?[2].selectedImage = UIImage(systemName: "heart.fill")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
         } else {
             // Fallback on earlier versions
         }
@@ -68,6 +80,14 @@ class MainCoordinator: Coordinator {
         detail.viewModel = detailViewModel
         detail.title = "Detail"
         return detail
+    }
+    
+    func createSearchView() -> UINavigationController {
+        let search = SearchViewController()
+        search.viewModel = searchViewModel
+        search.title = "Search"
+        let nav = UINavigationController(rootViewController: search)
+        return nav
     }
     
     func createFavoriteView() -> UINavigationController {

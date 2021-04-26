@@ -44,15 +44,7 @@ class PhotoListViewController: UIViewController {
                 self?.photoListView.reloadData()
             }
         }
-        
-        viewModel.searchRespone.bind { [weak self] (_) in
-            if #available(iOS 13.0, *) {
-                self?.photoListView.applyInitialSnapshots()
-            } else {
-                self?.photoListView.reloadData()
-            }
-        }
-        
+       
         viewModel.error.bind { (error) in
             guard let error = error else {
                 return
@@ -61,15 +53,15 @@ class PhotoListViewController: UIViewController {
             print("error", error)
         }
         
-        let searchController = SearchViewController(viewModel: viewModel)
+//        let searchController = SearchViewController(viewModel: viewModel)
+//
+//        if #available(iOS 11.0, *) {
+//
+//            self.navigationItem.searchController = searchController
+//            searchController.hidesNavigationBarDuringPresentation = false
+//        }
         
-        if #available(iOS 11.0, *) {
-            
-            self.navigationItem.searchController = searchController
-            searchController.hidesNavigationBarDuringPresentation = false
-        }
-        
-        viewModel.fetchData()
+        //viewModel.fetchData()
     }
     
 }

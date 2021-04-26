@@ -8,81 +8,42 @@
 
 import UIKit
 
-class SearchViewController: UISearchController {
+class SearchViewController: UIViewController {
     
-    var viewModel: PhotoListViewModel!
-    init(viewModel: PhotoListViewModel) {
-        self.viewModel = viewModel
-        super.init(searchResultsController: nil)
-    }
+    var viewModel: SearchViewModel!
+    var searchView: SearchView!
     
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-    
-    var isSearchBarEmpty: Bool {
-        return self.searchBar.text?.isEmpty ?? true
-    }
-    
-    var isFiltering: Bool {
-        let searchBarScopeIsFiltering = self.searchBar.selectedScopeButtonIndex != 0
-        return self.isActive && (!isSearchBarEmpty || searchBarScopeIsFiltering)
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureView()
-    }
-    
-    func configureView() {
-        //self.searchResultsUpdater = self
-        self.searchBar.autocapitalizationType = .none
-        //self.dimsBackgroundDuringPresentation = false
-        self.searchBar.delegate = self
-        self.searchBar.sizeToFit()
-        self.obscuresBackgroundDuringPresentation = true
-        self.searchBar.placeholder = "Search Candies"
-        definesPresentationContext = true
-       // self.showsSearchResultsController = true
-        //self.searchBar.scopeButtonTitles = SearchItem.ScopeTypeSection.allCases.map { $0.rawValue }
-    }
-}
-
-extension SearchViewController: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchView = SearchView(viewModel: viewModel)
+        searchView.navItem = self.navigationItem
+        searchView.createView()
+        searchView.configureCollectionView()
+        searchView.translatesAutoresizingMaskIntoConstraints = false
         
-        if searchBar.text.isEmptyOrWhitespace() {
-            return
+        self.view.addSubview(searchView)
+        
+        NSLayoutConstraint.activate([
+            searchView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
+            searchView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
+            searchView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
+            searchView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 44),
+        ])
+        
+        viewModel.searchRespone.bind { [weak self] (_) in
+            if #available(iOS 13.0, *) {
+                self?.searchView.applyInitialSnapshots()
+            } else {
+                //self?.searchView.reloadData()
+            }
         }
         
-        guard let searchText = searchBar.text else {
-            return
+        viewModel.error.bind { (error) in
+            guard let error = error else {
+                return
+            }
+            
+            print("search error", error)
         }
-        
-        // Strip out all the leading and trailing spaces.
-        let whitespaceCharacterSet = CharacterSet.whitespaces
-        let strippedString =
-            searchText.trimmingCharacters(in: whitespaceCharacterSet)
-        
-        viewModel.search(keyword: strippedString)
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        closeSearchView()
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchText == "" {
-            closeSearchView()
-        }
-    }
-    
-    func closeSearchView() {
-        self.viewModel.didCloseSearchFunction()
-        view.endEditing(true)
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
-        
     }
 }
