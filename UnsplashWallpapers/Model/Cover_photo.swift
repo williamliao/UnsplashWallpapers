@@ -11,9 +11,11 @@ struct Cover_photo: Codable {
     let id: String
     let created_at: String
     let updated_at: String
+    let promoted_at: String
     let width: Int
     let height: Int
     let color: String
+    let blur_hash : String
     let description: String?
     let alt_description: String?
     let urls: Urls
@@ -23,6 +25,7 @@ struct Cover_photo: Codable {
     let liked_by_user: Bool
     let current_user_collections: Current_user_collections?
     let user: User
+    let sponsorship: Sponsorship?
 }
 
 extension Cover_photo: Hashable, Equatable {

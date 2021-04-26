@@ -11,7 +11,8 @@ struct Preview_Photos:Codable {
     let id: String
     let created_at: String
     let updated_at: String
-    let urls: String
+    let blur_hash: String
+    let urls: Urls
 }
 
 extension Preview_Photos: Hashable {

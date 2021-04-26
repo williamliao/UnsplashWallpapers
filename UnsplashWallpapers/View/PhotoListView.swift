@@ -8,7 +8,13 @@
 import UIKit
 
 enum Section: Int, CaseIterable {
-  case main
+    case main
+}
+
+enum CurrentSource: Int, CaseIterable {
+    case random
+    case nature
+    case wallpapers
 }
 
 class PhotoListView: UIView {
@@ -24,12 +30,19 @@ class PhotoListView: UIView {
     @available(iOS 13.0, *)
     lazy var searchDataSource  = makeSearchDataSource()
     
+    @available(iOS 13.0, *)
+    lazy var natureDataSource  = makeNatureDataSource()
+    
+    @available(iOS 13.0, *)
+    lazy var wallpapersDataSource  = makeWallpapersDataSource()
+    
     var coordinator: MainCoordinator?
     
     var searchButton: UIButton!
     
     // MARK:- property
     var firstLoad = true
+    var section: CurrentSource = .random
     
     var currentIndex = 0;
     //var currentOffset:CGPoint = CGPoint.zero;
@@ -121,12 +134,24 @@ extension PhotoListView {
             switch (segmentedControl.selectedSegmentIndex) {
             case 0:
                 print("Random")
+                section = .random
                 break // Random
             case 1:
                 print("Nature")
+                
+                natureDataSource = makeNatureDataSource()
+                collectionView.dataSource = natureDataSource
+                
+                viewModel.fetchNature()
+                section = .nature
+                
                 break // Nature
             case 2:
                 print("Wallpapers")
+                wallpapersDataSource = makeWallpapersDataSource()
+                collectionView.dataSource = wallpapersDataSource
+                viewModel.fetchWallpapers()
+                section = .wallpapers
                 break // Wallpapers
             default:
                 break
@@ -197,6 +222,16 @@ extension PhotoListView {
         return searchDataSource
     }
     
+    @available(iOS 13.0, *)
+    private func getNatureDatasource() -> UICollectionViewDiffableDataSource<Section, Topic> {
+        return natureDataSource
+    }
+    
+    @available(iOS 13.0, *)
+    private func getWallpapersDatasource() -> UICollectionViewDiffableDataSource<Section, Topic> {
+        return wallpapersDataSource
+    }
+    
     func makeDataSource() -> UICollectionViewDiffableDataSource<Section, Response> {
         
         return UICollectionViewDiffableDataSource<Section, Response>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
@@ -209,6 +244,22 @@ extension PhotoListView {
         
         return UICollectionViewDiffableDataSource<Section, Results>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
             let cell = self.configureSearchCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
+            return cell
+        }
+    }
+    
+    func makeNatureDataSource() -> UICollectionViewDiffableDataSource<Section, Topic> {
+        
+        return UICollectionViewDiffableDataSource<Section, Topic>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+            let cell = self.configureTopicCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
+            return cell
+        }
+    }
+    
+    func makeWallpapersDataSource() -> UICollectionViewDiffableDataSource<Section, Topic> {
+
+        return UICollectionViewDiffableDataSource<Section, Topic>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+            let cell = self.configureTopicCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
             return cell
         }
     }
@@ -238,36 +289,99 @@ extension PhotoListView {
             }
             
         } else {
-            
-            if (!firstLoad) {
-                dataSource = makeDataSource()
-            } else {
-                dataSource = getDatasource()
-            }
-            
-            var snapshot = NSDiffableDataSourceSnapshot<Section, Response>()
-            
-            //Append available sections
-            Section.allCases.forEach { snapshot.appendSections([$0]) }
-            dataSource.apply(snapshot, animatingDifferences: false)
-            
-            //Append annotations to their corresponding sections
-            
-            viewModel.respone.value?.forEach { (respone) in
-                snapshot.appendItems([respone], toSection: .main)
-            }
-            
-            //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
-            DispatchQueue.main.async {
-                self.dataSource.apply(snapshot, animatingDifferences: false)
-                
-                if (self.currentIndex > 0) {
-                    UIView.animate(withDuration: 0.25) {
-                        self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: Section.main.rawValue), at: .bottom, animated: false)
+           
+            switch section {
+                case .random:
+                    var snapshot = NSDiffableDataSourceSnapshot<Section, Response>()
+                    if (!firstLoad) {
+                        dataSource = makeDataSource()
+                    } else {
+                        dataSource = getDatasource()
                     }
-                }
-                
+                    
+                    //Append available sections
+                    Section.allCases.forEach { snapshot.appendSections([$0]) }
+                    
+                    //Append annotations to their corresponding sections
+                    
+                    viewModel.respone.value?.forEach { (respone) in
+                        snapshot.appendItems([respone], toSection: .main)
+                    }
+                    
+                    //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
+                    DispatchQueue.main.async {
+                        self.dataSource.apply(snapshot, animatingDifferences: false)
+                        
+                        if (self.currentIndex > 0) {
+                            UIView.animate(withDuration: 0.25) {
+                                self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: Section.main.rawValue), at: .bottom, animated: false)
+                            }
+                        }
+                        
+                    }
+                    
+                case .nature:
+                    var snapshot = NSDiffableDataSourceSnapshot<Section, Topic>()
+                    natureDataSource.apply(snapshot, animatingDifferences: false)
+                    if (!firstLoad) {
+                        natureDataSource = makeNatureDataSource()
+                    } else {
+                        natureDataSource = getNatureDatasource()
+                    }
+                    
+                    //Append available sections
+                    Section.allCases.forEach { snapshot.appendSections([$0]) }
+                    
+                    //Append annotations to their corresponding sections
+                    
+                    viewModel.natureTopic.value?.forEach { (preview) in
+                        snapshot.appendItems([preview], toSection: .main)
+                    }
+                    
+                    //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
+                    DispatchQueue.main.async {
+                        self.natureDataSource.apply(snapshot, animatingDifferences: false)
+                        
+                        if (self.currentIndex > 0) {
+                            UIView.animate(withDuration: 0.25) {
+                                self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .bottom, animated: false)
+                            }
+                        }
+                        
+                    }
+                    
+                case .wallpapers:
+                    var snapshot = NSDiffableDataSourceSnapshot<Section, Topic>()
+                    wallpapersDataSource.apply(snapshot, animatingDifferences: false)
+                    if (!firstLoad) {
+                        wallpapersDataSource = makeWallpapersDataSource()
+                    } else {
+                        wallpapersDataSource = getWallpapersDatasource()
+                    }
+                    
+                    //Append available sections
+                    Section.allCases.forEach { snapshot.appendSections([$0]) }
+                    
+                    //Append annotations to their corresponding sections
+                    
+                    viewModel.wallpapersTopic.value?.forEach { (respone) in
+                        snapshot.appendItems([respone], toSection: .main)
+                    }
+                    
+                    //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
+                    DispatchQueue.main.async {
+                        self.wallpapersDataSource.apply(snapshot, animatingDifferences: false)
+                        
+                        if (self.currentIndex > 0) {
+                            UIView.animate(withDuration: 0.25) {
+                                self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .bottom, animated: false)
+                            }
+                        }
+                        
+                    }
             }
+            
+            
         }
     }
 }
@@ -364,6 +478,18 @@ extension PhotoListView {
         cell?.titleLabel.text = respone.user.name
         
         if let url = URL(string: respone.urls.thumb) {
+            cell?.configureImage(with: url)
+        }
+        
+        return cell
+    }
+    
+    func configureTopicCell(collectionView: UICollectionView, respone: Topic, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier, for: indexPath) as? PhotoListCollectionViewCell
+        
+        cell?.titleLabel.text = respone.title
+        
+        if let url = URL(string: respone.preview_photos[indexPath.row].urls.thumb) {
             cell?.configureImage(with: url)
         }
         

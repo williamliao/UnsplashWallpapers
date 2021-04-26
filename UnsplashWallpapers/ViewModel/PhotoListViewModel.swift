@@ -17,6 +17,8 @@ class PhotoListViewModel  {
     var coordinator: MainCoordinator?
     var respone: Observable<[Response]?> = Observable([])
     var searchRespone: Observable<SearchRespone?> = Observable(nil)
+    var natureTopic: Observable<[Topic]?> = Observable([])
+    var wallpapersTopic: Observable<[Topic]?> = Observable([])
     var error: Observable<Error?> = Observable(nil)
     private(set) var isFetching = false
     private var canFetchMore = true
@@ -30,6 +32,7 @@ class PhotoListViewModel  {
     var fetchCursor: Cursor!
     var unsplashPagedRequest: UnsplashPagedRequest!
     var unsplashSearchPagedRequest: UnsplashSearchPagedRequest!
+    var unsplashTopicRequest: UnsplashTopicRequest!
     
     var segmentedIndex = SegmentedIndex.random
 }
@@ -65,33 +68,22 @@ extension PhotoListViewModel {
         }
     }
     
-    func fetchPhotoData(index: SegmentedIndex = .nature) {
-        switch index {
-            case .random:
-                service.networkManager = NetworkManager(endPoint: .random)
-                print("random")
-                break
-            case .nature:
-                print("nature")
-                break
-            case .wallpapers:
-                print("wallpapers")
-                break
-        }
+    func fetchNature() {
+        service.networkManager = NetworkManager(endPoint: .nature)
         
         isLoading.value = true
         
         if fetchCursor == nil {
             fetchCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
-            unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
+            unsplashTopicRequest = UnsplashTopicRequest(with: fetchCursor)
         }
         
-        service.fetchDataWithNetworkManager(pageRequest: unsplashPagedRequest) { (result) in
+        service.topic(keyword: "nature", pageRequest: unsplashTopicRequest) { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):
-                   
-                    self.respone.value = respone
+                    
+                    self.natureTopic.value = respone
         
                 case .failure(let error):
                     
@@ -103,6 +95,37 @@ extension PhotoListViewModel {
                     }
             }
         }
+
+    }
+    
+    func fetchWallpapers() {
+        service.networkManager = NetworkManager(endPoint: .wallpapers)
+        
+        isLoading.value = true
+        
+        if fetchCursor == nil {
+            fetchCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+            unsplashTopicRequest = UnsplashTopicRequest(with: fetchCursor)
+        }
+        
+        service.topic(keyword: "wallpapers", pageRequest: unsplashTopicRequest) { (result) in
+            self.isLoading.value = false
+            switch result {
+                case .success(let respone):
+                    
+                    self.wallpapersTopic.value = respone
+        
+                case .failure(let error):
+                    
+                    switch error {
+                        case .statusCodeError(let code):
+                            print(code)
+                        default:
+                            self.error.value = error
+                    }
+            }
+        }
+
     }
     
     func search(keyword: String) {

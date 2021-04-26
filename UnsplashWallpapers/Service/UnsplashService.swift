@@ -30,10 +30,10 @@ extension UnsplashService {
         }, completion: completion)
     }
     
-    func topic(keyword: String, pageRequest: UnsplashTopicRequest, completion: @escaping (APIResult<Topic, ServerError>) -> Void) {
+    func topic(keyword: String, pageRequest: UnsplashTopicRequest, completion: @escaping (APIResult<[Topic], ServerError>) -> Void) {
         
-        networkManager.topic(query: keyword, pageRequest: pageRequest, method: .get, decode: { json -> Topic? in
-            guard let feedResult = json as? Topic else { return  nil }
+        networkManager.topic(query: keyword, pageRequest: pageRequest, method: .get, decode: { json -> [Topic]? in
+            guard let feedResult = json as? [Topic] else { return  nil }
             return feedResult
         }, completion: completion)
     }
@@ -47,7 +47,7 @@ extension UnsplashService {
         components.host = UnsplashAPI.host
           components.path = "/search/photos"
         
-        print("prepareURLComponents \(page)")
+        //print("prepareURLComponents \(page)")
         
         components.queryItems = [
             URLQueryItem(name: "query", value: query),
