@@ -35,14 +35,14 @@ class FavoriteView: UIView {
 extension FavoriteView {
     
     @available(iOS 13.0, *)
-    private func getDatasource() -> UITableViewDiffableDataSource<FavoriteSection, Response> {
+    private func getDatasource() -> UITableViewDiffableDataSource<FavoriteSection, PhotoInfo> {
         return dataSource
     }
     
     @available(iOS 13.0, *)
-    func makeDataSource() -> UITableViewDiffableDataSource<FavoriteSection, Response> {
+    func makeDataSource() -> UITableViewDiffableDataSource<FavoriteSection, PhotoInfo> {
         
-        return UITableViewDiffableDataSource<FavoriteSection, Response>(tableView: tableView) { (tableView, indexPath, respone) -> FavoriteTableViewCell? in
+        return UITableViewDiffableDataSource<FavoriteSection, PhotoInfo>(tableView: tableView) { (tableView, indexPath, respone) -> FavoriteTableViewCell? in
             let cell = self.configureCell(tableView: tableView, respone: respone, indexPath: indexPath)
             return cell
         }
@@ -75,7 +75,7 @@ extension FavoriteView {
             dataSource = getDatasource()
         }
         
-        var snapshot = NSDiffableDataSourceSnapshot<FavoriteSection, Response>()
+        var snapshot = NSDiffableDataSourceSnapshot<FavoriteSection, PhotoInfo>()
         
         //Append available sections
         FavoriteSection.allCases.forEach { snapshot.appendSections([$0]) }
@@ -83,7 +83,7 @@ extension FavoriteView {
         
         //Append annotations to their corresponding sections
         
-        viewModel.respone.value?.forEach { (respone) in
+        viewModel.photoInfo.value?.forEach { (respone) in
             snapshot.appendItems([respone], toSection: .main)
         }
         
@@ -119,17 +119,17 @@ extension FavoriteView {
 // MARK: - Private
 extension FavoriteView {
     
-    func configureCell(tableView: UITableView, respone: Response, indexPath: IndexPath) -> FavoriteTableViewCell? {
+    func configureCell(tableView: UITableView, respone: PhotoInfo, indexPath: IndexPath) -> FavoriteTableViewCell? {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: FavoriteTableViewCell.reuseIdentifier, for: indexPath) as? FavoriteTableViewCell
         
-        cell?.titleLabel.text = respone.user?.name
+        cell?.titleLabel.text = respone.title
         
-        if let url = URL(string: respone.urls.thumb) {
+        if let url = URL(string: respone.url.thumb) {
             cell?.configureImage(with: url)
         }
         
-        if let url = URL(string: respone.user?.profile_image.small ?? "") {
+        if let url = URL(string: respone.profile_image.small) {
             cell?.configureAImage(with: url)
         }
         

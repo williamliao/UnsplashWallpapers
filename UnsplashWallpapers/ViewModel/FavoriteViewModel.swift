@@ -10,6 +10,7 @@ import UIKit
 class FavoriteViewModel {
     var coordinator: MainCoordinator?
     var respone: Observable<[Response]?> = Observable([])
+    var photoInfo: Observable<[PhotoInfo]?> = Observable([])
     var error: Observable<Error?> = Observable(nil)
     
     let favoriteManager = FavoriteManager.sharedInstance
@@ -21,7 +22,17 @@ extension FavoriteViewModel {
         favoriteManager.loadFavorite(key: "favorites") {(success) in
             if (success) {
                 //print(favoriteManager.favorites.value)
-                respone.value = Array(favoriteManager.favorites.value)
+                photoInfo.value = Array(favoriteManager.favorites.value)
+                
+//                guard let combinedDict = photoInfo.value else {
+//                    return
+//                }
+//
+//                for info in photoInfoArray {
+//                   // photoInfo.value.forEach { (k,v) in info[k] = v }
+//                    photoInfo.value = combinedDict.merging(info) { $1 }
+//                }
+                
             } else {
                 
             }

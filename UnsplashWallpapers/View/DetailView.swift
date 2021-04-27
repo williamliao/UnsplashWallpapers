@@ -51,9 +51,9 @@ extension DetailView {
         ])
     }
     
-    func configureView(photo: Response) {
+    func configureView(photo: PhotoInfo) {
         
-        guard let url = URL(string: photo.urls.full) else {
+        guard let url = URL(string: photo.url.full) else {
             return
         }
         
@@ -72,16 +72,14 @@ extension DetailView {
             self?.act.isHidden = !isLoading
         }
         
-        viewModel.respone.bind { [weak self] (respone) in
-            guard let res = respone else {
+        viewModel.photoInfo.bind { [weak self] (info) in
+            guard let photoInfo = info else {
                 return
             }
-            self?.configureView(photo: res)
+            self?.configureView(photo: photoInfo)
         }
         
         viewModel.restultImage.bind { (image) in
-            
-            print(image)
             
             self.showImage(image: image)
             

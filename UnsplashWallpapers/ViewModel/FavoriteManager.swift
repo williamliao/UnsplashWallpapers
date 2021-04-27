@@ -20,12 +20,12 @@ class FavoriteSingleton {
         return instance
     }()
     
-    var favorites: Observable<Set<Response>> = Observable(Set<Response>())
+    var favorites: Observable<Set<PhotoInfo>> = Observable(Set<PhotoInfo>())
 }
 
 extension FavoriteSingleton {
     
-    func handleSaveAction(photo: Response, isFavorite: Bool) {
+    func handleSaveAction(photo: PhotoInfo, isFavorite: Bool) {
         if isFavorite {
             self.favorites.value.insert(photo)
         } else {
@@ -48,7 +48,7 @@ extension FavoriteSingleton {
         let userDefaults = UserDefaults.standard
         if UserDefaults.standard.object(forKey: key) != nil {
             do {
-                self.favorites.value = try userDefaults.getObject(forKey: key, castTo: Set<Response>.self)
+                self.favorites.value = try userDefaults.getObject(forKey: key, castTo: Set<PhotoInfo>.self)
                 completionHandler(true)
             } catch  {
                 print("loadFavorite \(error)")

@@ -74,6 +74,7 @@
 		C8CD0D2A2604818D009B12AA /* UnsplashPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CD0D272604818D009B12AA /* UnsplashPhoto.swift */; };
 		C8CD0D2B2604818D009B12AA /* UnsplashPhotoExif.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CD0D282604818D009B12AA /* UnsplashPhotoExif.swift */; };
 		C8CD0D2C2604818D009B12AA /* UnsplashUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CD0D292604818D009B12AA /* UnsplashUser.swift */; };
+		C8D688EF2637A773008F8B4D /* PhotoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D688EE2637A772008F8B4D /* PhotoInfo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -167,6 +168,7 @@
 		C8CD0D272604818D009B12AA /* UnsplashPhoto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnsplashPhoto.swift; sourceTree = "<group>"; };
 		C8CD0D282604818D009B12AA /* UnsplashPhotoExif.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnsplashPhotoExif.swift; sourceTree = "<group>"; };
 		C8CD0D292604818D009B12AA /* UnsplashUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnsplashUser.swift; sourceTree = "<group>"; };
+		C8D688EE2637A772008F8B4D /* PhotoInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoInfo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -295,6 +297,7 @@
 				C8BF2ABA2636994500BE7C51 /* Current_user_contributions.swift */,
 				C8BF2AC72636998400BE7C51 /* Total_current_user_submissions.swift */,
 				C8BF2ACC263699EE00BE7C51 /* Preview_Photos.swift */,
+				C8D688EE2637A772008F8B4D /* PhotoInfo.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -499,6 +502,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C8D688EF2637A773008F8B4D /* PhotoInfo.swift in Sources */,
 				C89A728E26034D20003E188F /* Position.swift in Sources */,
 				C89A727A26034CA6003E188F /* Current_user_collections.swift in Sources */,
 				C89A72C226035204003E188F /* URLSessionDataTaskProtocol.swift in Sources */,

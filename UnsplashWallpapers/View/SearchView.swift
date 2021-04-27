@@ -224,18 +224,7 @@ extension SearchView: UISearchBarDelegate {
 extension SearchView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        if #available(iOS 13.0, *) {
-            guard let res = searchDataSource.itemIdentifier(for: indexPath) else {
-              return
-            }
-            
-            //coordinator?.goToDetailView(respone: res)
-        } else {
-//            guard let res = viewModel.respone.value?[indexPath.row] else {
-//                return
-//            }
-//            coordinator?.goToDetailView(respone: res)
-        }
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

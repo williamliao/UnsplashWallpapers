@@ -158,17 +158,7 @@ extension PhotoListView {
                 break
             }
     }
-    
-    func createSearchBarItem(navItem: UINavigationItem) {
-        
-        let barButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(searchButtonTapped))
-        navItem.rightBarButtonItem = barButton
-    }
-    
-    @objc func searchButtonTapped() {
-        viewModel.search(keyword: "nature")
-    }
-    
+
     func reloadData() {
         collectionView.reloadData()
     }
@@ -387,16 +377,77 @@ extension PhotoListView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         if #available(iOS 13.0, *) {
-            guard let res = dataSource.itemIdentifier(for: indexPath) else {
-              return
+            
+            switch section {
+                case .random:
+                    guard let res = dataSource.itemIdentifier(for: indexPath), let profile = res.user?.profile_image  else {
+                        return
+                    }
+                    
+                    let photoInfo = PhotoInfo(title: res.user?.name ?? "", url: res.urls, profile_image: profile)
+                    coordinator?.goToDetailView(photoInfo: photoInfo)
+                    
+                case .nature:
+                    guard let res = natureDataSource.itemIdentifier(for: indexPath) else {
+                        return
+                    }
+                    
+                    guard let owners = viewModel.natureTopic.value?[indexPath.row].owners else {
+                        return
+                    }
+                    
+                    let photoInfo = PhotoInfo(title: "Nature", url: res.urls, profile_image: owners[indexPath.row].profile_image)
+                    coordinator?.goToDetailView(photoInfo: photoInfo)
+                    
+                case .wallpapers:
+                    
+                    guard let res = wallpapersDataSource.itemIdentifier(for: indexPath) else {
+                        return
+                    }
+                    
+                    guard let owners = viewModel.natureTopic.value?[indexPath.row].owners else {
+                        return
+                    }
+                    
+                    let photoInfo = PhotoInfo(title: "Wallpapers", url: res.urls, profile_image: owners[indexPath.row].profile_image)
+                    coordinator?.goToDetailView(photoInfo: photoInfo)
             }
             
-            coordinator?.goToDetailView(respone: res)
         } else {
-            guard let res = viewModel.respone.value?[indexPath.row] else {
-                return
+            
+            switch section {
+                case .random:
+                    guard let res = viewModel.respone.value?[indexPath.row], let profile = res.user?.profile_image else {
+                        return
+                    }
+                    let photoInfo = PhotoInfo(title: res.user?.name ?? "", url: res.urls, profile_image: profile)
+                    coordinator?.goToDetailView(photoInfo: photoInfo)
+                    
+                case .nature:
+                    guard let res = viewModel.natureTopic.value?[indexPath.row] else {
+                        return
+                    }
+                    
+                    guard let owners = viewModel.natureTopic.value?[indexPath.row].owners else {
+                        return
+                    }
+                    
+                    let photoInfo = PhotoInfo(title: "Nature", url: res.preview_photos[indexPath.row].urls, profile_image: owners[indexPath.row].profile_image)
+                    coordinator?.goToDetailView(photoInfo: photoInfo)
+                    
+                case .wallpapers:
+                    
+                    guard let res = viewModel.wallpapersTopic.value?[indexPath.row] else {
+                        return
+                    }
+                    
+                    guard let owners = viewModel.natureTopic.value?[indexPath.row].owners else {
+                        return
+                    }
+                    
+                    let photoInfo = PhotoInfo(title: "Wallpapers", url: res.preview_photos[indexPath.row].urls, profile_image: owners[indexPath.row].profile_image)
+                    coordinator?.goToDetailView(photoInfo: photoInfo)
             }
-            coordinator?.goToDetailView(respone: res)
         }
     }
     
@@ -441,19 +492,7 @@ extension PhotoListView {
         
         return cell
     }
-    
-    func configureSearchCell(collectionView: UICollectionView, respone: Results, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier, for: indexPath) as? PhotoListCollectionViewCell
-        
-        cell?.titleLabel.text = respone.user.name
-        
-        if let url = URL(string: respone.urls.thumb) {
-            cell?.configureImage(with: url)
-        }
-        
-        return cell
-    }
-    
+   
     func configureTopicCell(collectionView: UICollectionView, respone: Preview_Photos, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier, for: indexPath) as? PhotoListCollectionViewCell
         

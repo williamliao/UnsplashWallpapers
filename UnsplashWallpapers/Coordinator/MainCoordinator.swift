@@ -100,9 +100,9 @@ class MainCoordinator: Coordinator {
 }
 
 extension MainCoordinator {
-    func goToDetailView(respone: Response) {
+    func goToDetailView(photoInfo: PhotoInfo) {
         let topDetailVC = createDetailView()
-        topDetailVC.viewModel.respone.value = respone
+        topDetailVC.viewModel.photoInfo.value = photoInfo
        
         if let currentNavController = self.rootViewController.selectedViewController as? UINavigationController {
             currentNavController.pushViewController(topDetailVC, animated: true)

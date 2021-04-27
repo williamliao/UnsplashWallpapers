@@ -20,7 +20,7 @@ class FavoriteViewController: UIViewController {
         favoriteView.configureTableView(Add: self.view)
         favoriteView.makeDateSourceForTableView()
         
-        viewModel.respone.bind { [weak self] (_) in
+        viewModel.photoInfo.bind { [weak self] (_) in
             if #available(iOS 13.0, *) {
                 self?.favoriteView.applyInitialSnapshots()
             } else {

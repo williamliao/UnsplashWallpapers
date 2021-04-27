@@ -13,6 +13,7 @@ class DetailViewModel {
     var respone: Observable<Response?> = Observable(nil)
     var isLoading: Observable<Bool> = Observable(false)
     var restultImage: Observable<UIImage?> = Observable(nil)
+    var photoInfo: Observable<PhotoInfo?> = Observable(nil)
     
     // MARK: - component
     private var cancellable: AnyCancellable?
@@ -57,22 +58,22 @@ extension DetailViewModel {
         backButton.isSelected = isFavorite
         navItem.rightBarButtonItem = UIBarButtonItem(customView: backButton)
         
-        guard let photo = respone.value  else {
+        guard let photoInfo = photoInfo.value  else {
             return
         }
         
-        favoriteManager.handleSaveAction(photo: photo, isFavorite: isFavorite)
+        favoriteManager.handleSaveAction(photo: photoInfo, isFavorite: isFavorite)
     }
     
     func loadFavorite() {
         
         favoriteManager.loadFavorite(key: "favorites") { (success) in
             if (success) {
-                guard let photo = respone.value  else {
+                guard let photoInfo = photoInfo.value  else {
                     return
                 }
                 
-                if (favoriteManager.favorites.value.contains(photo)) {
+                if (favoriteManager.favorites.value.contains(photoInfo)) {
                     let backButton = navItem.rightBarButtonItem?.customView as! UIButton
                     backButton.isSelected = true
                     navItem.rightBarButtonItem = UIBarButtonItem(customView: backButton)
