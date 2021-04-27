@@ -12,12 +12,8 @@ enum SearchResultsSection: Int, CaseIterable {
     case trending
 }
 
-struct SearchResults:Codable,Hashable {
-    let title:String
-}
-
 protocol SearchResultsDidSelectedDelegate: class {
-    func searchResultsDidSelected(query:String)
+    func searchResultsDidSelected(query:String, category: SearchResults.Category)
 }
 
 class SearchResultsTableView: UIView {
@@ -154,7 +150,7 @@ extension SearchResultsTableView: UITableViewDelegate {
         guard let querys = viewModel.trending.value else {
             return
         }
-        
-        searchResultsDidSelectedDelegate.searchResultsDidSelected(query: querys[indexPath.row].title)
+
+        searchResultsDidSelectedDelegate.searchResultsDidSelected(query: querys[indexPath.row].title, category: viewModel.scropeTitle.value)
     }
 }

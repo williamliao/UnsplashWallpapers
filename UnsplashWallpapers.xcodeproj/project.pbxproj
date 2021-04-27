@@ -79,6 +79,7 @@
 		C8D6891C2637BC2B008F8B4D /* SearchResultsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D6891B2637BC2B008F8B4D /* SearchResultsTableViewCell.swift */; };
 		C8D689212637BC3A008F8B4D /* SearchResultsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D689202637BC3A008F8B4D /* SearchResultsViewModel.swift */; };
 		C8D689362637BF72008F8B4D /* SearchResultsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D689352637BF72008F8B4D /* SearchResultsHeaderView.swift */; };
+		C8D6893B2637E2E8008F8B4D /* SearchResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D6893A2637E2E7008F8B4D /* SearchResults.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -177,6 +178,7 @@
 		C8D6891B2637BC2B008F8B4D /* SearchResultsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchResultsTableViewCell.swift; sourceTree = "<group>"; };
 		C8D689202637BC3A008F8B4D /* SearchResultsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchResultsViewModel.swift; sourceTree = "<group>"; };
 		C8D689352637BF72008F8B4D /* SearchResultsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsHeaderView.swift; sourceTree = "<group>"; };
+		C8D6893A2637E2E7008F8B4D /* SearchResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResults.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -306,6 +308,7 @@
 				C8BF2AC72636998400BE7C51 /* Total_current_user_submissions.swift */,
 				C8BF2ACC263699EE00BE7C51 /* Preview_Photos.swift */,
 				C8D688EE2637A772008F8B4D /* PhotoInfo.swift */,
+				C8D6893A2637E2E7008F8B4D /* SearchResults.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -568,6 +571,7 @@
 				C8D6891C2637BC2B008F8B4D /* SearchResultsTableViewCell.swift in Sources */,
 				C89A729826034D52003E188F /* Response.swift in Sources */,
 				C8C91EC426088536001EAA59 /* UnsplashPageRequest.swift in Sources */,
+				C8D6893B2637E2E8008F8B4D /* SearchResults.swift in Sources */,
 				C89A72362603489C003E188F /* Observable.swift in Sources */,
 				C89A72512603495E003E188F /* PhotoListCollectionViewCell.swift in Sources */,
 				C8C91EBF260884F1001EAA59 /* Cursor.swift in Sources */,

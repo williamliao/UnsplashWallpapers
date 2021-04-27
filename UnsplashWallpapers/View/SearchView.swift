@@ -49,7 +49,7 @@ extension SearchView {
         //searchViewController.searchBar.sizeToFit()
         searchViewController.obscuresBackgroundDuringPresentation = true
         // self.showsSearchResultsController = true
-         //self.searchBar.scopeButtonTitles = SearchItem.ScopeTypeSection.allCases.map { $0.rawValue }
+        searchViewController.searchBar.scopeButtonTitles = SearchResults.Category.allCases.map { $0.rawValue }
         searchViewController.isActive = true
         
         if #available(iOS 11.0, *) {
@@ -248,9 +248,13 @@ extension SearchView: UISearchBarDelegate {
         let strippedString =
             searchText.trimmingCharacters(in: whitespaceCharacterSet)
         
-        viewModel.search(keyword: strippedString)
-        if !resultsViewModel.searchHistory.value.contains(SearchResults(title: strippedString)) {
-            resultsViewModel.searchHistory.value.insert(SearchResults(title: strippedString))
+        guard let category = SearchResults.Category(rawValue:searchBar.scopeButtonTitles![searchBar.selectedScopeButtonIndex]) else {
+            return
+        }
+        
+        viewModel.search(keyword: strippedString, category: category)
+        if !resultsViewModel.searchHistory.value.contains(SearchResults(title: strippedString, category: category)) {
+            resultsViewModel.searchHistory.value.insert(SearchResults(title: strippedString, category: category))
         }
         resultsViewModel.saveSearchHistory()
     }
@@ -274,6 +278,30 @@ extension SearchView: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
         
+        guard let scopeButtonTitles = searchBar.scopeButtonTitles else {
+            return
+        }
+        
+        guard let category = SearchResults.Category(rawValue:
+                                                        scopeButtonTitles[selectedScope]) else {
+            return
+        }
+        
+        if searchBar.text.isEmptyOrWhitespace() {
+            return
+        }
+        
+        guard let searchText = searchBar.text else {
+            return
+        }
+        
+        // Strip out all the leading and trailing spaces.
+        let whitespaceCharacterSet = CharacterSet.whitespaces
+        let strippedString =
+            searchText.trimmingCharacters(in: whitespaceCharacterSet)
+        
+        resultsViewModel.scropeTitle.value = category
+        viewModel.search(keyword: strippedString, category: category)
     }
 }
 
@@ -313,7 +341,7 @@ extension SearchView: UICollectionViewDelegate {
 // MARK: - SearchResultsDidSelectedDelegate
 
 extension SearchView: SearchResultsDidSelectedDelegate {
-    func searchResultsDidSelected(query: String) {
-        viewModel.search(keyword: query)
+    func searchResultsDidSelected(query: String, category: SearchResults.Category) {
+        viewModel.search(keyword: query, category: category)
     }
 }

@@ -27,7 +27,7 @@ class SearchViewModel {
 
 extension SearchViewModel {
    
-    func search(keyword: String) {
+    func search(keyword: String, category: SearchResults.Category) {
         isSearching.value = true
         query = keyword
         //self.searchHistory.value.append(keyword)

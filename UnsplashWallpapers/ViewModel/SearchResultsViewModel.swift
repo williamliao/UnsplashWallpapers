@@ -10,11 +10,12 @@ import Foundation
 class SearchResultsViewModel {
     var trending: Observable<[SearchResults]?> = Observable([])
     var searchHistory: Observable<Set<SearchResults>> = Observable(Set<SearchResults>())
+    var scropeTitle: Observable<SearchResults.Category> = Observable(SearchResults.Category.photos)
 }
 
 extension SearchResultsViewModel {
     func setupDefaultTrending() {
-        let trending = [SearchResults(title: "Cat"), SearchResults(title: "Dog"), SearchResults(title: "Food")]
+        let trending = [SearchResults(title: "Cat", category: .photos), SearchResults(title: "Dog", category: .photos), SearchResults(title: "Food", category: .photos)]
         self.trending.value = trending
     }
     
