@@ -75,7 +75,7 @@ extension SearchView {
             collectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-            collectionView.topAnchor.constraint(equalTo: self.topAnchor, constant: 44),
+            collectionView.topAnchor.constraint(equalTo: self.topAnchor),
         ])
     }
     
@@ -133,9 +133,6 @@ extension SearchView {
         //Force the update on the main thread to silence a warning about tableview not being in the hierarchy!
         DispatchQueue.main.async {
             dataSource.apply(snapshot, animatingDifferences: false)
-            
-            self.searchViewController.searchBar.text = ""
-            self.searchViewController.isActive = false
         }
     }
     
@@ -224,6 +221,15 @@ extension SearchView: UISearchBarDelegate {
 extension SearchView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
+        if #available(iOS 13.0, *) {
+            
+            guard let res = searchDataSource.itemIdentifier(for: indexPath)  else {
+                return
+            }
+            
+            let photoInfo = PhotoInfo(title: res.user.name, url: res.urls, profile_image: res.user.profile_image)
+            coordinator?.goToDetailView(photoInfo: photoInfo)
+        }
         
     }
     

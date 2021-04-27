@@ -85,6 +85,7 @@ class MainCoordinator: Coordinator {
     func createSearchView() -> UINavigationController {
         let search = SearchViewController()
         search.viewModel = searchViewModel
+        search.viewModel.coordinator = self
         search.title = "Search"
         let nav = UINavigationController(rootViewController: search)
         return nav
