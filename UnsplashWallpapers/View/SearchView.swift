@@ -192,9 +192,24 @@ extension SearchView {
         
         cell?.titleLabel.text = respone.user.name
         
-        if let url = URL(string: respone.urls.thumb) {
-            cell?.configureImage(with: url)
+        switch viewModel.category {
+            case .photos:
+                if let url = URL(string: respone.urls?.thumb ?? "") {
+                    cell?.configureImage(with: url)
+                }
+                break
+            case .collections:
+                if let url = URL(string: respone.cover_photo?.urls.thumb ?? "") {
+                    cell?.configureImage(with: url)
+                }
+                break
+            case .users:
+                break
+            case .none:
+                break
         }
+        
+        
         
         return cell
     }
@@ -312,11 +327,11 @@ extension SearchView: UICollectionViewDelegate {
         
         if #available(iOS 13.0, *) {
             
-            guard let res = searchDataSource.itemIdentifier(for: indexPath)  else {
+            guard let res = searchDataSource.itemIdentifier(for: indexPath), let urls = res.urls  else {
                 return
             }
             
-            let photoInfo = PhotoInfo(title: res.user.name, url: res.urls, profile_image: res.user.profile_image)
+            let photoInfo = PhotoInfo(title: res.user.name, url: urls, profile_image: res.user.profile_image)
             coordinator?.goToDetailView(photoInfo: photoInfo)
         }
         

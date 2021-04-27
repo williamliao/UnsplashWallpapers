@@ -118,6 +118,8 @@ class NetworkManager {
         case nature
         case wallpapers
         case search
+        case collections
+        case users
     }
     
     typealias JSONTaskCompletionHandler = (Decodable?, ServerError?) -> Void
@@ -168,9 +170,22 @@ class NetworkManager {
                   components.path = "/search/photos"
                 
                 return components
+                
+            case .collections:
+                var components = URLComponents()
+                components.scheme = UnsplashAPI.scheme
+                components.host = UnsplashAPI.host
+                components.path = "/search/collections"
+                
+                return components
             
-            //default:
-               // return URLComponents()
+            case .users:
+                var components = URLComponents()
+                components.scheme = UnsplashAPI.scheme
+                components.host = UnsplashAPI.host
+                  components.path = "/search/users"
+                
+                return components
         }
         
         

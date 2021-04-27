@@ -16,6 +16,9 @@ class SearchViewModel {
     let service: UnsplashService = UnsplashService()
     
     var searchCursor: Cursor!
+    var collectionsCursor: Cursor!
+    var usersCursor: Cursor!
+    
     var unsplashSearchPagedRequest: UnsplashSearchPagedRequest!
     
     var coordinator: MainCoordinator?
@@ -23,6 +26,7 @@ class SearchViewModel {
     private var canFetchMore = true
     
     var query = ""
+    var category: SearchResults.Category!
 }
 
 extension SearchViewModel {
@@ -31,15 +35,42 @@ extension SearchViewModel {
         isSearching.value = true
         query = keyword
         //self.searchHistory.value.append(keyword)
-        
-        service.networkManager = NetworkManager(endPoint: .search)
-        
-        if searchCursor == nil {
-            searchCursor = Cursor(query: keyword, page: 1, perPage: 10, parameters: [:])
-            unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: searchCursor)
-        }
-        
         isLoading.value = true
+        self.category = category
+        
+        switch category {
+            case .photos:
+                
+                service.networkManager = NetworkManager(endPoint: .search)
+                
+                if searchCursor == nil {
+                    searchCursor = Cursor(query: keyword, page: 1, perPage: 10, parameters: [:])
+                    unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: searchCursor)
+                }
+                
+                break
+            case .collections:
+                
+                service.networkManager = NetworkManager(endPoint: .collections)
+                
+                if collectionsCursor == nil {
+                    collectionsCursor = Cursor(query: keyword, page: 1, perPage: 10, parameters: [:])
+                    unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: collectionsCursor)
+                }
+                
+                break
+            case .users:
+                
+                service.networkManager = NetworkManager(endPoint: .users)
+                
+                if usersCursor == nil {
+                    usersCursor = Cursor(query: keyword, page: 1, perPage: 10, parameters: [:])
+                    unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: usersCursor)
+                }
+                
+                break
+        
+        }
         
         service.search(keyword: unsplashSearchPagedRequest.cursor.query ?? "", pageRequest: unsplashSearchPagedRequest) { (result) in
             self.isLoading.value = false
@@ -71,8 +102,19 @@ extension SearchViewModel {
         
         isLoading.value = true
         
-        //cursor = unsplashPagedRequest.nextCursor()
-        unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: searchCursor)
+        switch category {
+            case .photos:
+                unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: searchCursor)
+                break
+            case .collections:
+                unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: collectionsCursor)
+                break
+            case .users:
+                unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: usersCursor)
+                break
+            case .none:
+                break
+        }
         
         service.search(keyword: query, pageRequest: unsplashSearchPagedRequest) { [weak self] (result) in
             self?.isLoading.value = false
@@ -119,5 +161,7 @@ extension SearchViewModel {
         isLoading.value = false
         canFetchMore = false
         searchCursor = nil
+        collectionsCursor = nil
+        usersCursor = nil
     }
 }
