@@ -30,6 +30,7 @@ extension SearchViewModel {
     func search(keyword: String) {
         isSearching.value = true
         query = keyword
+        //self.searchHistory.value.append(keyword)
         
         service.networkManager = NetworkManager(endPoint: .search)
         

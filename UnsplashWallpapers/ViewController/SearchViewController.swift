@@ -19,6 +19,7 @@ class SearchViewController: UIViewController {
         searchView.navItem = self.navigationItem
         searchView.createView()
         searchView.configureCollectionView()
+        searchView.createTrendingView()
         searchView.translatesAutoresizingMaskIntoConstraints = false
         
         self.view.addSubview(searchView)
@@ -27,7 +28,7 @@ class SearchViewController: UIViewController {
             searchView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
             searchView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
             searchView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
-            searchView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 44),
+            searchView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
         ])
         
         viewModel.searchRespone.bind { [weak self] (_) in

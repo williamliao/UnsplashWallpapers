@@ -9,11 +9,14 @@ import UIKit
 
 class SearchView: UIView {
     
-    var searchViewController = UISearchController(searchResultsController: nil)
+    var searchViewController: UISearchController!
     var collectionView: UICollectionView!
     var navItem: UINavigationItem!
     var viewModel: SearchViewModel
     var coordinator: MainCoordinator?
+    
+    var resultsViewModel: SearchResultsViewModel!
+    var searchResultsView: SearchResultsTableView!
     
     init(viewModel: SearchViewModel,coordinator: MainCoordinator? ) {
         self.viewModel = viewModel
@@ -36,6 +39,8 @@ class SearchView: UIView {
 extension SearchView {
     func createView() {
         self.backgroundColor = .systemBackground
+        
+        searchViewController = UISearchController(searchResultsController: nil)
         searchViewController.searchBar.delegate = self
         searchViewController.obscuresBackgroundDuringPresentation = true
         searchViewController.searchBar.placeholder = "Search"
@@ -45,10 +50,12 @@ extension SearchView {
         searchViewController.obscuresBackgroundDuringPresentation = true
         // self.showsSearchResultsController = true
          //self.searchBar.scopeButtonTitles = SearchItem.ScopeTypeSection.allCases.map { $0.rawValue }
+        searchViewController.isActive = true
         
         if #available(iOS 11.0, *) {
             navItem.searchController = searchViewController
             searchViewController.hidesNavigationBarDuringPresentation = false
+            navItem.hidesSearchBarWhenScrolling = false
         }
     }
     
@@ -95,6 +102,44 @@ extension SearchView {
             //collectionView.dataSource = self
         }
     }
+    
+    func createTrendingView() {
+        resultsViewModel = SearchResultsViewModel()
+        resultsViewModel.setupDefaultTrending()
+        resultsViewModel.loadSearchHistory(key: "searchHistory") { (_) in
+            
+        }
+
+        searchResultsView = SearchResultsTableView(viewModel: resultsViewModel)
+        searchResultsView.createView()
+        searchResultsView.translatesAutoresizingMaskIntoConstraints = false
+        searchResultsView.searchResultsDidSelectedDelegate = self
+        
+        self.addSubview(searchResultsView)
+        
+        NSLayoutConstraint.activate([
+            searchResultsView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            searchResultsView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            searchResultsView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            searchResultsView.topAnchor.constraint(equalTo: self.topAnchor),
+        ])
+        
+        resultsViewModel.trending.bind { [weak self] (_) in
+            if #available(iOS 13.0, *) {
+                self?.searchResultsView.applyInitialSnapshots()
+            } else {
+                self?.searchResultsView.tableView.reloadData()
+            }
+        }
+        
+        resultsViewModel.searchHistory.bind { [weak self] (_) in
+            if #available(iOS 13.0, *) {
+                self?.searchResultsView.applyInitialSnapshots()
+            } else {
+                self?.searchResultsView.tableView.reloadData()
+            }
+        }
+    }
 }
 
 // MARK: - Private
@@ -133,6 +178,12 @@ extension SearchView {
         //Force the update on the main thread to silence a warning about tableview not being in the hierarchy!
         DispatchQueue.main.async {
             dataSource.apply(snapshot, animatingDifferences: false)
+            
+            if let count = self.viewModel.searchRespone.value?.results.count {
+                if count > 0 {
+                    self.searchResultsView.isHidden = true
+                }
+            }
         }
     }
     
@@ -178,6 +229,8 @@ extension SearchView: UICollectionViewDelegateFlowLayout {
     }
 }
 
+// MARK: - UISearchBarDelegate
+
 extension SearchView: UISearchBarDelegate {
    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -196,6 +249,10 @@ extension SearchView: UISearchBarDelegate {
             searchText.trimmingCharacters(in: whitespaceCharacterSet)
         
         viewModel.search(keyword: strippedString)
+        if !resultsViewModel.searchHistory.value.contains(SearchResults(title: strippedString)) {
+            resultsViewModel.searchHistory.value.insert(SearchResults(title: strippedString))
+        }
+        resultsViewModel.saveSearchHistory()
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -209,6 +266,8 @@ extension SearchView: UISearchBarDelegate {
     }
     
     func closeSearchView() {
+        searchResultsView.isHidden = false
+        viewModel.searchRespone.value = nil
         self.viewModel.didCloseSearchFunction()
         self.endEditing(true)
     }
@@ -217,6 +276,8 @@ extension SearchView: UISearchBarDelegate {
         
     }
 }
+
+// MARK: - UICollectionViewDelegate
 
 extension SearchView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -246,5 +307,13 @@ extension SearchView: UICollectionViewDelegate {
             viewModel.fetchNextPage()
             
         }
+    }
+}
+
+// MARK: - SearchResultsDidSelectedDelegate
+
+extension SearchView: SearchResultsDidSelectedDelegate {
+    func searchResultsDidSelected(query: String) {
+        viewModel.search(keyword: query)
     }
 }
