@@ -31,6 +31,10 @@ class SearchView: UIView {
     @available(iOS 13.0, *)
     lazy var searchDataSource  = makeSearchDataSource()
     
+    @available(iOS 13.0, *)
+    lazy var searchUserDataSource  = makeSearchUserDataSource()
+    
+    
     var firstLoad = true
     var currentIndex = 0;
 }
@@ -75,6 +79,9 @@ extension SearchView {
         
         collectionView.register(PhotoListCollectionViewCell.self
                                 , forCellWithReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier)
+        collectionView.register(UsersListCollectionViewCell.self
+                                , forCellWithReuseIdentifier: UsersListCollectionViewCell.reuseIdentifier)
+        
         
         self.addSubview(collectionView)
         
@@ -150,10 +157,21 @@ extension SearchView {
         return searchDataSource
     }
     
+    @available(iOS 13.0, *)
+    private func getSearchUserDatasource() -> UICollectionViewDiffableDataSource<Section, Results> {
+        return searchUserDataSource
+    }
+    
     func makeSearchDataSource() -> UICollectionViewDiffableDataSource<Section, Results> {
-        
         return UICollectionViewDiffableDataSource<Section, Results>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
             let cell = self.configureSearchCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
+            return cell
+        }
+    }
+    
+    func makeSearchUserDataSource() -> UICollectionViewDiffableDataSource<Section, Results> {
+        return UICollectionViewDiffableDataSource<Section, Results>(collectionView: collectionView) { (collectionView, indexPath, respone) -> UsersListCollectionViewCell? in
+            let cell = self.configureSearchUserCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
             return cell
         }
     }
@@ -161,7 +179,14 @@ extension SearchView {
     @available(iOS 13.0, *)
     func applyInitialSnapshots() {
         
-        let dataSource = getSearchDatasource()
+//        searchDataSource = makeSearchDataSource()
+//        collectionView.dataSource = searchDataSource
+       
+        var dataSource = getSearchDatasource()
+        
+        if viewModel.category == .users {
+            dataSource = getSearchUserDatasource()
+        }
         
         var snapshot = NSDiffableDataSourceSnapshot<Section, Results>()
         
@@ -190,27 +215,29 @@ extension SearchView {
     func configureSearchCell(collectionView: UICollectionView, respone: Results, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier, for: indexPath) as? PhotoListCollectionViewCell
         
-        cell?.titleLabel.text = respone.user.name
+        cell?.titleLabel.text = respone.user?.name
         
-        switch viewModel.category {
-            case .photos:
-                if let url = URL(string: respone.urls?.thumb ?? "") {
-                    cell?.configureImage(with: url)
-                }
-                break
-            case .collections:
-                if let url = URL(string: respone.cover_photo?.urls.thumb ?? "") {
-                    cell?.configureImage(with: url)
-                }
-                break
-            case .users:
-                break
-            case .none:
-                break
+        if viewModel.category == .photos {
+            if let url = URL(string: respone.urls?.thumb ?? "") {
+                cell?.configureImage(with: url)
+            }
+        } else if viewModel.category == .collections {
+            if let url = URL(string: respone.cover_photo?.urls.thumb ?? "") {
+                cell?.configureImage(with: url)
+            }
         }
+    
+        return cell
+    }
+    
+    func configureSearchUserCell(collectionView: UICollectionView, respone: Results, indexPath: IndexPath) -> UsersListCollectionViewCell? {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: UsersListCollectionViewCell.reuseIdentifier, for: indexPath) as? UsersListCollectionViewCell
         
-        
-        
+        cell?.titleLabel.text = respone.name
+        if let url = URL(string: respone.profile_image?.small ?? "") {
+            cell?.configureImage(with: url)
+        }
+            
         return cell
     }
 }
@@ -222,7 +249,12 @@ extension SearchView: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.bounds.size.width, height: 300)
+        
+        if viewModel.category == .users {
+            return CGSize(width: collectionView.bounds.size.width, height: 50)
+        } else {
+            return CGSize(width: collectionView.bounds.size.width, height: 300)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView,
@@ -327,11 +359,11 @@ extension SearchView: UICollectionViewDelegate {
         
         if #available(iOS 13.0, *) {
             
-            guard let res = searchDataSource.itemIdentifier(for: indexPath), let urls = res.urls  else {
+            guard let res = searchDataSource.itemIdentifier(for: indexPath), let urls = res.urls, let user = res.user  else {
                 return
             }
             
-            let photoInfo = PhotoInfo(title: res.user.name, url: urls, profile_image: res.user.profile_image)
+            let photoInfo = PhotoInfo(title: user.name, url: urls, profile_image: user.profile_image)
             coordinator?.goToDetailView(photoInfo: photoInfo)
         }
         
@@ -341,6 +373,8 @@ extension SearchView: UICollectionViewDelegate {
 
         let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
         if !viewModel.isLoading.value && indexPath.row == lastElement {
+            
+            print("lastElement \(lastElement)")
         
             let spinner = UIActivityIndicatorView(style: .medium)
             spinner.startAnimating()

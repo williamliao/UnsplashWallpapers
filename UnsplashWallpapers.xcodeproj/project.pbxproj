@@ -80,6 +80,7 @@
 		C8D689212637BC3A008F8B4D /* SearchResultsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D689202637BC3A008F8B4D /* SearchResultsViewModel.swift */; };
 		C8D689362637BF72008F8B4D /* SearchResultsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D689352637BF72008F8B4D /* SearchResultsHeaderView.swift */; };
 		C8D6893B2637E2E8008F8B4D /* SearchResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D6893A2637E2E7008F8B4D /* SearchResults.swift */; };
+		C8D868802637F55F00FF672D /* UsersListCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D8687F2637F55F00FF672D /* UsersListCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -179,6 +180,7 @@
 		C8D689202637BC3A008F8B4D /* SearchResultsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchResultsViewModel.swift; sourceTree = "<group>"; };
 		C8D689352637BF72008F8B4D /* SearchResultsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsHeaderView.swift; sourceTree = "<group>"; };
 		C8D6893A2637E2E7008F8B4D /* SearchResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResults.swift; sourceTree = "<group>"; };
+		C8D8687F2637F55F00FF672D /* UsersListCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersListCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -383,6 +385,7 @@
 				C8A8FD4526316CF300C38FAF /* FavoriteTableViewCell.swift */,
 				C8D6891B2637BC2B008F8B4D /* SearchResultsTableViewCell.swift */,
 				C8D689352637BF72008F8B4D /* SearchResultsHeaderView.swift */,
+				C8D8687F2637F55F00FF672D /* UsersListCollectionViewCell.swift */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -529,6 +532,7 @@
 				C8CD0D2B2604818D009B12AA /* UnsplashPhotoExif.swift in Sources */,
 				C8A8FD3C2631694600C38FAF /* FavoriteViewModel.swift in Sources */,
 				C8BF2AC82636998400BE7C51 /* Total_current_user_submissions.swift in Sources */,
+				C8D868802637F55F00FF672D /* UsersListCollectionViewCell.swift in Sources */,
 				C89A72CE260352FC003E188F /* StaticURL.swift in Sources */,
 				C89A72BB26034DF3003E188F /* User.swift in Sources */,
 				C89A725626034972003E188F /* PhotoListView.swift in Sources */,

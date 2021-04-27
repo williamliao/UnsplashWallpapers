@@ -20,6 +20,7 @@ class SearchViewModel {
     var usersCursor: Cursor!
     
     var unsplashSearchPagedRequest: UnsplashSearchPagedRequest!
+    var unsplashSearchUserPagedRequest: UnsplashSearchPagedRequest!
     
     var coordinator: MainCoordinator?
     private(set) var isFetching = false
@@ -100,8 +101,6 @@ extension SearchViewModel {
             return
         }
         
-        isLoading.value = true
-        
         switch category {
             case .photos:
                 unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: searchCursor)
@@ -116,6 +115,9 @@ extension SearchViewModel {
                 break
         }
         
+        
+        isLoading.value = true
+        
         service.search(keyword: query, pageRequest: unsplashSearchPagedRequest) { [weak self] (result) in
             self?.isLoading.value = false
             
@@ -123,6 +125,11 @@ extension SearchViewModel {
                 case .success(let respone):
                    
                     guard var new = self?.searchRespone.value  else {
+                        return
+                    }
+                    
+                    if new.results.count == respone.results.count {
+                       self?.canFetchMore = false
                         return
                     }
                     

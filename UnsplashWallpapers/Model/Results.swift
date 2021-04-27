@@ -28,12 +28,28 @@ struct Results: Codable, Identifiable {
     let likes: Int?
     let liked_by_user: Bool?
     let current_user_collections: [Current_user_collections]?
-    let user: User
+    let user: User?
     let tags: [Tags]?
     let blur_hash: String?
     let promoted_at: String?
     let sponsorship: Sponsorship?
     let cover_photo: Cover_photo?
+    let username: String?
+    let name: String?
+    let first_name: String?
+    let last_name: String?
+    let twitter_username: String?
+    let instagram_username: String?
+    let portfolio_url: String?
+    let bio: String?
+    let location: String?
+    let profile_image: Profile_image?
+    let total_collections: NSInteger?
+    let total_likes: Int?
+    let accepted_tos: Bool?
+    let for_hire: Bool?
+    let followed_by_user: Bool?
+    let photos: [Photos]?
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -62,6 +78,22 @@ struct Results: Codable, Identifiable {
         case sponsorship
         case share_key
         case cover_photo
+        case username
+        case name
+        case first_name
+        case last_name
+        case twitter_username
+        case instagram_username
+        case portfolio_url
+        case bio
+        case location
+        case profile_image
+        case total_collections
+        case total_likes
+        case accepted_tos
+        case for_hire
+        case followed_by_user
+        case photos
     }
 }
 
@@ -126,4 +158,12 @@ struct Cover_Photo {
     let user: User
     let url: Urls
     let links: Links
+}
+
+struct Photos: Codable {
+    let id: String
+    let created_at: String
+    let updated_at: String
+    let blur_hash: String
+    let urls: Urls
 }
