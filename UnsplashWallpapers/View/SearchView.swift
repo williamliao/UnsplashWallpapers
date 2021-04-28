@@ -204,6 +204,8 @@ extension SearchView {
         DispatchQueue.main.async {
             dataSource.apply(snapshot, animatingDifferences: false)
             
+            self.searchViewController.isActive = false
+            
             if let count = self.viewModel.searchRespone.value?.results.count {
                 if count > 0 {
                     self.searchResultsView.isHidden = true

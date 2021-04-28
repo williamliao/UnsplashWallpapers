@@ -29,7 +29,7 @@ class SearchResultsTableViewCell: UITableViewCell {
 extension SearchResultsTableViewCell {
     func configureView() {
         titleLabel = UILabel()
-        titleLabel.font = UIFont.systemFont(ofSize: 16)
+        titleLabel.font = UIFont.systemFont(ofSize: 20)
         titleLabel.textColor = .white
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byTruncatingTail

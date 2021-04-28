@@ -130,6 +130,11 @@ extension SearchResultsTableView {
 }
 
 extension SearchResultsTableView: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 44
+    }
+    
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = tableView.dequeueReusableHeaderFooterView(
             withIdentifier: SearchResultsHeaderView.reuseIdentifier) as! SearchResultsHeaderView
