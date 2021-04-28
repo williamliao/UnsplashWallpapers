@@ -359,12 +359,26 @@ extension SearchView: UICollectionViewDelegate {
         
         if #available(iOS 13.0, *) {
             
-            guard let res = searchDataSource.itemIdentifier(for: indexPath), let urls = res.urls, let user = res.user  else {
-                return
+            switch viewModel.category {
+            case .photos:
+                guard let res = searchDataSource.itemIdentifier(for: indexPath), let urls = res.urls, let user = res.user  else {
+                    return
+                }
+                
+                let photoInfo = PhotoInfo(title: user.name, url: urls, profile_image: user.profile_image)
+                coordinator?.goToDetailView(photoInfo: photoInfo)
+            case .collections:
+                break
+                
+            case .users:
+                break
+                
+            default:
+                break
+            
             }
             
-            let photoInfo = PhotoInfo(title: user.name, url: urls, profile_image: user.profile_image)
-            coordinator?.goToDetailView(photoInfo: photoInfo)
+            
         }
         
     }
