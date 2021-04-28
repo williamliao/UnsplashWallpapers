@@ -39,6 +39,12 @@ struct SearchResults: Codable,Hashable {
     }
 }
 
+extension SearchResults: Equatable {
+    static func == (lhs: SearchResults, rhs: SearchResults) -> Bool {
+        return lhs.title == rhs.title
+    }
+}
+
 extension SearchResults.Category: CaseIterable { }
 
 extension SearchResults.Category: RawRepresentable {

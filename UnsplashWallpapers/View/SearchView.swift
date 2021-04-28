@@ -218,11 +218,11 @@ extension SearchView {
         cell?.titleLabel.text = respone.user?.name
         
         if viewModel.category == .photos {
-            if let url = URL(string: respone.urls?.thumb ?? "") {
+            if let url = URL(string: respone.urls?.small ?? "") {
                 cell?.configureImage(with: url)
             }
         } else if viewModel.category == .collections {
-            if let url = URL(string: respone.cover_photo?.urls.thumb ?? "") {
+            if let url = URL(string: respone.cover_photo?.urls.small ?? "") {
                 cell?.configureImage(with: url)
             }
         }
