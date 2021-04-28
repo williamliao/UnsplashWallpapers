@@ -362,6 +362,7 @@ extension SearchView: UISearchBarDelegate {
             searchText.trimmingCharacters(in: whitespaceCharacterSet)
         
         resultsViewModel.scropeTitle.value = category
+        viewModel.reset()
         viewModel.search(keyword: strippedString, category: category)
     }
 }
@@ -386,7 +387,19 @@ extension SearchView: UICollectionViewDelegate {
                 guard let res = searchDataSource.itemIdentifier(for: indexPath) else {
                     return
                 }
-                coordinator?.pushToCollectionListView(id: res.id)
+                
+                let searchBar = searchViewController.searchBar
+                
+                guard let scopeButtonTitles = searchViewController.searchBar.scopeButtonTitles else {
+                    return
+                }
+                
+                guard let category = SearchResults.Category(rawValue:
+                                                                scopeButtonTitles[searchBar.selectedScopeButtonIndex]) else {
+                    return
+                }
+                
+                //coordinator?.pushToCollectionListView(id: res.id, category: category)
                 break
                 
             case .users:

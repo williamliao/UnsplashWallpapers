@@ -33,6 +33,7 @@ class SearchViewModel {
 extension SearchViewModel {
    
     func search(keyword: String, category: SearchResults.Category) {
+        
         isSearching.value = true
         query = keyword
         //self.searchHistory.value.append(keyword)
@@ -160,6 +161,16 @@ extension SearchViewModel {
                     }
             }
         }
+    }
+    
+    func reset() {
+        isSearching.value = false
+        query = ""
+        isLoading.value = false
+        canFetchMore = false
+        searchCursor = nil
+        collectionsCursor = nil
+        usersCursor = nil
     }
     
     func didCloseSearchFunction() {

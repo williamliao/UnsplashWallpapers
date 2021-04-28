@@ -110,7 +110,7 @@ extension MainCoordinator {
         }
     }
     
-    func pushToCollectionListView(id: String) {
+    func pushToCollectionListView(id: String, category: SearchResults.Category) {
         
         let photoListViewModel = PhotoListViewModel()
         photoListViewModel.fetchCollection(id: id)
