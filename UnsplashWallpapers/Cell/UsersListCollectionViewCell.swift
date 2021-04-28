@@ -19,6 +19,7 @@ class UsersListCollectionViewCell: UICollectionViewCell {
     
     private var cancellable: AnyCancellable?
     private var animator: UIViewPropertyAnimator?
+    private var isHeightCalculated: Bool = false
     
     override init(frame: CGRect) {
         super.init(frame: frame)

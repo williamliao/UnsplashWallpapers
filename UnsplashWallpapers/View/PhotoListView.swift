@@ -75,7 +75,8 @@ extension PhotoListView {
         
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        flowLayout.estimatedItemSize = .zero
+        //flowLayout.estimatedItemSize = .zero
+        flowLayout.estimatedItemSize = CGSize(width: 1.0, height: 1.0)
 
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         
@@ -141,6 +142,7 @@ extension PhotoListView {
                 collectionView.dataSource = dataSource
                 viewModel.fetchData()
                 section = .random
+                viewModel.segmentedIndex = .random
                 
                 break // Random
             case 1:
@@ -151,6 +153,7 @@ extension PhotoListView {
                 
                 viewModel.fetchNature()
                 section = .nature
+                viewModel.segmentedIndex = .nature
                 
                 break // Nature
             case 2:
@@ -159,6 +162,7 @@ extension PhotoListView {
                 collectionView.dataSource = wallpapersDataSource
                 viewModel.fetchWallpapers()
                 section = .wallpapers
+                viewModel.segmentedIndex = .wallpapers
                 break // Wallpapers
             default:
                 break
@@ -183,8 +187,19 @@ extension PhotoListView: UICollectionViewDelegateFlowLayout {
         let marginsAndInsets = flowLayout.sectionInset.left + flowLayout.sectionInset.right + collectionView.safeAreaInsets.left + collectionView.safeAreaInsets.right + flowLayout.minimumInteritemSpacing * CGFloat(cellsPerRow - 1)
         let itemWidth = ((collectionView.bounds.size.width - marginsAndInsets) / CGFloat(cellsPerRow)).rounded(.down)
         return CGSize(width: itemWidth, height: 300)*/
-       
+        
+       /* let cell = collectionView.cellForItem(at: indexPath) as? PhotoListCollectionViewCell
+        
+        if let cell = cell {
+            print("cell.height \(cell.height)")
+            return CGSize(width: collectionView.bounds.size.width, height: cell.height)
+        } else {
+            return CGSize(width: collectionView.bounds.size.width, height: 300)
+        }*/
+        
         return CGSize(width: collectionView.bounds.size.width, height: 300)
+       
+        
     }
     
     func collectionView(_ collectionView: UICollectionView,
@@ -542,7 +557,7 @@ extension PhotoListView {
         
         cell?.titleLabel.text = respone.user?.name
         
-        if let url = URL(string: respone.urls.thumb) {
+        if let url = URL(string: respone.urls.small) {
             cell?.configureImage(with: url)
         }
         
@@ -562,7 +577,7 @@ extension PhotoListView {
             cell?.titleLabel.text = "Wallpapers"
         }
         
-        if let url = URL(string: respone.urls.thumb) {
+        if let url = URL(string: respone.urls.small) {
             cell?.configureImage(with: url)
         }
         
@@ -574,7 +589,7 @@ extension PhotoListView {
         
         cell?.titleLabel.text = respone.user.name
         
-        if let url = URL(string: respone.urls.thumb) {
+        if let url = URL(string: respone.urls.small) {
             cell?.configureImage(with: url)
         }
         

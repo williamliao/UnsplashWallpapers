@@ -142,9 +142,9 @@ extension PhotoListViewModel {
         
         isLoading.value = true
         
-        if fetchNatureCursor == nil {
-            fetchNatureCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
-            unsplashCollectionRequest = UnsplashCollectionRequest(with: fetchNatureCursor)
+        if fetchWallpapersCursor == nil {
+            fetchWallpapersCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+            unsplashCollectionRequest = UnsplashCollectionRequest(with: fetchWallpapersCursor)
         }
         
         service.collection(id: id, pageRequest: unsplashCollectionRequest) { (result) in
@@ -177,7 +177,14 @@ extension PhotoListViewModel {
         
         isLoading.value = true
         
-        unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
+        switch segmentedIndex {
+            case .random:
+                unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
+            case .nature:
+                unsplashPagedRequest = UnsplashPagedRequest(with: fetchNatureCursor)
+            case .wallpapers:
+                unsplashPagedRequest = UnsplashPagedRequest(with: collectionCursor)
+        }
         
         service.fetchDataWithNetworkManager(pageRequest: unsplashPagedRequest) { [weak self] (result) in
             self?.isLoading.value = false
@@ -188,10 +195,10 @@ extension PhotoListViewModel {
                         return
                     }
                     
-                    if new.count == respone.count {
-                       self?.canFetchMore = false
-                        return
-                    }
+//                    if new.count == respone.count {
+//                       self?.canFetchMore = false
+//                        return
+//                    }
                     
                     new.append(contentsOf: respone)
                     

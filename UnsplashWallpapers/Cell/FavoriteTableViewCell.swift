@@ -22,7 +22,7 @@ class FavoriteTableViewCell: UITableViewCell {
     private var cancellable2: AnyCancellable?
     private var animator: UIViewPropertyAnimator?
     private var act = UIActivityIndicatorView(style: .large)
-    
+  
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureView()

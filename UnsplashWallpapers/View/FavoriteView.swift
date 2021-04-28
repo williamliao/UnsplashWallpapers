@@ -125,7 +125,7 @@ extension FavoriteView {
         
         cell?.titleLabel.text = respone.title
         
-        if let url = URL(string: respone.url.thumb) {
+        if let url = URL(string: respone.url.small) {
             cell?.configureImage(with: url)
         }
         

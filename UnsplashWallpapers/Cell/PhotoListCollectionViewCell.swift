@@ -19,6 +19,8 @@ class PhotoListCollectionViewCell: UICollectionViewCell {
     private var cancellable: AnyCancellable?
     private var animator: UIViewPropertyAnimator?
     private var act = UIActivityIndicatorView(style: .large)
+
+    var isHeightCalculated: Bool = false
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -44,7 +46,7 @@ extension PhotoListCollectionViewCell {
         titleLabel.textAlignment = .center
      
         thumbnailImageView = UIImageView()
-        thumbnailImageView.contentMode = .scaleAspectFit
+        thumbnailImageView.contentMode = .scaleAspectFill
         thumbnailImageView.clipsToBounds = true
         
         act.color = .systemBackground
@@ -58,14 +60,14 @@ extension PhotoListCollectionViewCell {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         thumbnailImageView.translatesAutoresizingMaskIntoConstraints = false
         act.translatesAutoresizingMaskIntoConstraints = false
-     
+
         NSLayoutConstraint.activate([
             
             thumbnailImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             thumbnailImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             thumbnailImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             thumbnailImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-         
+
             titleLabel.leadingAnchor.constraint(equalTo: thumbnailImageView.leadingAnchor, constant: 5),
             titleLabel.bottomAnchor.constraint(equalTo: thumbnailImageView.bottomAnchor, constant: -5),
             titleLabel.heightAnchor.constraint(equalToConstant: 16),
@@ -91,31 +93,17 @@ extension PhotoListCollectionViewCell {
     private func showImage(image: UIImage?) {
         DispatchQueue.main.async {
             self.thumbnailImageView.alpha = 0.0
-           // self.thumbnailImageView.image = image
-            
-//            if let width = image?.size.width, let height = image?.size.height {
-//                let at = width / height
-//                self.thumbnailImageView.widthAnchor.constraint(equalTo: self.thumbnailImageView.heightAnchor, multiplier: at).isActive = true
-//            } else {
-//                return
-//            }
-            
+
             guard let image = image else {
                 return
             }
-            
-//            if image.size.height > image.size.width {
-//                self.thumbnailImageView.image = image
-//            } else {
-//                let resizeImage = self.resizedImage(at: image, for: CGSize(width: UIScreen.main.bounds.size.width, height: 300))
-//                self.thumbnailImageView.image = resizeImage
-//            }
-            
-            let resizeImage = self.resizedImage(at: image, for: CGSize(width: UIScreen.main.bounds.size.width, height: 300))
+
+            let resizeImage = self.resizedImage(at: image, for: CGSize(width: UIScreen.main.bounds.size.width, height: image.size.height))
             self.thumbnailImageView.image = resizeImage
             
             self.animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: [.curveEaseOut, .transitionCrossDissolve], animations: {
                 self.thumbnailImageView.alpha = 1.0
+                
             })
         }
     }
@@ -152,6 +140,21 @@ extension PhotoListCollectionViewCell {
         thumbnailImageView.alpha = 0.0
         animator?.stopAnimation(true)
         cancellable?.cancel()
+    }
+    
+    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        //Exhibit A - We need to cache our calculation to prevent a crash.
+        if !isHeightCalculated {
+            setNeedsLayout()
+            layoutIfNeeded()
+            let size = contentView.systemLayoutSizeFitting(layoutAttributes.size)
+            var newFrame = layoutAttributes.frame
+            newFrame.size.width = CGFloat(ceilf(Float(size.width)))
+            newFrame.size.height = CGFloat(ceilf(Float(size.height)))
+            layoutAttributes.frame = newFrame
+            isHeightCalculated = true
+        }
+        return layoutAttributes
     }
     
 }
