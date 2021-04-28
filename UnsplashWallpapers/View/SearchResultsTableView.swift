@@ -42,6 +42,7 @@ extension SearchResultsTableView {
         self.backgroundColor = .systemBackground
         
         tableView = UITableView()
+        tableView.backgroundColor = .systemBackground
         
         tableView.delegate = self
         //tableView.contentInsetAdjustmentBehavior = .always

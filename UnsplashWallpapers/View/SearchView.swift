@@ -54,7 +54,9 @@ extension SearchView {
         searchViewController.obscuresBackgroundDuringPresentation = true
         // self.showsSearchResultsController = true
         searchViewController.searchBar.scopeButtonTitles = SearchResults.Category.allCases.map { $0.rawValue }
+        searchViewController.searchBar.showsScopeBar = true
         searchViewController.isActive = true
+        
         
         if #available(iOS 11.0, *) {
             navItem.searchController = searchViewController
@@ -121,6 +123,7 @@ extension SearchView {
         searchResultsView.createView()
         searchResultsView.translatesAutoresizingMaskIntoConstraints = false
         searchResultsView.searchResultsDidSelectedDelegate = self
+        searchResultsView.backgroundColor = .systemBackground
         
         self.addSubview(searchResultsView)
         

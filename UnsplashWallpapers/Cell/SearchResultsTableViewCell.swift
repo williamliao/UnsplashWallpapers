@@ -28,6 +28,9 @@ class SearchResultsTableViewCell: UITableViewCell {
 
 extension SearchResultsTableViewCell {
     func configureView() {
+        
+        self.backgroundColor = .systemBackground
+        
         titleLabel = UILabel()
         titleLabel.font = UIFont.systemFont(ofSize: 20)
         titleLabel.textColor = .white

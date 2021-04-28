@@ -22,6 +22,8 @@ class SearchViewController: UIViewController {
         searchView.createTrendingView()
         searchView.translatesAutoresizingMaskIntoConstraints = false
         
+        self.view.backgroundColor = .systemBackground
+        
         self.view.addSubview(searchView)
         
         NSLayoutConstraint.activate([

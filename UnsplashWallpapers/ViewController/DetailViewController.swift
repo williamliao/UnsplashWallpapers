@@ -38,7 +38,6 @@ class DetailViewController: UIViewController {
         self.viewModel.loadFavorite()
     }
     
-
     /*
     // MARK: - Navigation
 
