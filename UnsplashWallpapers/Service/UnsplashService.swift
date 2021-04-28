@@ -38,6 +38,15 @@ extension UnsplashService {
         }, completion: completion)
     }
     
+    func ListUserPhotos(username: String, pageRequest: UnsplashUserListRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
+        
+        networkManager.listUserPhotos(username: username, pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
+            guard let feedResult = json as? [CollectionResponse] else { return  nil }
+            return feedResult
+        }, completion: completion)
+
+    }
+    
     func collection(id: String, pageRequest: UnsplashCollectionRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
         
         networkManager.get_Collection(id: id, pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in

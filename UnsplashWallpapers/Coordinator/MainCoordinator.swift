@@ -125,4 +125,19 @@ extension MainCoordinator {
             currentNavController.pushViewController(photo, animated: true)
         }
     }
+    
+    func pushToUserProfileCollectionListView(userProfileInfo: UserProfileInfo) {
+        
+        let userProfileViewModel = UserProfileViewModel()
+        userProfileViewModel.fetchUserPhotos(username: userProfileInfo.userName)
+        userProfileViewModel.userProfileInfo = userProfileInfo
+        
+        let userProfile = UserProfileViewController()
+        userProfile.viewModel = userProfileViewModel
+        userProfile.viewModel.coordinator = self
+        
+        if let currentNavController = self.rootViewController.selectedViewController as? UINavigationController {
+            currentNavController.pushViewController(userProfile, animated: true)
+        }
+    }
 }

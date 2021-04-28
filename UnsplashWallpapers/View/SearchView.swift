@@ -376,6 +376,12 @@ extension SearchView: UICollectionViewDelegate {
                 break
                 
             case .users:
+                
+                guard let res = searchUserDataSource.itemIdentifier(for: indexPath), let userName = res.username, let name = res.name, let profile_image = res.profile_image else {
+                    return
+                }
+                let userProfileInfo = UserProfileInfo(id: UUID(), name: name, userName: userName, profile_image: profile_image)
+                coordinator?.pushToUserProfileCollectionListView(userProfileInfo: userProfileInfo)
                 break
                 
             default:
