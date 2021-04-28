@@ -180,50 +180,134 @@ extension PhotoListViewModel {
         switch segmentedIndex {
             case .random:
                 unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
+                
+                service.fetchDataWithNetworkManager(pageRequest: unsplashPagedRequest) { [weak self] (result) in
+                    self?.isLoading.value = false
+                    switch result {
+                        case .success(let respone):
+                            
+                            if (respone.count == 0) {
+                                return
+                            }
+                           
+                            guard var new = self?.respone.value  else {
+                                return
+                            }
+                            
+                            if new.count == respone.count {
+                               self?.canFetchMore = false
+                                return
+                            }
+                            
+                            new.append(contentsOf: respone)
+                            
+                            self?.respone.value = new
+                           
+                            guard let cursor = self?.fetchCursor ,let count = self?.respone.value?.count else {
+                                return
+                            }
+
+                            if count < cursor.perPage {
+                                self?.canFetchMore = false
+                            } else {
+                                self?.fetchCursor = self?.unsplashPagedRequest.nextCursor()
+                            }
+                
+                        case .failure(let error):
+                            
+                            switch error {
+                                case .statusCodeError(let code):
+                                    print(code)
+                                default:
+                                    self?.error.value = error
+                            }
+                    }
+                }
+                
             case .nature:
                 unsplashPagedRequest = UnsplashPagedRequest(with: fetchNatureCursor)
+                
+                service.topic(keyword: "nature", pageRequest: unsplashTopicRequest) { [weak self] (result) in
+                    self?.isLoading.value = false
+                    switch result {
+                        case .success(let respone):
+                            
+                            if (respone.count == 0) {
+                                return
+                            }
+                           
+                            guard var new = self?.natureTopic.value  else {
+                                return
+                            }
+         
+                            new.append(contentsOf: respone)
+                            
+                            self?.natureTopic.value = new
+                           
+                            guard let cursor = self?.fetchNatureCursor ,let count = self?.natureTopic.value?.count else {
+                                return
+                            }
+
+                            if count < cursor.perPage {
+                                self?.canFetchMore = false
+                            } else {
+                                self?.fetchCursor = self?.unsplashPagedRequest.nextCursor()
+                            }
+                
+                        case .failure(let error):
+                            
+                            switch error {
+                                case .statusCodeError(let code):
+                                    print(code)
+                                default:
+                                    self?.error.value = error
+                            }
+                    }
+                }
+                
             case .wallpapers:
                 unsplashPagedRequest = UnsplashPagedRequest(with: collectionCursor)
-        }
-        
-        service.fetchDataWithNetworkManager(pageRequest: unsplashPagedRequest) { [weak self] (result) in
-            self?.isLoading.value = false
-            switch result {
-                case .success(let respone):
-                   
-                    guard var new = self?.respone.value  else {
-                        return
-                    }
-                    
-//                    if new.count == respone.count {
-//                       self?.canFetchMore = false
-//                        return
-//                    }
-                    
-                    new.append(contentsOf: respone)
-                    
-                    self?.respone.value = new
-                   
-                    guard let cursor = self?.fetchCursor ,let count = self?.respone.value?.count else {
-                        return
-                    }
+                
+                service.topic(keyword: "wallpapers", pageRequest: unsplashTopicRequest) { [weak self] (result) in
+                    self?.isLoading.value = false
+                    switch result {
+                        case .success(let respone):
+                            
+                            if (respone.count == 0) {
+                                return
+                            }
+                           
+                            guard var new = self?.wallpapersTopic.value  else {
+                                return
+                            }
+         
+                            new.append(contentsOf: respone)
+                            
+                            self?.wallpapersTopic.value = new
+                           
+                            guard let cursor = self?.collectionCursor ,let count = self?.wallpapersTopic.value?.count else {
+                                return
+                            }
 
-                    if count < cursor.perPage {
-                        self?.canFetchMore = false
-                    } else {
-                        self?.fetchCursor = self?.unsplashPagedRequest.nextCursor()
+                            if count < cursor.perPage {
+                                self?.canFetchMore = false
+                            } else {
+                                self?.fetchCursor = self?.unsplashPagedRequest.nextCursor()
+                            }
+                
+                        case .failure(let error):
+                            
+                            switch error {
+                                case .statusCodeError(let code):
+                                    print(code)
+                                default:
+                                    self?.error.value = error
+                            }
                     }
-        
-                case .failure(let error):
-                    
-                    switch error {
-                        case .statusCodeError(let code):
-                            print(code)
-                        default:
-                            self?.error.value = error
-                    }
-            }
+                }
         }
+        
+        
         
     }
     
