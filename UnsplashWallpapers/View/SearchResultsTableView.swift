@@ -147,10 +147,22 @@ extension SearchResultsTableView: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        guard let querys = viewModel.trending.value else {
-            return
-        }
+        switch indexPath.section {
+        case 0:
+            
+            let querys = Array(viewModel.searchHistory.value)
 
-        searchResultsDidSelectedDelegate.searchResultsDidSelected(query: querys[indexPath.row].title, category: viewModel.scropeTitle.value)
+            searchResultsDidSelectedDelegate.searchResultsDidSelected(query: querys[indexPath.row].title, category: viewModel.scropeTitle.value)
+        case 1:
+            guard let querys = viewModel.trending.value else {
+                return
+            }
+
+            searchResultsDidSelectedDelegate.searchResultsDidSelected(query: querys[indexPath.row].title, category: viewModel.scropeTitle.value)
+        default:
+            break
+        }
+        
+        
     }
 }

@@ -300,9 +300,18 @@ extension SearchView: UISearchBarDelegate {
         }
         
         viewModel.search(keyword: strippedString, category: category)
-        if !resultsViewModel.searchHistory.value.contains(SearchResults(title: strippedString, category: category)) {
-            resultsViewModel.searchHistory.value.insert(SearchResults(title: strippedString, category: category))
+        let searchResults = SearchResults(title: strippedString, category: category)
+        
+        if resultsViewModel.searchHistory.value.count > 0 {
+            for sr in resultsViewModel.searchHistory.value {
+                if sr.title != searchResults.title {
+                    resultsViewModel.searchHistory.value.insert(searchResults)
+                }
+            }
+        } else {
+            resultsViewModel.searchHistory.value.insert(searchResults)
         }
+
         resultsViewModel.saveSearchHistory()
     }
     
