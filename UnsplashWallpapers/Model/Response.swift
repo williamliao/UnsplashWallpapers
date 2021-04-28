@@ -31,31 +31,59 @@ struct Response: Codable, Identifiable {
     let promoted_at: String?
     let blur_hash: String?
     let viewsCount: Int?
+    let title: String?
+    let published_at: String?
+    let last_collected_at: String?
+    let curated: Bool?
+    let featured: Bool?
+    let total_photos: Int?
+    let privateKey: Bool?
+    let share_key: String?
+    let tags: Tags?
+    let cover_photo: Cover_Photo?
+    let preview_photos: Preview_Photos?
+    
+    enum CodingKeys: String, CodingKey {
+        case sponsorship
+        case id
+        case created_at
+        case updated_at
+        case width
+        case height
+        case color
+        case description
+        case alt_description
+        case urls
+        case links
+        case categories
+        case likes
+        case liked_by_user
+        case current_user_collections
+        case user
+        case exif
+        case location
+        case views
+        case downloads
+        case promoted_at
+        case blur_hash
+        case viewsCount
+        case title
+        case published_at
+        case last_collected_at
+        case curated
+        case featured
+        case total_photos
+        case privateKey = "private"
+        case share_key
+        case tags
+        case cover_photo
+        case preview_photos
+    }
 }
 
 extension Response: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
-        hasher.combine(created_at)
-        hasher.combine(updated_at)
-        hasher.combine(width)
-        hasher.combine(height)
-        hasher.combine(color)
-        hasher.combine(description)
-        hasher.combine(alt_description)
-        hasher.combine(urls)
-        hasher.combine(links)
-        hasher.combine(categories)
-        hasher.combine(likes)
-        hasher.combine(liked_by_user)
-        hasher.combine(user)
-        hasher.combine(exif)
-        hasher.combine(location)
-        hasher.combine(views)
-        hasher.combine(downloads)
-        hasher.combine(promoted_at)
-        hasher.combine(blur_hash)
-        hasher.combine(viewsCount)
     }
 }
 

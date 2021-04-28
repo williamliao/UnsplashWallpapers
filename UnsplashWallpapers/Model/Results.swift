@@ -145,7 +145,7 @@ extension Results: Hashable, Equatable {
     }
 }
 
-struct Cover_Photo {
+struct Cover_Photo:Codable {
     let id: String
     let created_at: String
     let width: Int

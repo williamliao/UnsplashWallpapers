@@ -15,10 +15,14 @@ enum SegmentedIndex: Int, CaseIterable {
 
 class PhotoListViewModel  {
     var coordinator: MainCoordinator?
+    
     var respone: Observable<[Response]?> = Observable([])
     var searchRespone: Observable<SearchRespone?> = Observable(nil)
+    var collectionResponse: Observable<[CollectionResponse]?> = Observable([])
+    
     var natureTopic: Observable<[Topic]?> = Observable([])
     var wallpapersTopic: Observable<[Topic]?> = Observable([])
+    
     var error: Observable<Error?> = Observable(nil)
     private(set) var isFetching = false
     private var canFetchMore = true
@@ -32,11 +36,12 @@ class PhotoListViewModel  {
     var fetchCursor: Cursor!
     var fetchNatureCursor: Cursor!
     var fetchWallpapersCursor: Cursor!
-    
+    var collectionCursor: Cursor!
     
     var unsplashPagedRequest: UnsplashPagedRequest!
     var unsplashSearchPagedRequest: UnsplashSearchPagedRequest!
     var unsplashTopicRequest: UnsplashTopicRequest!
+    var unsplashCollectionRequest: UnsplashCollectionRequest!
     
     var segmentedIndex = SegmentedIndex.random
 }
@@ -107,9 +112,9 @@ extension PhotoListViewModel {
         
         isLoading.value = true
         
-        if fetchWallpapersCursor == nil {
-            fetchWallpapersCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
-            unsplashTopicRequest = UnsplashTopicRequest(with: fetchWallpapersCursor)
+        if collectionCursor == nil {
+            collectionCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+            unsplashTopicRequest = UnsplashTopicRequest(with: collectionCursor)
         }
         
         service.topic(keyword: "wallpapers", pageRequest: unsplashTopicRequest) { (result) in
@@ -130,6 +135,35 @@ extension PhotoListViewModel {
             }
         }
 
+    }
+    
+    func fetchCollection(id:String) {
+        service.networkManager = NetworkManager(endPoint: .get_collection)
+        
+        isLoading.value = true
+        
+        if fetchNatureCursor == nil {
+            fetchNatureCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+            unsplashCollectionRequest = UnsplashCollectionRequest(with: fetchNatureCursor)
+        }
+        
+        service.collection(id: id, pageRequest: unsplashCollectionRequest) { (result) in
+            self.isLoading.value = false
+            switch result {
+                case .success(let respone):
+                    
+                    self.collectionResponse.value = respone
+        
+                case .failure(let error):
+                    
+                    switch error {
+                        case .statusCodeError(let code):
+                            print(code)
+                        default:
+                            self.error.value = error
+                    }
+            }
+        }
     }
     
     func fetchNextPage() {

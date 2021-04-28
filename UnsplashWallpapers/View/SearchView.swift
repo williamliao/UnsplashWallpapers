@@ -368,6 +368,11 @@ extension SearchView: UICollectionViewDelegate {
                 let photoInfo = PhotoInfo(title: user.name, url: urls, profile_image: user.profile_image)
                 coordinator?.goToDetailView(photoInfo: photoInfo)
             case .collections:
+                
+                guard let res = searchDataSource.itemIdentifier(for: indexPath) else {
+                    return
+                }
+                coordinator?.pushToCollectionListView(id: res.id)
                 break
                 
             case .users:

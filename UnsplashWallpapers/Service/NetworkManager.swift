@@ -120,6 +120,7 @@ class NetworkManager {
         case search
         case collections
         case users
+        case get_collection
     }
     
     typealias JSONTaskCompletionHandler = (Decodable?, ServerError?) -> Void
@@ -184,6 +185,14 @@ class NetworkManager {
                 components.scheme = UnsplashAPI.scheme
                 components.host = UnsplashAPI.host
                   components.path = "/search/users"
+                
+                return components
+                
+            case .get_collection:
+                var components = URLComponents()
+                components.scheme = UnsplashAPI.scheme
+                components.host = UnsplashAPI.host
+                components.path = "/collections"
                 
                 return components
         }
@@ -285,6 +294,45 @@ class NetworkManager {
         ]
         
         guard let url = components?.url else {
+            return
+        }
+        
+        let mutableRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: timeoutInterval)
+        
+        let task = decodingTask(with: mutableRequest, decodingType: T.self) { (json , error) in
+            
+            DispatchQueue.main.async {
+                guard let json = json else {
+                    if let error = error {
+                        completion(APIResult.failure(error))
+                    }
+                    return
+                }
+
+                if let value = decode(json) {
+                    completion(.success(value))
+                }
+            }
+        }
+        task?.resume()
+    }
+    
+    func get_Collection<T: Decodable>(id: String, pageRequest: UnsplashCollectionRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+        
+        let urlString = "/collections/\(id)/photos"
+        
+        var components = URLComponents()
+        components.scheme = UnsplashAPI.scheme
+        components.host = UnsplashAPI.host
+        components.path = urlString
+        
+        components.queryItems = [
+            URLQueryItem(name: "per_page", value: String(pageRequest.cursor.perPage)),
+            URLQueryItem(name: "page", value: String(pageRequest.cursor.page)),
+            URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey)
+        ]
+        
+        guard let url = components.url else {
             return
         }
         

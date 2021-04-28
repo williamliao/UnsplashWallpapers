@@ -15,6 +15,7 @@ enum CurrentSource: Int, CaseIterable {
     case random
     case nature
     case wallpapers
+    case collections
 }
 
 class PhotoListView: UIView {
@@ -32,6 +33,11 @@ class PhotoListView: UIView {
     
     @available(iOS 13.0, *)
     lazy var wallpapersDataSource  = makeWallpapersDataSource()
+    
+    @available(iOS 13.0, *)
+    lazy var collectionDataSource  = makeCollectionDataSource()
+    
+    //
     
     var coordinator: MainCoordinator?
     
@@ -218,6 +224,11 @@ extension PhotoListView {
         return wallpapersDataSource
     }
     
+    @available(iOS 13.0, *)
+    private func getCollectionDatasource() -> UICollectionViewDiffableDataSource<Section, CollectionResponse> {
+        return collectionDataSource
+    }
+    
     func makeDataSource() -> UICollectionViewDiffableDataSource<Section, Response> {
         
         return UICollectionViewDiffableDataSource<Section, Response>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
@@ -238,6 +249,14 @@ extension PhotoListView {
 
         return UICollectionViewDiffableDataSource<Section, Preview_Photos>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
             let cell = self.configureTopicCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
+            return cell
+        }
+    }
+    
+    func makeCollectionDataSource() -> UICollectionViewDiffableDataSource<Section, CollectionResponse> {
+        
+        return UICollectionViewDiffableDataSource<Section, CollectionResponse>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+            let cell = self.configureCollectionCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
             return cell
         }
     }
@@ -342,6 +361,39 @@ extension PhotoListView {
                     }
                     
                 }
+            case .collections:
+                var snapshot = NSDiffableDataSourceSnapshot<Section, CollectionResponse>()
+                if (!firstLoad) {
+                    collectionDataSource = makeCollectionDataSource()
+                } else {
+                    collectionDataSource = getCollectionDatasource()
+                }
+                
+                //Append available sections
+                Section.allCases.forEach { snapshot.appendSections([$0]) }
+                
+                //Append annotations to their corresponding sections
+                
+                guard let collections = viewModel.collectionResponse.value else {
+                    return
+                }
+                
+                collections.forEach { (collection) in
+                    snapshot.appendItems([collection], toSection: .main)
+                }
+                
+                //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
+                DispatchQueue.main.async {
+                    self.collectionDataSource.apply(snapshot, animatingDifferences: false)
+                    
+                    if (self.currentIndex > 0) {
+                        UIView.animate(withDuration: 0.25) {
+                            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .bottom, animated: false)
+                        }
+                    }
+                    
+                }
+                
         }
     }
 }
@@ -411,6 +463,8 @@ extension PhotoListView: UICollectionViewDelegate {
                     
                     let photoInfo = PhotoInfo(title: "Wallpapers", url: res.urls, profile_image: owners[indexPath.row].profile_image)
                     coordinator?.goToDetailView(photoInfo: photoInfo)
+                case .collections:
+                    break
             }
             
         } else {
@@ -447,6 +501,8 @@ extension PhotoListView: UICollectionViewDelegate {
                     
                     let photoInfo = PhotoInfo(title: "Wallpapers", url: res.preview_photos[indexPath.row].urls, profile_image: owners[indexPath.row].profile_image)
                     coordinator?.goToDetailView(photoInfo: photoInfo)
+                case .collections:
+                    break
             }
         }
     }
@@ -505,6 +561,18 @@ extension PhotoListView {
             
             cell?.titleLabel.text = "Wallpapers"
         }
+        
+        if let url = URL(string: respone.urls.thumb) {
+            cell?.configureImage(with: url)
+        }
+        
+        return cell
+    }
+
+    func configureCollectionCell(collectionView: UICollectionView, respone: CollectionResponse, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier, for: indexPath) as? PhotoListCollectionViewCell
+        
+        cell?.titleLabel.text = respone.user.name
         
         if let url = URL(string: respone.urls.thumb) {
             cell?.configureImage(with: url)

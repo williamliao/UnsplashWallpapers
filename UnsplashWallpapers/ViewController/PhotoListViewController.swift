@@ -12,6 +12,8 @@ class PhotoListViewController: UIViewController {
     var viewModel: PhotoListViewModel!
     
     var photoListView: PhotoListView!
+    
+    var isCollectionMode: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,6 +22,10 @@ class PhotoListViewController: UIViewController {
         photoListView.configureCollectionView(Add: self.view)
         photoListView.createSegmentView(view: self.view)
         //photoListView.createSearchBarItem(navItem: self.navigationItem)
+        
+        if isCollectionMode {
+            photoListView.section = .collections
+        }
         
         viewModel.respone.bind { [weak self] (_) in
             if #available(iOS 13.0, *) {
@@ -38,6 +44,14 @@ class PhotoListViewController: UIViewController {
         }
         
         viewModel.wallpapersTopic.bind { [weak self] (_) in
+            if #available(iOS 13.0, *) {
+                self?.photoListView.applyInitialSnapshots()
+            } else {
+                self?.photoListView.reloadData()
+            }
+        }
+        
+        viewModel.collectionResponse.bind { [weak self] (_) in
             if #available(iOS 13.0, *) {
                 self?.photoListView.applyInitialSnapshots()
             } else {
