@@ -67,6 +67,9 @@
 		C8AE36F026390D9600AF57C4 /* UserProfileInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8AE36EF26390D9600AF57C4 /* UserProfileInfo.swift */; };
 		C8AE36F52639107400AF57C4 /* ImageDownLoad.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8AE36F42639107400AF57C4 /* ImageDownLoad.swift */; };
 		C8AE36FA2639138100AF57C4 /* ImageCombineDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8AE36F92639138100AF57C4 /* ImageCombineDownloader.swift */; };
+		C8AE37062639690F00AF57C4 /* CollectionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8AE37052639690F00AF57C4 /* CollectionListView.swift */; };
+		C8AE370B2639692C00AF57C4 /* CollectionListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8AE370A2639692C00AF57C4 /* CollectionListViewModel.swift */; };
+		C8AE37102639693F00AF57C4 /* CollectionListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8AE370F2639693F00AF57C4 /* CollectionListViewController.swift */; };
 		C8BF2AAC263695ED00BE7C51 /* UnsplashTopicRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8BF2AAB263695ED00BE7C51 /* UnsplashTopicRequest.swift */; };
 		C8BF2AB1263696FF00BE7C51 /* Topic.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8BF2AB0263696FF00BE7C51 /* Topic.swift */; };
 		C8BF2AB62636983900BE7C51 /* Owners.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8BF2AB52636983900BE7C51 /* Owners.swift */; };
@@ -177,6 +180,9 @@
 		C8AE36EF26390D9600AF57C4 /* UserProfileInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileInfo.swift; sourceTree = "<group>"; };
 		C8AE36F42639107400AF57C4 /* ImageDownLoad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDownLoad.swift; sourceTree = "<group>"; };
 		C8AE36F92639138100AF57C4 /* ImageCombineDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCombineDownloader.swift; sourceTree = "<group>"; };
+		C8AE37052639690F00AF57C4 /* CollectionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionListView.swift; sourceTree = "<group>"; };
+		C8AE370A2639692C00AF57C4 /* CollectionListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionListViewModel.swift; sourceTree = "<group>"; };
+		C8AE370F2639693F00AF57C4 /* CollectionListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionListViewController.swift; sourceTree = "<group>"; };
 		C8BF2AAB263695ED00BE7C51 /* UnsplashTopicRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsplashTopicRequest.swift; sourceTree = "<group>"; };
 		C8BF2AB0263696FF00BE7C51 /* Topic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Topic.swift; sourceTree = "<group>"; };
 		C8BF2AB52636983900BE7C51 /* Owners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Owners.swift; sourceTree = "<group>"; };
@@ -347,6 +353,7 @@
 				C8D689202637BC3A008F8B4D /* SearchResultsViewModel.swift */,
 				C8A8FD4A263175C200C38FAF /* FavoriteManager.swift */,
 				C8AE36D3263901AB00AF57C4 /* UserProfileViewModel.swift */,
+				C8AE370A2639692C00AF57C4 /* CollectionListViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -361,6 +368,7 @@
 				C8D689162637BC1D008F8B4D /* SearchResultsTableView.swift */,
 				C8AE36CE2639019800AF57C4 /* UserProfileView.swift */,
 				C8AE36EA26390C5300AF57C4 /* UserProfileHeaderView.swift */,
+				C8AE37052639690F00AF57C4 /* CollectionListView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -373,6 +381,7 @@
 				C8C91ED7260895B0001EAA59 /* DetailViewController.swift */,
 				C8A8FD2C263168A000C38FAF /* FavoriteViewController.swift */,
 				C8AE36D8263901CC00AF57C4 /* UserProfileViewController.swift */,
+				C8AE370F2639693F00AF57C4 /* CollectionListViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -552,6 +561,7 @@
 			files = (
 				C8D688EF2637A773008F8B4D /* PhotoInfo.swift in Sources */,
 				C8AE36D9263901CC00AF57C4 /* UserProfileViewController.swift in Sources */,
+				C8AE37102639693F00AF57C4 /* CollectionListViewController.swift in Sources */,
 				C89A728E26034D20003E188F /* Position.swift in Sources */,
 				C8D689172637BC1D008F8B4D /* SearchResultsTableView.swift in Sources */,
 				C8AE36C02638F1BC00AF57C4 /* UnsplashCollectionRequest.swift in Sources */,
@@ -563,6 +573,7 @@
 				C8AE36D4263901AB00AF57C4 /* UserProfileViewModel.swift in Sources */,
 				C8C91ECE26089543001EAA59 /* DetailView.swift in Sources */,
 				C8CD0D2A2604818D009B12AA /* UnsplashPhoto.swift in Sources */,
+				C8AE370B2639692C00AF57C4 /* CollectionListViewModel.swift in Sources */,
 				C8CD0D2B2604818D009B12AA /* UnsplashPhotoExif.swift in Sources */,
 				C8A8FD3C2631694600C38FAF /* FavoriteViewModel.swift in Sources */,
 				C8BF2AC82636998400BE7C51 /* Total_current_user_submissions.swift in Sources */,
@@ -588,6 +599,7 @@
 				C89A726B26034C55003E188F /* Categories.swift in Sources */,
 				C8C91EC926088F2C001EAA59 /* SearchViewController.swift in Sources */,
 				C89A726626034C2C003E188F /* Ancestry.swift in Sources */,
+				C8AE37062639690F00AF57C4 /* CollectionListView.swift in Sources */,
 				C8AE36F026390D9600AF57C4 /* UserProfileInfo.swift in Sources */,
 				C89A72B626034DE0003E188F /* Urls.swift in Sources */,
 				C89A72C92603521E003E188F /* EndPoint.swift in Sources */,

@@ -399,7 +399,7 @@ extension SearchView: UICollectionViewDelegate {
                     return
                 }
                 
-                //coordinator?.pushToCollectionListView(id: res.id, category: category)
+                coordinator?.pushToCollectionListView(id: res.id, category: category)
                 break
                 
             case .users:

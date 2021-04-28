@@ -112,17 +112,15 @@ extension MainCoordinator {
     
     func pushToCollectionListView(id: String, category: SearchResults.Category) {
         
-        let photoListViewModel = PhotoListViewModel()
-        photoListViewModel.fetchCollection(id: id)
+        let collectionViewModel = CollectionListViewModel()
+        collectionViewModel.fetchCollection(id: id)
         
-        let photo = PhotoListViewController()
-        photo.title = "Photo"
-        photo.viewModel = photoListViewModel
-        photo.viewModel.coordinator = self
-        photo.isCollectionMode = true
+        let collection = CollectionListViewController()
+        collection.viewModel = collectionViewModel
+        collection.viewModel.coordinator = self
         
         if let currentNavController = self.rootViewController.selectedViewController as? UINavigationController {
-            currentNavController.pushViewController(photo, animated: true)
+            currentNavController.pushViewController(collection, animated: true)
         }
     }
     
