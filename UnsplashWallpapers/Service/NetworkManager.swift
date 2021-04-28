@@ -115,8 +115,7 @@ class NetworkManager {
     
     enum NetworkEndpoint {
         case random
-        case nature
-        case wallpapers
+        case topic
         case search
         case collections
         case users
@@ -149,22 +148,14 @@ class NetworkManager {
                 
                 return components
                 
-            case .nature:
+            case .topic:
                 var components = URLComponents()
                 components.scheme = UnsplashAPI.scheme
                 components.host = UnsplashAPI.host
                 components.path = "/topics"
                 
                 return components
-                
-            case .wallpapers:
-                var components = URLComponents()
-                components.scheme = UnsplashAPI.scheme
-                components.host = UnsplashAPI.host
-                components.path = "/topics"
-                
-                return components
-            
+
             case .search:
                 var components = URLComponents()
                 components.scheme = UnsplashAPI.scheme

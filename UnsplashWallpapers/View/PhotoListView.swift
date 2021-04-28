@@ -137,29 +137,31 @@ extension PhotoListView {
     @objc func segmentAction(_ segmentedControl: UISegmentedControl) {
             switch (segmentedControl.selectedSegmentIndex) {
             case 0:
-                print("Random")
+                //print("Random")
                 dataSource = makeDataSource()
                 collectionView.dataSource = dataSource
                 viewModel.fetchData()
+                viewModel.reset()
                 section = .random
                 viewModel.segmentedIndex = .random
                 
                 break // Random
             case 1:
-                print("Nature")
+                //print("Nature")
                 
                 natureDataSource = makeNatureDataSource()
                 collectionView.dataSource = natureDataSource
-                
+                viewModel.reset()
                 viewModel.fetchNature()
                 section = .nature
                 viewModel.segmentedIndex = .nature
                 
                 break // Nature
             case 2:
-                print("Wallpapers")
+                //print("Wallpapers")
                 wallpapersDataSource = makeWallpapersDataSource()
                 collectionView.dataSource = wallpapersDataSource
+                viewModel.reset()
                 viewModel.fetchWallpapers()
                 section = .wallpapers
                 viewModel.segmentedIndex = .wallpapers
@@ -230,12 +232,12 @@ extension PhotoListView {
     }
  
     @available(iOS 13.0, *)
-    private func getNatureDatasource() -> UICollectionViewDiffableDataSource<Section, Preview_Photos> {
+    private func getNatureDatasource() -> UICollectionViewDiffableDataSource<Section, Results> {
         return natureDataSource
     }
     
     @available(iOS 13.0, *)
-    private func getWallpapersDatasource() -> UICollectionViewDiffableDataSource<Section, Preview_Photos> {
+    private func getWallpapersDatasource() -> UICollectionViewDiffableDataSource<Section, Results> {
         return wallpapersDataSource
     }
     
@@ -252,17 +254,17 @@ extension PhotoListView {
         }
     }
     
-    func makeNatureDataSource() -> UICollectionViewDiffableDataSource<Section, Preview_Photos> {
+    func makeNatureDataSource() -> UICollectionViewDiffableDataSource<Section, Results> {
         
-        return UICollectionViewDiffableDataSource<Section, Preview_Photos>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+        return UICollectionViewDiffableDataSource<Section, Results>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
             let cell = self.configureTopicCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
             return cell
         }
     }
     
-    func makeWallpapersDataSource() -> UICollectionViewDiffableDataSource<Section, Preview_Photos> {
+    func makeWallpapersDataSource() -> UICollectionViewDiffableDataSource<Section, Results> {
 
-        return UICollectionViewDiffableDataSource<Section, Preview_Photos>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+        return UICollectionViewDiffableDataSource<Section, Results>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
             let cell = self.configureTopicCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
             return cell
         }
@@ -310,7 +312,7 @@ extension PhotoListView {
                 }
                 
             case .nature:
-                var snapshot = NSDiffableDataSourceSnapshot<Section, Preview_Photos>()
+                var snapshot = NSDiffableDataSourceSnapshot<Section, Results>()
                 natureDataSource.apply(snapshot, animatingDifferences: false)
                 if (!firstLoad) {
                     natureDataSource = makeNatureDataSource()
@@ -323,12 +325,12 @@ extension PhotoListView {
                 
                 //Append annotations to their corresponding sections
                 
-                guard let topics = viewModel.natureTopic.value else {
+                guard let topics = viewModel.searchRespone.value else {
                     return
                 }
                 
-                topics.forEach { (topic) in
-                    snapshot.appendItems(topic.preview_photos, toSection: .main)
+                topics.results.forEach { (result) in
+                    snapshot.appendItems([result], toSection: .main)
                 }
                 
                 //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
@@ -344,7 +346,7 @@ extension PhotoListView {
                 }
                 
             case .wallpapers:
-                var snapshot = NSDiffableDataSourceSnapshot<Section, Preview_Photos>()
+                var snapshot = NSDiffableDataSourceSnapshot<Section, Results>()
                 wallpapersDataSource.apply(snapshot, animatingDifferences: false)
                 if (!firstLoad) {
                     wallpapersDataSource = makeWallpapersDataSource()
@@ -357,12 +359,12 @@ extension PhotoListView {
                 
                 //Append annotations to their corresponding sections
                 
-                guard let topics = viewModel.wallpapersTopic.value else {
+                guard let topics = viewModel.searchRespone.value else {
                     return
                 }
                 
-                topics.forEach { (topic) in
-                    snapshot.appendItems(topic.preview_photos, toSection: .main)
+                topics.results.forEach { (result) in
+                    snapshot.appendItems([result], toSection: .main)
                 }
                 
                 //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
@@ -455,28 +457,20 @@ extension PhotoListView: UICollectionViewDelegate {
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                     
                 case .nature:
-                    guard let res = natureDataSource.itemIdentifier(for: indexPath) else {
+                    guard let res = natureDataSource.itemIdentifier(for: indexPath), let profile = res.user?.profile_image, let urls = res.urls else {
                         return
                     }
-                    
-                    guard let owners = viewModel.natureTopic.value?[indexPath.row].owners else {
-                        return
-                    }
-                    
-                    let photoInfo = PhotoInfo(title: "Nature", url: res.urls, profile_image: owners[indexPath.row].profile_image)
+
+                    let photoInfo = PhotoInfo(title: res.user?.name ?? "", url: urls, profile_image: profile)
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                     
                 case .wallpapers:
                     
-                    guard let res = wallpapersDataSource.itemIdentifier(for: indexPath) else {
+                    guard let res = wallpapersDataSource.itemIdentifier(for: indexPath), let profile = res.user?.profile_image, let urls = res.urls else {
                         return
                     }
                     
-                    guard let owners = viewModel.natureTopic.value?[indexPath.row].owners else {
-                        return
-                    }
-                    
-                    let photoInfo = PhotoInfo(title: "Wallpapers", url: res.urls, profile_image: owners[indexPath.row].profile_image)
+                    let photoInfo = PhotoInfo(title: res.user?.name ?? "", url: urls, profile_image: profile)
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                 case .collections:
                     break
@@ -564,7 +558,7 @@ extension PhotoListView {
         return cell
     }
    
-    func configureTopicCell(collectionView: UICollectionView, respone: Preview_Photos, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
+    func configureTopicCell(collectionView: UICollectionView, respone: Results, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier, for: indexPath) as? PhotoListCollectionViewCell
         
         if section == .nature {
@@ -577,7 +571,7 @@ extension PhotoListView {
             cell?.titleLabel.text = "Wallpapers"
         }
         
-        if let url = URL(string: respone.urls.small) {
+        if let url = URL(string: respone.urls!.small) {
             cell?.configureImage(with: url)
         }
         

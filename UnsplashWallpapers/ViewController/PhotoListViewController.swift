@@ -35,7 +35,7 @@ class PhotoListViewController: UIViewController {
             }
         }
         
-        viewModel.natureTopic.bind { [weak self] (_) in
+        viewModel.searchRespone.bind { [weak self] (_) in
             if #available(iOS 13.0, *) {
                 self?.photoListView.applyInitialSnapshots()
             } else {
