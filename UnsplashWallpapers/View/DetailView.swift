@@ -31,6 +31,8 @@ extension DetailView {
         self.addSubview(imageView)
         self.addSubview(act)
         
+        act.color = traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
+        
         configureConstraints()
     }
     
@@ -45,7 +47,7 @@ extension DetailView {
             imageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
             imageView.heightAnchor.constraint(equalToConstant: 300),
             
-            act.topAnchor.constraint(equalTo: self.bottomAnchor, constant: 10),
+            act.topAnchor.constraint(equalTo: self.topAnchor, constant: 20),
             act.centerXAnchor.constraint(equalTo: self.centerXAnchor),
          
         ])

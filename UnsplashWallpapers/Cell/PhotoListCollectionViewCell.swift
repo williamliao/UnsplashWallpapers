@@ -49,7 +49,7 @@ extension PhotoListCollectionViewCell {
         thumbnailImageView.contentMode = .scaleAspectFill
         thumbnailImageView.clipsToBounds = true
         
-        act.color = .systemBackground
+        act.color = traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
     
         contentView.addSubview(thumbnailImageView)
         contentView.addSubview(act)
