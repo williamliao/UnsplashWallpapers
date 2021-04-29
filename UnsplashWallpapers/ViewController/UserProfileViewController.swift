@@ -18,6 +18,8 @@ class UserProfileViewController: UIViewController {
         userProfileView = UserProfileView(viewModel: viewModel, coordinator: viewModel.coordinator)
         userProfileView.configureCollectionView()
         userProfileView.createUserProfileHeaderView()
+        userProfileView.createSegmentView()
+        userProfileView.configureConstraints()
         userProfileView.translatesAutoresizingMaskIntoConstraints = false
         
         self.view.addSubview(userProfileView)
@@ -30,6 +32,14 @@ class UserProfileViewController: UIViewController {
         ])
         
         viewModel.userPhotosResponse.bind { [weak self] (_) in
+            if #available(iOS 13.0, *) {
+                self?.userProfileView.applyInitialSnapshots()
+            } else {
+                //self?.searchView.reloadData()
+            }
+        }
+        
+        viewModel.userLikesResponse.bind { [weak self] (_) in
             if #available(iOS 13.0, *) {
                 self?.userProfileView.applyInitialSnapshots()
             } else {

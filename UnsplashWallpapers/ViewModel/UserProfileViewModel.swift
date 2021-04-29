@@ -12,6 +12,7 @@ class UserProfileViewModel {
     let service: UnsplashService = UnsplashService()
     
     var userPhotosResponse: Observable<[CollectionResponse]?> = Observable([])
+    var userLikesResponse: Observable<[CollectionResponse]?> = Observable([])
     
     var isLoading: Observable<Bool> = Observable(false)
     var error: Observable<Error?> = Observable(nil)
@@ -21,8 +22,10 @@ class UserProfileViewModel {
     var userProfileInfo: UserProfileInfo!
     
     var userPhotosCursor: Cursor!
-    
     var unsplashUserPhotosdRequest: UnsplashUserListRequest!
+    
+    var userLikePhotosCursor: Cursor!
+    var unsplashUserLikePhotosdRequest: UnsplashUserListRequest!
     
     //var segmentedIndex = SegmentedIndex.random
 }
@@ -38,7 +41,7 @@ extension UserProfileViewModel {
             unsplashUserPhotosdRequest = UnsplashUserListRequest(with: userPhotosCursor)
         }
         
-        service.ListUserPhotos(username: username, pageRequest: unsplashUserPhotosdRequest) { (result) in
+        service.listUserPhotos(username: username, pageRequest: unsplashUserPhotosdRequest) { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):
@@ -57,7 +60,48 @@ extension UserProfileViewModel {
         }
     }
     
+    func fetchUserLikePhotos(username: String) {
+        service.networkManager = NetworkManager(endPoint: .user_photo)
+        
+        isLoading.value = true
+        
+        if userLikePhotosCursor == nil {
+            userLikePhotosCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+            unsplashUserLikePhotosdRequest = UnsplashUserListRequest(with: userLikePhotosCursor)
+        }
+        
+        service.listUserLikePhotos(username: username, pageRequest: unsplashUserPhotosdRequest) { (result) in
+            self.isLoading.value = false
+            switch result {
+                case .success(let respone):
+                    
+                    self.userLikesResponse.value = respone
+        
+                case .failure(let error):
+                    
+                    switch error {
+                        case .statusCodeError(let code):
+                            print("statusCodeError \(code)")
+                        default:
+                            self.error.value = error
+                    }
+            }
+        }
+    }
+    
     func fetchNextPage() {
         
+    }
+    
+    func reset() {
+        userLikePhotosCursor = nil
+        unsplashUserLikePhotosdRequest = nil
+        userPhotosCursor = nil
+        unsplashUserPhotosdRequest = nil
+        userPhotosResponse.value = nil
+        userLikesResponse.value = nil
+        isFetching = false
+        canFetchMore = false
+        isLoading.value = false
     }
 }

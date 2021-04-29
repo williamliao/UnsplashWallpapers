@@ -17,10 +17,15 @@ class UserProfileView: UIView {
     // MARK: - component
     var collectionView: UICollectionView!
     
+    let userProfileHeaderView = UserProfileHeaderView()
+    
     var viewModel: UserProfileViewModel
     
     @available(iOS 13.0, *)
     lazy var dataSource  = makeUserListPhotosDataSource()
+    
+    @available(iOS 13.0, *)
+    lazy var likeDataSource  = makeUserLikesPhotosDataSource()
     
     var coordinator: MainCoordinator?
     
@@ -49,7 +54,7 @@ class UserProfileView: UIView {
 extension UserProfileView {
     
     func createUserProfileHeaderView() {
-        let userProfileHeaderView = UserProfileHeaderView()
+        
         userProfileHeaderView.translatesAutoresizingMaskIntoConstraints = false
         
         userProfileHeaderView.titleLabel.text = viewModel.userProfileInfo.name
@@ -62,12 +67,28 @@ extension UserProfileView {
         }
         
         self.addSubview(userProfileHeaderView)
-        
+    }
+    
+    func configureConstraints() {
         NSLayoutConstraint.activate([
             userProfileHeaderView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             userProfileHeaderView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             userProfileHeaderView.topAnchor.constraint(equalTo: self.topAnchor),
             userProfileHeaderView.heightAnchor.constraint(equalToConstant: 100),
+        ])
+        
+        NSLayoutConstraint.activate([
+            collectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            collectionView.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor),
+        ])
+        
+        NSLayoutConstraint.activate([
+            segmentedControl.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            segmentedControl.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            segmentedControl.topAnchor.constraint(equalTo: userProfileHeaderView.bottomAnchor),
+            segmentedControl.heightAnchor.constraint(equalToConstant: 44),
         ])
     }
     
@@ -88,17 +109,8 @@ extension UserProfileView {
         
         collectionView.register(PhotoListCollectionViewCell.self
                                 , forCellWithReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier)
-        
-        
-        
+  
         self.addSubview(collectionView)
-        
-        NSLayoutConstraint.activate([
-            collectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-            collectionView.topAnchor.constraint(equalTo: self.topAnchor, constant: 100),
-        ])
     }
     
     func makeDateSourceForCollectionView() {
@@ -118,31 +130,47 @@ extension UserProfileView {
         }
     }
     
-    func createSegmentView(view : UIView) {
+    func createSegmentView() {
         segmentedControl.frame = CGRect.zero
         segmentedControl.addTarget(self, action: #selector(segmentAction(_:)), for: .valueChanged)
         segmentedControl.selectedSegmentIndex = 0
-        view.addSubview(segmentedControl)
+        self.addSubview(segmentedControl)
         
         segmentedControl.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            segmentedControl.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            segmentedControl.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            segmentedControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            segmentedControl.heightAnchor.constraint(equalToConstant: 44),
-        ])
     }
     
     @objc func segmentAction(_ segmentedControl: UISegmentedControl) {
         switch (segmentedControl.selectedSegmentIndex) {
             case 0:
                 print("Photos")
+                section = .photos
+                
+                guard let count = viewModel.userPhotosResponse.value?.count  else {
+                    return
+                }
+                
+                if count == 0 {
+                    viewModel.fetchUserPhotos(username: viewModel.userProfileInfo.userName)
+                } else {
+                    self.applyInitialSnapshots()
+                }
                 break
             case 1:
                 print("Likes")
+                section = .likes
+                
+                guard let count = viewModel.userLikesResponse.value?.count  else {
+                    return
+                }
+                
+                if count == 0 {
+                    viewModel.fetchUserLikePhotos(username: viewModel.userProfileInfo.userName)
+                } else {
+                    self.applyInitialSnapshots()
+                }
                 break
             case 2:
+                section = .collections
                 print("Collections")
                 break
             default:
@@ -170,11 +198,30 @@ extension UserProfileView {
     func configureCell(collectionView: UICollectionView, respone: CollectionResponse, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier, for: indexPath) as? PhotoListCollectionViewCell
         
+        cell?.titleLabel.text = viewModel.userProfileInfo.name
+        
         if let url = URL(string: respone.urls.small) {
             cell?.configureImage(with: url)
         }
         
         return cell
+    }
+}
+
+// MARK:- UserLikesPhotos
+extension UserProfileView {
+    
+    @available(iOS 13.0, *)
+    private func getUserLikesPhotosDatasource() -> UICollectionViewDiffableDataSource<Section, CollectionResponse> {
+        return likeDataSource
+    }
+    
+    func makeUserLikesPhotosDataSource() -> UICollectionViewDiffableDataSource<Section, CollectionResponse> {
+        
+        return UICollectionViewDiffableDataSource<Section, CollectionResponse>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+            let cell = self.configureCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
+            return cell
+        }
     }
 }
 
@@ -214,7 +261,33 @@ extension UserProfileView {
                 }
                 
             case .likes:
-                break
+                var snapshot = NSDiffableDataSourceSnapshot<Section, CollectionResponse>()
+                if (!firstLoad) {
+                    likeDataSource = makeUserLikesPhotosDataSource()
+                } else {
+                    likeDataSource = getUserLikesPhotosDatasource()
+                }
+                
+                //Append available sections
+                Section.allCases.forEach { snapshot.appendSections([$0]) }
+                
+                //Append annotations to their corresponding sections
+                
+                viewModel.userLikesResponse.value?.forEach { (respone) in
+                    snapshot.appendItems([respone], toSection: .main)
+                }
+                
+                //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
+                DispatchQueue.main.async {
+                    self.likeDataSource.apply(snapshot, animatingDifferences: false)
+                    
+                    if (self.currentIndex > 0) {
+                        UIView.animate(withDuration: 0.25) {
+                            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: Section.main.rawValue), at: .bottom, animated: false)
+                        }
+                    }
+                    
+                }
                 
             case .collections:
                 break
