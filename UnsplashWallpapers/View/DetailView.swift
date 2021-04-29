@@ -21,6 +21,7 @@ class DetailView: UIView {
     
     var imageView: UIImageView!
     var scrollView: UIScrollView!
+    let downloadButton = UIButton(type: .custom)
     private var act = UIActivityIndicatorView(style: .large)
     
     var imageViewBottomConstraint: NSLayoutConstraint!
@@ -55,13 +56,26 @@ extension DetailView {
         scrollView.addSubview(imageView)
         scrollView.addSubview(act)
         
+        createDownloadButton()
+        
         configureConstraints()
+    }
+    
+    func createDownloadButton() {
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 64, weight: .bold, scale: .large)
+        let tintColor = self.traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
+        let image = UIImage(systemName: "arrow.down.circle", withConfiguration: largeConfig)?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+        downloadButton.setImage(image, for: .normal)
+        downloadButton.addTarget(self, action: #selector(downloadButtonTouch), for: .touchUpInside)
+        
+        scrollView.addSubview(downloadButton)
     }
     
     func configureConstraints() {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         act.translatesAutoresizingMaskIntoConstraints = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        downloadButton.translatesAutoresizingMaskIntoConstraints = false
         
         imageViewLeadingConstraint = imageView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor)
         imageViewTrailingConstraint = imageView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor)
@@ -82,7 +96,11 @@ extension DetailView {
 
             act.topAnchor.constraint(equalTo: self.topAnchor, constant: 20),
             act.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-         
+            
+            downloadButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
+            downloadButton.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
+            downloadButton.widthAnchor.constraint(equalToConstant: 44),
+            downloadButton.heightAnchor.constraint(equalToConstant: 44),
         ])
     }
 
@@ -141,6 +159,50 @@ extension DetailView {
             self.scrollView.contentSize = self.imageView.bounds.size
             
         }
+    }
+}
+
+//MARK:- Downloading
+extension DetailView {
+    @objc func downloadButtonTouch() {
+
+        guard let urlString = viewModel.photoInfo.value?.url.full else {
+            return
+        }
+        
+        guard let url = URL(string: urlString) else {
+            return
+        }
+        
+        downloadImage(from: url)
+    }
+    
+    func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
+        URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
+    }
+    
+    func downloadImage(from url: URL) {
+        print("Download Started")
+        getData(from: url) { data, response, error in
+            guard let data = data, error == nil else { return }
+            print(response?.suggestedFilename ?? url.lastPathComponent)
+            print("Download Finished")
+            // always update the UI from the main thread
+            DispatchQueue.main.async() { [weak self] in
+                
+                if let image = UIImage(data: data) {
+                    self?.writeToPhotoAlbum(image: image)
+                }
+            }
+        }
+    }
+    
+    func writeToPhotoAlbum(image: UIImage) {
+        UIImageWriteToSavedPhotosAlbum(image, self, #selector(saveError), nil)
+    }
+
+    @objc func saveError(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        // save complete
     }
 }
 
