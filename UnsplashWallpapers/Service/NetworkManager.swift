@@ -355,48 +355,9 @@ class NetworkManager {
         task?.resume()
     }
     
-    func listUserPhotos<T: Decodable>(username: String, pageRequest: UnsplashUserListRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+    func listUserData<T: Decodable>(username: String, endPoint: String, pageRequest: UnsplashUserListRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
         
-        let urlString = "/users/\(username)/photos"
-        
-        var components = URLComponents()
-        components.scheme = UnsplashAPI.scheme
-        components.host = UnsplashAPI.host
-        components.path = urlString
-        
-        components.queryItems = [
-            URLQueryItem(name: "per_page", value: String(pageRequest.cursor.perPage)),
-            URLQueryItem(name: "page", value: String(pageRequest.cursor.page)),
-            URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey)
-        ]
-        
-        guard let url = components.url else {
-            return
-        }
-        
-        let mutableRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: timeoutInterval)
-        
-        let task = decodingTask(with: mutableRequest, decodingType: T.self) { (json , error) in
-            
-            DispatchQueue.main.async {
-                guard let json = json else {
-                    if let error = error {
-                        completion(APIResult.failure(error))
-                    }
-                    return
-                }
-
-                if let value = decode(json) {
-                    completion(.success(value))
-                }
-            }
-        }
-        task?.resume()
-    }
-    
-    func listUserLikePhotos<T: Decodable>(username: String, pageRequest: UnsplashUserListRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
-        
-        let urlString = "/users/\(username)/likes"
+        let urlString = "/users/\(username)/\(endPoint)"
         
         var components = URLComponents()
         components.scheme = UnsplashAPI.scheme

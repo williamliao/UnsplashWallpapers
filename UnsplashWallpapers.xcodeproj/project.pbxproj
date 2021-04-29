@@ -57,6 +57,7 @@
 		C8A8FD4626316CF300C38FAF /* FavoriteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A8FD4526316CF300C38FAF /* FavoriteTableViewCell.swift */; };
 		C8A8FD4B263175C200C38FAF /* FavoriteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A8FD4A263175C200C38FAF /* FavoriteManager.swift */; };
 		C8A8FD582631777400C38FAF /* CodableUserDefault.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A8FD572631777400C38FAF /* CodableUserDefault.swift */; };
+		C8AC4700263A50D500178411 /* UserCollectionRespone.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8AC46FF263A50D500178411 /* UserCollectionRespone.swift */; };
 		C8AE36C02638F1BC00AF57C4 /* UnsplashCollectionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8AE36BF2638F1BC00AF57C4 /* UnsplashCollectionRequest.swift */; };
 		C8AE36C52638F3D800AF57C4 /* CollectionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8AE36C42638F3D800AF57C4 /* CollectionResponse.swift */; };
 		C8AE36CA2639005400AF57C4 /* UnsplashUserListRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8AE36C92639005400AF57C4 /* UnsplashUserListRequest.swift */; };
@@ -170,6 +171,7 @@
 		C8A8FD4526316CF300C38FAF /* FavoriteTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteTableViewCell.swift; sourceTree = "<group>"; };
 		C8A8FD4A263175C200C38FAF /* FavoriteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteManager.swift; sourceTree = "<group>"; };
 		C8A8FD572631777400C38FAF /* CodableUserDefault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableUserDefault.swift; sourceTree = "<group>"; };
+		C8AC46FF263A50D500178411 /* UserCollectionRespone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCollectionRespone.swift; sourceTree = "<group>"; };
 		C8AE36BF2638F1BC00AF57C4 /* UnsplashCollectionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsplashCollectionRequest.swift; sourceTree = "<group>"; };
 		C8AE36C42638F3D800AF57C4 /* CollectionResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionResponse.swift; sourceTree = "<group>"; };
 		C8AE36C92639005400AF57C4 /* UnsplashUserListRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsplashUserListRequest.swift; sourceTree = "<group>"; };
@@ -339,6 +341,7 @@
 				C8D6893A2637E2E7008F8B4D /* SearchResults.swift */,
 				C8AE36C42638F3D800AF57C4 /* CollectionResponse.swift */,
 				C8AE36EF26390D9600AF57C4 /* UserProfileInfo.swift */,
+				C8AC46FF263A50D500178411 /* UserCollectionRespone.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -580,6 +583,7 @@
 				C8D868802637F55F00FF672D /* UsersListCollectionViewCell.swift in Sources */,
 				C89A72CE260352FC003E188F /* StaticURL.swift in Sources */,
 				C8AE36EB26390C5300AF57C4 /* UserProfileHeaderView.swift in Sources */,
+				C8AC4700263A50D500178411 /* UserCollectionRespone.swift in Sources */,
 				C89A72BB26034DF3003E188F /* User.swift in Sources */,
 				C89A725626034972003E188F /* PhotoListView.swift in Sources */,
 				C8BF2ABB2636994500BE7C51 /* Current_user_contributions.swift in Sources */,

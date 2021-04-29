@@ -13,6 +13,7 @@ class UserProfileViewModel {
     
     var userPhotosResponse: Observable<[CollectionResponse]?> = Observable([])
     var userLikesResponse: Observable<[CollectionResponse]?> = Observable([])
+    var userCollectionsResponse: Observable<[UserCollectionRespone]?> = Observable([])
     
     var isLoading: Observable<Bool> = Observable(false)
     var error: Observable<Error?> = Observable(nil)
@@ -26,6 +27,9 @@ class UserProfileViewModel {
     
     var userLikePhotosCursor: Cursor!
     var unsplashUserLikePhotosdRequest: UnsplashUserListRequest!
+    
+    var userCollectionsPhotosCursor: Cursor!
+    var unsplashUserCollectionsPhotosdRequest: UnsplashUserListRequest!
     
     //var segmentedIndex = SegmentedIndex.random
 }
@@ -89,6 +93,35 @@ extension UserProfileViewModel {
         }
     }
     
+    func fetchUserCollectons(username: String) {
+        service.networkManager = NetworkManager(endPoint: .user_photo)
+        
+        isLoading.value = true
+        
+        if userCollectionsPhotosCursor == nil {
+            userCollectionsPhotosCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+            unsplashUserCollectionsPhotosdRequest = UnsplashUserListRequest(with: userCollectionsPhotosCursor)
+        }
+        
+        service.listUserCollections(username: username, pageRequest: unsplashUserPhotosdRequest) { (result) in
+            self.isLoading.value = false
+            switch result {
+                case .success(let respone):
+                    
+                    self.userCollectionsResponse.value = respone
+        
+                case .failure(let error):
+                    
+                    switch error {
+                        case .statusCodeError(let code):
+                            print("statusCodeError \(code)")
+                        default:
+                            self.error.value = error
+                    }
+            }
+        }
+    }
+    
     func fetchNextPage() {
         
     }
@@ -98,6 +131,8 @@ extension UserProfileViewModel {
         unsplashUserLikePhotosdRequest = nil
         userPhotosCursor = nil
         unsplashUserPhotosdRequest = nil
+        userCollectionsPhotosCursor = nil
+        unsplashUserCollectionsPhotosdRequest = nil
         userPhotosResponse.value = nil
         userLikesResponse.value = nil
         isFetching = false

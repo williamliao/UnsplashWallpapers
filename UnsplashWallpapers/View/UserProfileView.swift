@@ -27,6 +27,9 @@ class UserProfileView: UIView {
     @available(iOS 13.0, *)
     lazy var likeDataSource  = makeUserLikesPhotosDataSource()
     
+    @available(iOS 13.0, *)
+    lazy var collectionsDataSource  = makeUserCollectionsDataSource()
+    
     var coordinator: MainCoordinator?
     
     var section: UserProfileCurrentSource = .photos
@@ -142,7 +145,6 @@ extension UserProfileView {
     @objc func segmentAction(_ segmentedControl: UISegmentedControl) {
         switch (segmentedControl.selectedSegmentIndex) {
             case 0:
-                print("Photos")
                 section = .photos
                 
                 guard let count = viewModel.userPhotosResponse.value?.count  else {
@@ -156,7 +158,6 @@ extension UserProfileView {
                 }
                 break
             case 1:
-                print("Likes")
                 section = .likes
                 
                 guard let count = viewModel.userLikesResponse.value?.count  else {
@@ -171,7 +172,15 @@ extension UserProfileView {
                 break
             case 2:
                 section = .collections
-                print("Collections")
+                guard let count = viewModel.userCollectionsResponse.value?.count  else {
+                    return
+                }
+                
+                if count == 0 {
+                    viewModel.fetchUserCollectons(username: viewModel.userProfileInfo.userName)
+                } else {
+                    self.applyInitialSnapshots()
+                }
                 break
             default:
                 break
@@ -225,72 +234,106 @@ extension UserProfileView {
     }
 }
 
+// MARK:- UserCollections
+extension UserProfileView {
+    
+    @available(iOS 13.0, *)
+    private func getUserCollectionsDatasource() -> UICollectionViewDiffableDataSource<Section, UserCollectionRespone> {
+        return collectionsDataSource
+    }
+    
+    func makeUserCollectionsDataSource() -> UICollectionViewDiffableDataSource<Section, UserCollectionRespone> {
+        
+        return UICollectionViewDiffableDataSource<Section, UserCollectionRespone>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+            let cell = self.configureCollectionsCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
+            return cell
+        }
+    }
+    
+    func configureCollectionsCell(collectionView: UICollectionView, respone: UserCollectionRespone, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier, for: indexPath) as? PhotoListCollectionViewCell
+        
+        cell?.titleLabel.text = viewModel.userProfileInfo.name
+        
+        if let url = URL(string: respone.cover_photo.url.small) {
+            cell?.configureImage(with: url)
+        }
+        
+        return cell
+    }
+}
+
 // MARK:- ReloadData
 extension UserProfileView {
     @available(iOS 13.0, *)
     func applyInitialSnapshots() {
         
+        var snapshot = NSDiffableDataSourceSnapshot<Section, CollectionResponse>()
+        
+        //Append available sections
+        Section.allCases.forEach { snapshot.appendSections([$0]) }
+        
         switch section {
             case .photos:
-                var snapshot = NSDiffableDataSourceSnapshot<Section, CollectionResponse>()
+                
                 if (!firstLoad) {
                     dataSource = makeUserListPhotosDataSource()
                 } else {
                     dataSource = getUserListPhotosDatasource()
                 }
                 
-                //Append available sections
-                Section.allCases.forEach { snapshot.appendSections([$0]) }
-                
                 //Append annotations to their corresponding sections
-                
                 viewModel.userPhotosResponse.value?.forEach { (respone) in
                     snapshot.appendItems([respone], toSection: .main)
                 }
                 
-                //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
-                DispatchQueue.main.async {
-                    self.dataSource.apply(snapshot, animatingDifferences: false)
-                    
-                    if (self.currentIndex > 0) {
-                        UIView.animate(withDuration: 0.25) {
-                            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: Section.main.rawValue), at: .bottom, animated: false)
-                        }
-                    }
-                    
-                }
+                reloadDataSource(dataSource: dataSource, snapshot: snapshot)
                 
             case .likes:
-                var snapshot = NSDiffableDataSourceSnapshot<Section, CollectionResponse>()
+                
                 if (!firstLoad) {
                     likeDataSource = makeUserLikesPhotosDataSource()
                 } else {
                     likeDataSource = getUserLikesPhotosDatasource()
                 }
                 
-                //Append available sections
-                Section.allCases.forEach { snapshot.appendSections([$0]) }
-                
                 //Append annotations to their corresponding sections
-                
                 viewModel.userLikesResponse.value?.forEach { (respone) in
                     snapshot.appendItems([respone], toSection: .main)
                 }
                 
-                //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
-                DispatchQueue.main.async {
-                    self.likeDataSource.apply(snapshot, animatingDifferences: false)
-                    
-                    if (self.currentIndex > 0) {
-                        UIView.animate(withDuration: 0.25) {
-                            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: Section.main.rawValue), at: .bottom, animated: false)
-                        }
-                    }
-                    
-                }
+                reloadDataSource(dataSource: likeDataSource, snapshot: snapshot)
                 
             case .collections:
+                
+                if (!firstLoad) {
+                    collectionsDataSource = makeUserLikesPhotosDataSource()
+                } else {
+                    collectionsDataSource = getUserLikesPhotosDatasource()
+                }
+                
+                //Append annotations to their corresponding sections
+                viewModel.userCollectionsResponse.value?.forEach { (respone) in
+                    snapshot.appendItems([respone], toSection: .main)
+                }
+                
+                reloadDataSource(dataSource: collectionsDataSource, snapshot: snapshot)
+                
                 break
+        }
+    }
+    
+    func reloadDataSource(dataSource: UICollectionViewDiffableDataSource<Section, CollectionResponse>, snapshot: NSDiffableDataSourceSnapshot<Section, CollectionResponse>) {
+        //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
+        DispatchQueue.main.async {
+            dataSource.apply(snapshot, animatingDifferences: false)
+            
+            if (self.currentIndex > 0) {
+                UIView.animate(withDuration: 0.25) {
+                    self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: Section.main.rawValue), at: .bottom, animated: false)
+                }
+            }
+            
         }
     }
 }
@@ -311,9 +354,21 @@ extension UserProfileView: UICollectionViewDelegate {
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                     
                 case .likes:
+                    
+                    guard let res = likeDataSource.itemIdentifier(for: indexPath)  else {
+                        return
+                    }
+                    
+                    let photoInfo = PhotoInfo(title: res.user.name, url: res.urls, profile_image: res.user.profile_image)
+                    coordinator?.goToDetailView(photoInfo: photoInfo)
                     break
                     
                 case .collections:
+                    
+                    guard let res = collectionsDataSource.itemIdentifier(for: indexPath)  else {
+                        return
+                    }
+                    coordinator?.pushToCollectionListView(id: res.id)
                     break
             }
             

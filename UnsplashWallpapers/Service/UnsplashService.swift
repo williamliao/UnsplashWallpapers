@@ -40,7 +40,7 @@ extension UnsplashService {
     
     func listUserPhotos(username: String, pageRequest: UnsplashUserListRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
         
-        networkManager.listUserPhotos(username: username, pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
+        networkManager.listUserData(username: username, endPoint:"photos", pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
             guard let feedResult = json as? [CollectionResponse] else { return  nil }
             return feedResult
         }, completion: completion)
@@ -49,7 +49,16 @@ extension UnsplashService {
     
     func listUserLikePhotos(username: String, pageRequest: UnsplashUserListRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
         
-        networkManager.listUserLikePhotos(username: username, pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
+        networkManager.listUserData(username: username, endPoint:"likes", pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
+            guard let feedResult = json as? [CollectionResponse] else { return  nil }
+            return feedResult
+        }, completion: completion)
+
+    }
+    
+    func listUserCollections(username: String, pageRequest: UnsplashUserListRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
+        
+        networkManager.listUserData(username: username, endPoint:"collections" , pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
             guard let feedResult = json as? [CollectionResponse] else { return  nil }
             return feedResult
         }, completion: completion)

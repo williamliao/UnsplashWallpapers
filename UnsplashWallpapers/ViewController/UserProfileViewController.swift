@@ -47,6 +47,14 @@ class UserProfileViewController: UIViewController {
             }
         }
         
+        viewModel.userCollectionsResponse.bind { [weak self] (_) in
+            if #available(iOS 13.0, *) {
+                self?.userProfileView.applyInitialSnapshots()
+            } else {
+                //self?.searchView.reloadData()
+            }
+        }
+        
         viewModel.error.bind { (error) in
             guard let error = error else {
                 return
