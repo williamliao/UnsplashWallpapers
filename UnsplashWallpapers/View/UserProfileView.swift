@@ -306,10 +306,15 @@ extension UserProfileView {
                 
             case .collections:
                 
+                var snapshot = NSDiffableDataSourceSnapshot<Section, UserCollectionRespone>()
+                
+                //Append available sections
+                Section.allCases.forEach { snapshot.appendSections([$0]) }
+                
                 if (!firstLoad) {
-                    collectionsDataSource = makeUserLikesPhotosDataSource()
+                    collectionsDataSource = makeUserCollectionsDataSource()
                 } else {
-                    collectionsDataSource = getUserLikesPhotosDatasource()
+                    collectionsDataSource = getUserCollectionsDatasource()
                 }
                 
                 //Append annotations to their corresponding sections
@@ -317,7 +322,16 @@ extension UserProfileView {
                     snapshot.appendItems([respone], toSection: .main)
                 }
                 
-                reloadDataSource(dataSource: collectionsDataSource, snapshot: snapshot)
+                DispatchQueue.main.async {
+                    self.collectionsDataSource.apply(snapshot, animatingDifferences: false)
+                    
+                    if (self.currentIndex > 0) {
+                        UIView.animate(withDuration: 0.25) {
+                            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: Section.main.rawValue), at: .bottom, animated: false)
+                        }
+                    }
+                    
+                }
                 
                 break
         }
