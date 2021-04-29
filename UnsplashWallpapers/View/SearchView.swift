@@ -384,7 +384,6 @@ extension SearchView: UISearchBarDelegate {
                 break
         }
         
-        resultsViewModel.scropeTitle.value = category
         viewModel.reset()
         viewModel.search(keyword: strippedString, category: category)
     }

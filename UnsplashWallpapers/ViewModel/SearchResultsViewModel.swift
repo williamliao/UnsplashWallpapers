@@ -10,7 +10,6 @@ import Foundation
 class SearchResultsViewModel {
     var trending: Observable<[SearchResults]?> = Observable([])
     var searchHistory: Observable<Set<SearchResults>> = Observable(Set<SearchResults>())
-    var scropeTitle: Observable<SearchResults.Category> = Observable(SearchResults.Category.photos)
 }
 
 extension SearchResultsViewModel {

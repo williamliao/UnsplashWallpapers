@@ -157,14 +157,14 @@ extension SearchResultsTableView: UITableViewDelegate {
         case 0:
             
             let querys = Array(viewModel.searchHistory.value)
-
-            searchResultsDidSelectedDelegate.searchResultsDidSelected(query: querys[indexPath.row].title, category: viewModel.scropeTitle.value)
+            
+            searchResultsDidSelectedDelegate.searchResultsDidSelected(query: querys[indexPath.row].title, category: querys[indexPath.row].category)
         case 1:
             guard let querys = viewModel.trending.value else {
                 return
             }
 
-            searchResultsDidSelectedDelegate.searchResultsDidSelected(query: querys[indexPath.row].title, category: viewModel.scropeTitle.value)
+            searchResultsDidSelectedDelegate.searchResultsDidSelected(query: querys[indexPath.row].title, category: querys[indexPath.row].category)
         default:
             break
         }
