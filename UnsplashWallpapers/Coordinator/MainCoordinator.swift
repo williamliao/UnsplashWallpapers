@@ -78,6 +78,7 @@ class MainCoordinator: Coordinator {
     func createDetailView() -> DetailViewController {
         let detail = DetailViewController()
         detail.viewModel = detailViewModel
+        detail.viewModel.coordinator = self
         detail.title = "Detail"
         return detail
     }
@@ -136,6 +137,13 @@ extension MainCoordinator {
         
         if let currentNavController = self.rootViewController.selectedViewController as? UINavigationController {
             currentNavController.pushViewController(userProfile, animated: true)
+        }
+    }
+    
+    func presentExifView(vc: UIViewController) {
+        if let currentNavController = self.rootViewController.selectedViewController as? UINavigationController {
+            currentNavController.present(vc, animated: true, completion: nil)
+            //currentNavController.pushViewController(vc, animated: true)
         }
     }
 }

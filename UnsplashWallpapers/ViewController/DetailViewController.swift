@@ -13,7 +13,7 @@ class DetailViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        detailView = DetailView(viewModel: viewModel)
+        detailView = DetailView(viewModel: viewModel, coordinator: viewModel.coordinator)
         detailView.translatesAutoresizingMaskIntoConstraints = false
         detailView.createView()
         detailView.observerBindData()
@@ -36,16 +36,9 @@ class DetailViewController: UIViewController {
         self.viewModel.navItem = self.navigationItem
         self.viewModel.createBarItem()
         self.viewModel.loadFavorite()
+        
+        viewModel.photoRespone.bind { [weak self] (_) in
+            self?.detailView.getPhotoInfo()
+        }
     }
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

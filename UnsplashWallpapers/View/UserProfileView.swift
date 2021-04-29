@@ -364,7 +364,7 @@ extension UserProfileView: UICollectionViewDelegate {
                         return
                     }
                     
-                    let photoInfo = PhotoInfo(title: res.user.name, url: res.urls, profile_image: res.user.profile_image)
+                    let photoInfo = PhotoInfo(id: res.id, title: res.user.name, url: res.urls, profile_image: res.user.profile_image)
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                     
                 case .likes:
@@ -373,7 +373,7 @@ extension UserProfileView: UICollectionViewDelegate {
                         return
                     }
                     
-                    let photoInfo = PhotoInfo(title: res.user.name, url: res.urls, profile_image: res.user.profile_image)
+                    let photoInfo = PhotoInfo(id: res.id, title: res.user.name, url: res.urls, profile_image: res.user.profile_image)
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                     break
                     

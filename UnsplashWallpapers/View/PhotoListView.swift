@@ -353,8 +353,7 @@ extension PhotoListView {
                 } else {
                     wallpapersDataSource = getWallpapersDatasource()
                 }
-                
-                //Append available sections
+                                //Append available sections
                 Section.allCases.forEach { snapshot.appendSections([$0]) }
                 
                 //Append annotations to their corresponding sections
@@ -364,6 +363,7 @@ extension PhotoListView {
                 }
                 
                 topics.results.forEach { (result) in
+                    
                     snapshot.appendItems([result], toSection: .main)
                 }
                 
@@ -453,7 +453,7 @@ extension PhotoListView: UICollectionViewDelegate {
                         return
                     }
                     
-                    let photoInfo = PhotoInfo(title: res.user?.name ?? "", url: res.urls, profile_image: profile)
+                    let photoInfo = PhotoInfo(id: res.id, title: res.user?.name ?? "", url: res.urls, profile_image: profile)
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                     
                 case .nature:
@@ -461,7 +461,7 @@ extension PhotoListView: UICollectionViewDelegate {
                         return
                     }
 
-                    let photoInfo = PhotoInfo(title: res.user?.name ?? "", url: urls, profile_image: profile)
+                    let photoInfo = PhotoInfo(id: res.id, title: res.user?.name ?? "", url: urls, profile_image: profile)
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                     
                 case .wallpapers:
@@ -470,7 +470,7 @@ extension PhotoListView: UICollectionViewDelegate {
                         return
                     }
                     
-                    let photoInfo = PhotoInfo(title: res.user?.name ?? "", url: urls, profile_image: profile)
+                    let photoInfo = PhotoInfo(id: res.id, title: res.user?.name ?? "", url: urls, profile_image: profile)
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                 case .collections:
                     break
@@ -483,7 +483,7 @@ extension PhotoListView: UICollectionViewDelegate {
                     guard let res = viewModel.respone.value?[indexPath.row], let profile = res.user?.profile_image else {
                         return
                     }
-                    let photoInfo = PhotoInfo(title: res.user?.name ?? "", url: res.urls, profile_image: profile)
+                    let photoInfo = PhotoInfo(id: res.id, title: res.user?.name ?? "", url: res.urls, profile_image: profile)
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                     
                 case .nature:
@@ -495,7 +495,7 @@ extension PhotoListView: UICollectionViewDelegate {
                         return
                     }
                     
-                    let photoInfo = PhotoInfo(title: "Nature", url: res.preview_photos[indexPath.row].urls, profile_image: owners[indexPath.row].profile_image)
+                    let photoInfo = PhotoInfo(id: res.id, title: "Nature", url: res.preview_photos[indexPath.row].urls, profile_image: owners[indexPath.row].profile_image)
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                     
                 case .wallpapers:
@@ -508,7 +508,7 @@ extension PhotoListView: UICollectionViewDelegate {
                         return
                     }
                     
-                    let photoInfo = PhotoInfo(title: "Wallpapers", url: res.preview_photos[indexPath.row].urls, profile_image: owners[indexPath.row].profile_image)
+                    let photoInfo = PhotoInfo(id: res.id, title: "Wallpapers", url: res.preview_photos[indexPath.row].urls, profile_image: owners[indexPath.row].profile_image)
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                 case .collections:
                     break
@@ -572,6 +572,7 @@ extension PhotoListView {
         }
         
         if let url = URL(string: respone.urls!.small) {
+            
             cell?.configureImage(with: url)
         }
         

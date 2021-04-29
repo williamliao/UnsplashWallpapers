@@ -403,7 +403,7 @@ extension SearchView: UICollectionViewDelegate {
                     return
                 }
                 
-                let photoInfo = PhotoInfo(title: user.name, url: urls, profile_image: user.profile_image)
+                let photoInfo = PhotoInfo(id: res.id, title: user.name, url: urls, profile_image: user.profile_image)
                 coordinator?.goToDetailView(photoInfo: photoInfo)
             case .collections:
                 

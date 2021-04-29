@@ -11,20 +11,64 @@ import Combine
 class DetailViewModel {
     // MARK:- property
     var respone: Observable<Response?> = Observable(nil)
+    var photoRespone: Observable<UnsplashPhotoInfo?> = Observable(nil)
     var isLoading: Observable<Bool> = Observable(false)
+    var error: Observable<Error?> = Observable(nil)
     var restultImage: Observable<UIImage?> = Observable(nil)
     var photoInfo: Observable<PhotoInfo?> = Observable(nil)
     
     // MARK: - component
     private var cancellable: AnyCancellable?
     private var isFavorite: Bool = false
+    var coordinator: MainCoordinator?
     
     var navItem: UINavigationItem!
     let favoriteManager = FavoriteManager.sharedInstance
+    
+    let service: UnsplashService = UnsplashService()
+    
+    var userPhotosCursor: Cursor!
+    var unsplashUserPhotosdRequest: UnsplashUserPhotoRequest!
+
 }
 
 // MARK: - Public
 extension DetailViewModel {
+    
+    func getPhotoInfo() {
+        service.networkManager = NetworkManager(endPoint: .random)
+        
+        if userPhotosCursor == nil {
+            userPhotosCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+            unsplashUserPhotosdRequest = UnsplashUserPhotoRequest(with: userPhotosCursor)
+        }
+        
+        isLoading.value = true
+        
+        guard let photoInfo = self.photoInfo.value else {
+            return
+        }
+        
+        service.getPhotoInfo(id: photoInfo.id, pageRequest: unsplashUserPhotosdRequest) { (result) in
+            self.isLoading.value = false
+            switch result {
+                case .success(let respone):
+                    
+                    self.photoRespone.value = respone
+                    
+                case .failure(let error):
+                    
+                    switch error {
+                        case .statusCodeError(let code):
+                            print("statusCodeError \(code)")
+                        default:
+                            self.error.value = error
+                    }
+            }
+        }
+    }
+    
+    
      func configureImage(with url: URL) {
         isLoading.value = true
         restultImage.value = nil

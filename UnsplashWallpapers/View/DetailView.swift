@@ -10,8 +10,13 @@ import UIKit
 class DetailView: UIView {
     let viewModel: DetailViewModel
     
-    init(viewModel: DetailViewModel) {
+    let photoExifViewModel = PhotoExifViewModel()
+    
+    var coordinator: MainCoordinator?
+    
+    init(viewModel: DetailViewModel, coordinator: MainCoordinator?) {
         self.viewModel = viewModel
+        self.coordinator = viewModel.coordinator
         super.init(frame: CGRect.zero)
     }
     
@@ -22,6 +27,7 @@ class DetailView: UIView {
     var imageView: UIImageView!
     var scrollView: UIScrollView!
     let downloadButton = UIButton(type: .custom)
+    let infoButton = UIButton(type: .custom)
     private var act = UIActivityIndicatorView(style: .large)
     
     var imageViewBottomConstraint: NSLayoutConstraint!
@@ -57,7 +63,7 @@ extension DetailView {
         scrollView.addSubview(act)
         
         createDownloadButton()
-        
+        createInfoButton()
         configureConstraints()
     }
     
@@ -71,11 +77,21 @@ extension DetailView {
         scrollView.addSubview(downloadButton)
     }
     
+    func createInfoButton() {
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 64, weight: .bold, scale: .large)
+        let tintColor = self.traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
+        let image = UIImage(systemName: "info.circle.fill", withConfiguration: largeConfig)?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+        infoButton.setImage(image, for: .normal)
+        infoButton.addTarget(self, action: #selector(infoButtonTouch), for: .touchUpInside)
+        scrollView.addSubview(infoButton)
+    }
+    
     func configureConstraints() {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         act.translatesAutoresizingMaskIntoConstraints = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         downloadButton.translatesAutoresizingMaskIntoConstraints = false
+        infoButton.translatesAutoresizingMaskIntoConstraints = false
         
         imageViewLeadingConstraint = imageView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor)
         imageViewTrailingConstraint = imageView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor)
@@ -101,6 +117,11 @@ extension DetailView {
             downloadButton.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
             downloadButton.widthAnchor.constraint(equalToConstant: 44),
             downloadButton.heightAnchor.constraint(equalToConstant: 44),
+            
+            infoButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
+            infoButton.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
+            infoButton.widthAnchor.constraint(equalToConstant: 44),
+            infoButton.heightAnchor.constraint(equalToConstant: 44),
         ])
     }
 
@@ -159,6 +180,31 @@ extension DetailView {
             self.scrollView.contentSize = self.imageView.bounds.size
             
         }
+    }
+}
+
+//MARK:- Info
+extension DetailView {
+    @objc func infoButtonTouch() {
+        viewModel.getPhotoInfo()
+    }
+    
+    func getPhotoInfo() {
+        guard let photoInfo = self.viewModel.photoRespone.value else {
+            return
+        }
+        
+
+        photoExifViewModel.userInterfaceStyle = self.traitCollection.userInterfaceStyle
+        photoExifViewModel.photoInfo = photoInfo
+        
+        let vc = PhotoExifViewController()
+        vc.viewModel = photoExifViewModel
+        //vc.photoInfo = photoInfo
+        
+        self.viewModel.photoRespone.value = nil
+        
+        coordinator?.presentExifView(vc: vc)
     }
 }
 
