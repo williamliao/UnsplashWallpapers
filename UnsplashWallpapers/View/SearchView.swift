@@ -465,6 +465,16 @@ extension SearchView: UICollectionViewDelegate {
 
 extension SearchView: SearchResultsDidSelectedDelegate {
     func searchResultsDidSelected(query: String, category: SearchResults.Category) {
+        
+        switch category {
+            case .photos:
+                searchViewController.searchBar.selectedScopeButtonIndex = 0
+            case .collections:
+                searchViewController.searchBar.selectedScopeButtonIndex = 1
+            case .users:
+                searchViewController.searchBar.selectedScopeButtonIndex = 2
+        }
+        
         viewModel.search(keyword: query, category: category)
     }
 }
