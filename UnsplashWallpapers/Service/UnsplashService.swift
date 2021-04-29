@@ -56,10 +56,10 @@ extension UnsplashService {
 
     }
     
-    func listUserCollections(username: String, pageRequest: UnsplashUserListRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
+    func listUserCollections(username: String, pageRequest: UnsplashUserListRequest, completion: @escaping (APIResult<[UserCollectionRespone], ServerError>) -> Void) {
         
-        networkManager.listUserData(username: username, endPoint:"collections" , pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
-            guard let feedResult = json as? [CollectionResponse] else { return  nil }
+        networkManager.listUserData(username: username, endPoint:"collections" , pageRequest: pageRequest, method: .get, decode: { json -> [UserCollectionRespone]? in
+            guard let feedResult = json as? [UserCollectionRespone] else { return  nil }
             return feedResult
         }, completion: completion)
 

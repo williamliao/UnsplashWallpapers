@@ -388,7 +388,7 @@ extension SearchView: UICollectionViewDelegate {
                     return
                 }
                 
-                let searchBar = searchViewController.searchBar
+               /* let searchBar = searchViewController.searchBar
                 
                 guard let scopeButtonTitles = searchViewController.searchBar.scopeButtonTitles else {
                     return
@@ -397,9 +397,9 @@ extension SearchView: UICollectionViewDelegate {
                 guard let category = SearchResults.Category(rawValue:
                                                                 scopeButtonTitles[searchBar.selectedScopeButtonIndex]) else {
                     return
-                }
+                }*/
                 
-                coordinator?.pushToCollectionListView(id: res.id, category: category)
+                coordinator?.pushToCollectionListView(id: res.id)
                 break
                 
             case .users:

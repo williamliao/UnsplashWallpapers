@@ -171,6 +171,7 @@ extension SearchViewModel {
         searchCursor = nil
         collectionsCursor = nil
         usersCursor = nil
+        searchRespone.value = nil
     }
     
     func didCloseSearchFunction() {
