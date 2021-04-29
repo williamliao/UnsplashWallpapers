@@ -7,6 +7,12 @@
 
 import UIKit
 
+enum SearchViewCurrentSource: Int, CaseIterable {
+    case photos
+    case collections
+    case user
+}
+
 class SearchView: UIView {
     
     var searchViewController: UISearchController!
@@ -17,6 +23,8 @@ class SearchView: UIView {
     
     var resultsViewModel: SearchResultsViewModel!
     var searchResultsView: SearchResultsTableView!
+    
+    var currentSource: SearchViewCurrentSource = .photos
     
     init(viewModel: SearchViewModel,coordinator: MainCoordinator? ) {
         self.viewModel = viewModel
@@ -62,6 +70,8 @@ extension SearchView {
             navItem.searchController = searchViewController
             searchViewController.hidesNavigationBarDuringPresentation = false
             navItem.hidesSearchBarWhenScrolling = false
+        } else {
+            navItem.titleView = searchViewController.searchBar
         }
     }
     
@@ -181,17 +191,19 @@ extension SearchView {
     
     @available(iOS 13.0, *)
     func applyInitialSnapshots() {
-        
-//        searchDataSource = makeSearchDataSource()
-//        collectionView.dataSource = searchDataSource
-       
+
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Results>()
         var dataSource = getSearchDatasource()
         
-        if viewModel.category == .users {
+        switch currentSource {
+        case .photos, .collections:
+            collectionView.dataSource = dataSource
+            break
+        case .user:
             dataSource = getSearchUserDatasource()
+            collectionView.dataSource = dataSource
+            break
         }
-        
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Results>()
         
         //Append available sections
         Section.allCases.forEach { snapshot.appendSections([$0]) }
@@ -360,6 +372,17 @@ extension SearchView: UISearchBarDelegate {
         let whitespaceCharacterSet = CharacterSet.whitespaces
         let strippedString =
             searchText.trimmingCharacters(in: whitespaceCharacterSet)
+        
+        switch selectedScope {
+            case 0:
+                currentSource = .photos
+            case 1:
+                currentSource = .collections
+            case 2:
+                currentSource = .user
+            default:
+                break
+        }
         
         resultsViewModel.scropeTitle.value = category
         viewModel.reset()
