@@ -155,11 +155,22 @@ extension CollectionListView: UICollectionViewDelegate {
         
         if #available(iOS 13.0, *) {
             
+            guard let res = dataSource.itemIdentifier(for: indexPath)  else {
+                return
+            }
+            
+            let photoInfo = PhotoInfo(title: res.user.name, url: res.urls, profile_image: res.user.profile_image)
+            coordinator?.goToDetailView(photoInfo: photoInfo)
             
             
         } else {
             
+            guard let res = viewModel.collectionListResponse.value?[indexPath.row] else {
+                return
+            }
             
+            let photoInfo = PhotoInfo(title: res.user.name, url: res.urls, profile_image: res.user.profile_image)
+            coordinator?.goToDetailView(photoInfo: photoInfo)
             
         }
     }

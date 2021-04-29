@@ -170,7 +170,7 @@ extension UserProfileView {
     func configureCell(collectionView: UICollectionView, respone: CollectionResponse, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier, for: indexPath) as? PhotoListCollectionViewCell
         
-        if let url = URL(string: respone.urls.thumb) {
+        if let url = URL(string: respone.urls.small) {
             cell?.configureImage(with: url)
         }
         
@@ -230,7 +230,12 @@ extension UserProfileView: UICollectionViewDelegate {
             
             switch section {
                 case .photos:
-                    break
+                    guard let res = dataSource.itemIdentifier(for: indexPath)  else {
+                        return
+                    }
+                    
+                    let photoInfo = PhotoInfo(title: res.user.name, url: res.urls, profile_image: res.user.profile_image)
+                    coordinator?.goToDetailView(photoInfo: photoInfo)
                     
                 case .likes:
                     break
