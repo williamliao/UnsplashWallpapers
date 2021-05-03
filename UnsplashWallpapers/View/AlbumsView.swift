@@ -273,7 +273,7 @@ extension AlbumsView {
     
     func configureAllAlbumCell(collectionView: UICollectionView, albumItem: AlbumItem, indexPath: IndexPath) -> AlbumItemCell? {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AlbumItemCell.reuseIdentifier, for: indexPath) as? AlbumItemCell
-        print("configureAllAlbumCell \(albumItem.albumURL)")
+
         cell?.title = albumItem.albumTitle
         cell?.featuredPhotoURL = albumItem.albumURL
         return cell
@@ -283,7 +283,7 @@ extension AlbumsView {
         guard let cell = collectionView.dequeueReusableCell(
           withReuseIdentifier: SharedAlbumItemCell.reuseIdentifier,
           for: indexPath) as? SharedAlbumItemCell else { fatalError("Could not create new cell") }
-        print("configureSharedAlbumItemCell \(albumItem.albumURL)")
+
         cell.title = albumItem.albumTitle
         cell.featuredPhotoURL = albumItem.albumURL
         return cell
@@ -293,7 +293,6 @@ extension AlbumsView {
         guard let cell = collectionView.dequeueReusableCell(
           withReuseIdentifier: FeaturedAlbumItemCell.reuseIdentifier,
           for: indexPath) as? FeaturedAlbumItemCell else { fatalError("Could not create new cell") }
-        print("configureFeaturedAlbumItemCell \(albumItem.albumURL)")
         cell.title = albumItem.albumTitle
         cell.featuredPhotoURL = albumItem.albumURL
         cell.totalNumberOfImages = albumItem.imageItems.count
