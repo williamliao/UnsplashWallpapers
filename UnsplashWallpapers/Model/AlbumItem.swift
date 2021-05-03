@@ -12,11 +12,13 @@ class AlbumItem: Codable, Hashable {
     let albumURL: URL
     let albumTitle: String
     let imageItems: [AlbumDetailItem]
+    let isLandscape: Bool
 
-    init(albumTitle: String, albumURL: URL, imageItems: [AlbumDetailItem] = []) {
+    init(albumTitle: String, albumURL: URL, isLandscape: Bool, imageItems: [AlbumDetailItem] = []) {
         self.albumURL = albumURL
         self.albumTitle = albumTitle
         self.imageItems = imageItems
+        self.isLandscape = isLandscape
     }
 
     func hash(into hasher: inout Hasher) {

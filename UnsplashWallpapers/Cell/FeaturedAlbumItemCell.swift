@@ -38,6 +38,8 @@ class FeaturedAlbumItemCell: UICollectionViewCell {
         configure()
       }
     }
+    
+    var isLandscape = false
 
     override init(frame: CGRect) {
       super.init(frame: frame)
@@ -58,11 +60,22 @@ extension FeaturedAlbumItemCell {
 
     featuredPhotoView.translatesAutoresizingMaskIntoConstraints = false
     if let featuredPhotoURL = featuredPhotoURL {
-      //featuredPhotoView.image = UIImage(contentsOfFile: featuredPhotoURL.path)
-        self.configureImage(with: featuredPhotoURL)
+    
+        if isLandscape {
+            self.configureImage(with: featuredPhotoURL)
+        } else {
+            let adjustString = featuredPhotoURL.absoluteString.replacingOccurrences(of: "fit=max", with: "&ar=16:9&fit=crop")
+            
+            guard let url = URL(string: adjustString) else {
+                return
+            }
+            
+            self.configureImage(with: url)
+        }
     }
     featuredPhotoView.layer.cornerRadius = 4
     featuredPhotoView.clipsToBounds = true
+    //featuredPhotoView.contentMode = .scaleAspectFit
     contentContainer.addSubview(featuredPhotoView)
 
     titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -161,6 +174,7 @@ extension FeaturedAlbumItemCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        featuredPhotoURL = nil
         featuredPhotoView.image = nil
         cancellable?.cancel()
     }

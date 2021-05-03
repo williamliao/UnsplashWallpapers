@@ -246,6 +246,41 @@ class NetworkManager {
         task?.resume()
     }
     
+    func queryWithRandom<T: Decodable>(query: String, pageRequest: UnsplashPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+        
+        var components = prepareURLComponents()
+        
+        components?.queryItems = [
+            URLQueryItem(name: "query", value: query),
+            URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey),
+            URLQueryItem(name: "orientation", value: "landscape"),
+            URLQueryItem(name: "count", value: String(pageRequest.cursor.page))
+        ]
+        
+        guard let url = components?.url else {
+            return
+        }
+        
+        let mutableRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: timeoutInterval)
+        
+        let task = decodingTask(with: mutableRequest, decodingType: T.self) { (json , error) in
+            
+            DispatchQueue.main.async {
+                guard let json = json else {
+                    if let error = error {
+                        completion(APIResult.failure(error))
+                    }
+                    return
+                }
+
+                if let value = decode(json) {
+                    completion(.success(value))
+                }
+            }
+        }
+        task?.resume()
+    }
+    
     func query<T: Decodable>(query: String, pageRequest: UnsplashSearchPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
         
         var components = prepareURLComponents()
@@ -254,7 +289,8 @@ class NetworkManager {
             URLQueryItem(name: "query", value: query),
             URLQueryItem(name: "per_page", value: String(pageRequest.cursor.perPage)),
             URLQueryItem(name: "page", value: String(pageRequest.cursor.page)),
-            URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey)
+            URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey),
+            URLQueryItem(name: "orientation", value: "landscape"),
         ]
         
         guard let url = components?.url else {

@@ -18,7 +18,7 @@ class AlbumsViewController: UIViewController {
         albumsView = AlbumsView(viewModel: viewModel, coordinator: viewModel.coordinator)
         albumsView.translatesAutoresizingMaskIntoConstraints = false
         albumsView.configureCollectionView()
-        //albumsView.configureDataSource()
+        albumsView.configureDataSource()
         
         view.backgroundColor = .systemBackground
         
@@ -35,14 +35,47 @@ class AlbumsViewController: UIViewController {
          
         ])
         
-        //self.viewModel.getAllAlbums()
-        //self.viewModel.getSharedAlbums()
-        self.viewModel.getFeaturedAlbums()
+        let dispatchQueue = DispatchQueue(label: "com.prit.TestGCD.DispatchQueue")
+
+        let semaphore = DispatchSemaphore(value: 2)
+            
+        dispatchQueue.async {
+            let result = semaphore.wait(timeout: DispatchTime.distantFuture)
+            
+            Thread.sleep(forTimeInterval: 2)
+            self.viewModel.getFeaturedAlbums()
+            semaphore.signal()
+        }
+            
+        dispatchQueue.async {
+            semaphore.wait(timeout: DispatchTime.distantFuture)
+            Thread.sleep(forTimeInterval: 2)
+            self.viewModel.getSharedAlbums()
+            semaphore.signal()
+        }
+            
+        dispatchQueue.async {
+            self.viewModel.getAllAlbums()
+            semaphore.signal()
+        }
         
-        viewModel.featuredAlbumsRespone.bind { [weak self] (_) in
+//        viewModel.featuredAlbumsRespone.bind { [weak self] (_) in
+//
+//            self?.albumsView.configureDataSource()
+//
+//        }
+//
+//        viewModel.sharedAlbumsRespone.bind { [weak self] (_) in
+//
+//            self?.albumsView.configureDataSource()
+//
+//        }
+        
+        viewModel.allAlbumsRespone.bind { [weak self] (_) in
             
             self?.albumsView.configureDataSource()
             
         }
+        
     }
 }

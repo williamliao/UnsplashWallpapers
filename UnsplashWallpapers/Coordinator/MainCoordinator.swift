@@ -164,4 +164,17 @@ extension MainCoordinator {
             //currentNavController.pushViewController(vc, animated: true)
         }
     }
+    
+    func goToAlbumDetailView(albumDetailItems: [AlbumDetailItem]) {
+        
+        let albumDetailVC = AlbumDetailViewController()
+        let albumDetailViewModel = AlbumDetailViewModel()
+        albumDetailViewModel.detailRespone.value = albumDetailItems
+        
+        albumDetailVC.viewModel = albumDetailViewModel
+        
+        if let currentNavController = self.rootViewController.selectedViewController as? UINavigationController {
+            currentNavController.pushViewController(albumDetailVC, animated: true)
+        }
+    }
 }

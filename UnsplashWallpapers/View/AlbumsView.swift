@@ -64,11 +64,50 @@ extension AlbumsView {
         collectionView.dataSource = dataSource
     }
     
+    func configureDataSource() {
+      dataSource = UICollectionViewDiffableDataSource
+        <Section, AlbumItem>(collectionView: albumsCollectionView) {
+          (collectionView: UICollectionView, indexPath: IndexPath, albumItem: AlbumItem) -> UICollectionViewCell? in
+
+          let sectionType = Section.allCases[indexPath.section]
+          switch sectionType {
+          case .featuredAlbums:
+            let cell = self.configureFeaturedAlbumItemCell(collectionView: collectionView, albumItem: albumItem, indexPath: indexPath)
+            return cell
+
+          case .sharedAlbums:
+            let cell = self.configureSharedAlbumItemCell(collectionView: collectionView, albumItem: albumItem, indexPath: indexPath)
+            return cell
+
+          case .myAlbums:
+            let cell = self.configureAllAlbumCell(collectionView: collectionView, albumItem: albumItem, indexPath: indexPath)
+            return cell
+
+          }
+      }
+      
+        dataSource.supplementaryViewProvider = { (
+          collectionView: UICollectionView,
+          kind: String,
+          indexPath: IndexPath) -> UICollectionReusableView? in
+
+          guard let supplementaryView = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: AlbumHeaderCollectionReusableView.reuseIdentifier,
+            for: indexPath) as? AlbumHeaderCollectionReusableView else { fatalError("Cannot create header view") }
+
+          supplementaryView.label.text = Section.allCases[indexPath.section].rawValue
+          return supplementaryView
+        }
+
+      let snapshot = snapshotForCurrentState()
+      dataSource.apply(snapshot, animatingDifferences: false)
+    }
+    
     func makeDataSource() -> UICollectionViewDiffableDataSource<Section, AlbumItem> {
         
         return UICollectionViewDiffableDataSource<Section, AlbumItem>(collectionView: albumsCollectionView) { (collectionView, indexPath, albumItem) -> UICollectionViewCell? in
-            
-            
+           
             let sectionType = Section.allCases[indexPath.section]
             switch sectionType {
             case .featuredAlbums:
@@ -88,8 +127,8 @@ extension AlbumsView {
         
     }
     
-    func configureDataSource() {
-        dataSource = makeDataSource()
+    /*func configureDataSource() {
+        
         
         dataSource.supplementaryViewProvider = { (
           collectionView: UICollectionView,
@@ -107,13 +146,13 @@ extension AlbumsView {
         
         let snapshot = snapshotForCurrentState()
         dataSource.apply(snapshot, animatingDifferences: false)
-    }
+    }*/
   
     func generateLayout() -> UICollectionViewLayout {
       let layout = UICollectionViewCompositionalLayout { (sectionIndex: Int,
         layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
         let isWideView = layoutEnvironment.container.effectiveContentSize.width > 500
-
+        
         let sectionLayoutKind = Section.allCases[sectionIndex]
         switch (sectionLayoutKind) {
         case .featuredAlbums: return self.generateFeaturedAlbumsLayout(isWide: isWideView)
@@ -234,7 +273,7 @@ extension AlbumsView {
     
     func configureAllAlbumCell(collectionView: UICollectionView, albumItem: AlbumItem, indexPath: IndexPath) -> AlbumItemCell? {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AlbumItemCell.reuseIdentifier, for: indexPath) as? AlbumItemCell
-        
+        print("configureAllAlbumCell \(albumItem.albumURL)")
         cell?.title = albumItem.albumTitle
         cell?.featuredPhotoURL = albumItem.albumURL
         return cell
@@ -244,7 +283,7 @@ extension AlbumsView {
         guard let cell = collectionView.dequeueReusableCell(
           withReuseIdentifier: SharedAlbumItemCell.reuseIdentifier,
           for: indexPath) as? SharedAlbumItemCell else { fatalError("Could not create new cell") }
-        
+        print("configureSharedAlbumItemCell \(albumItem.albumURL)")
         cell.title = albumItem.albumTitle
         cell.featuredPhotoURL = albumItem.albumURL
         return cell
@@ -254,10 +293,11 @@ extension AlbumsView {
         guard let cell = collectionView.dequeueReusableCell(
           withReuseIdentifier: FeaturedAlbumItemCell.reuseIdentifier,
           for: indexPath) as? FeaturedAlbumItemCell else { fatalError("Could not create new cell") }
-        
+        print("configureFeaturedAlbumItemCell \(albumItem.albumURL)")
         cell.title = albumItem.albumTitle
         cell.featuredPhotoURL = albumItem.albumURL
         cell.totalNumberOfImages = albumItem.imageItems.count
+        cell.isLandscape = albumItem.isLandscape
         return cell
     }
 }
@@ -266,9 +306,8 @@ extension AlbumsView: UICollectionViewDelegate {
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
     
+    coordinator?.goToAlbumDetailView(albumDetailItems: item.imageItems)
     
-    
-    //let albumDetailVC = AlbumDetailViewController(withPhotosFromDirectory: item.albumURL)
     //navigationController?.pushViewController(albumDetailVC, animated: true)
   }
 }

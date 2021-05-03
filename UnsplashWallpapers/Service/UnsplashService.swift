@@ -99,6 +99,14 @@ extension UnsplashService {
         }, completion: completion)
 
     }
+    
+    func fetchRandomWithQuery(query: String, pageRequest: UnsplashPagedRequest, completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
+        
+        networkManager.queryWithRandom(query: query, pageRequest: pageRequest, method: .get, decode: { json -> [Response]? in
+            guard let feedResult = json as? [Response] else { return  nil }
+            return feedResult
+        }, completion: completion)
+    }
 }
 
 extension UnsplashService {
