@@ -50,6 +50,15 @@
 		C89A72C92603521E003E188F /* EndPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89A72C82603521E003E188F /* EndPoint.swift */; };
 		C89A72CE260352FC003E188F /* StaticURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89A72CD260352FC003E188F /* StaticURL.swift */; };
 		C89A72D32603532E003E188F /* UnsplashService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89A72D22603532E003E188F /* UnsplashService.swift */; };
+		C89D68EB263F95C100CA8617 /* AlbumsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89D68EA263F95C100CA8617 /* AlbumsViewController.swift */; };
+		C89D68F0263F95CE00CA8617 /* AlbumsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89D68EF263F95CE00CA8617 /* AlbumsView.swift */; };
+		C89D68F5263F95DB00CA8617 /* AlbumsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89D68F4263F95DB00CA8617 /* AlbumsViewModel.swift */; };
+		C89D68FA263F967000CA8617 /* AlbumItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89D68F9263F967000CA8617 /* AlbumItem.swift */; };
+		C89D68FF263F977300CA8617 /* AlbumItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89D68FE263F977300CA8617 /* AlbumItemCell.swift */; };
+		C89D6904263F978A00CA8617 /* FeaturedAlbumItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89D6903263F978A00CA8617 /* FeaturedAlbumItemCell.swift */; };
+		C89D6909263F979A00CA8617 /* SharedAlbumItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89D6908263F979A00CA8617 /* SharedAlbumItemCell.swift */; };
+		C89D690E263F9CF900CA8617 /* UnsplashAlbumsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89D690D263F9CF800CA8617 /* UnsplashAlbumsRequest.swift */; };
+		C89D6913263FACD100CA8617 /* AlbumHeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89D6912263FACD100CA8617 /* AlbumHeaderCollectionReusableView.swift */; };
 		C8A8FD2D263168A000C38FAF /* FavoriteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A8FD2C263168A000C38FAF /* FavoriteViewController.swift */; };
 		C8A8FD32263168B200C38FAF /* FavoriteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A8FD31263168B200C38FAF /* FavoriteView.swift */; };
 		C8A8FD3C2631694600C38FAF /* FavoriteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A8FD3B2631694600C38FAF /* FavoriteViewModel.swift */; };
@@ -169,6 +178,15 @@
 		C89A72C82603521E003E188F /* EndPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndPoint.swift; sourceTree = "<group>"; };
 		C89A72CD260352FC003E188F /* StaticURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticURL.swift; sourceTree = "<group>"; };
 		C89A72D22603532E003E188F /* UnsplashService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsplashService.swift; sourceTree = "<group>"; };
+		C89D68EA263F95C100CA8617 /* AlbumsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsViewController.swift; sourceTree = "<group>"; };
+		C89D68EF263F95CE00CA8617 /* AlbumsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsView.swift; sourceTree = "<group>"; };
+		C89D68F4263F95DB00CA8617 /* AlbumsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsViewModel.swift; sourceTree = "<group>"; };
+		C89D68F9263F967000CA8617 /* AlbumItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumItem.swift; sourceTree = "<group>"; };
+		C89D68FE263F977300CA8617 /* AlbumItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumItemCell.swift; sourceTree = "<group>"; };
+		C89D6903263F978A00CA8617 /* FeaturedAlbumItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturedAlbumItemCell.swift; sourceTree = "<group>"; };
+		C89D6908263F979A00CA8617 /* SharedAlbumItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedAlbumItemCell.swift; sourceTree = "<group>"; };
+		C89D690D263F9CF800CA8617 /* UnsplashAlbumsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsplashAlbumsRequest.swift; sourceTree = "<group>"; };
+		C89D6912263FACD100CA8617 /* AlbumHeaderCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumHeaderCollectionReusableView.swift; sourceTree = "<group>"; };
 		C8A8FD2C263168A000C38FAF /* FavoriteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteViewController.swift; sourceTree = "<group>"; };
 		C8A8FD31263168B200C38FAF /* FavoriteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteView.swift; sourceTree = "<group>"; };
 		C8A8FD3B2631694600C38FAF /* FavoriteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteViewModel.swift; sourceTree = "<group>"; };
@@ -353,6 +371,7 @@
 				C8AE36EF26390D9600AF57C4 /* UserProfileInfo.swift */,
 				C8AC46FF263A50D500178411 /* UserCollectionRespone.swift */,
 				C8AC470E263A889A00178411 /* UnsplashPhotoInfo.swift */,
+				C89D68F9263F967000CA8617 /* AlbumItem.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -369,6 +388,7 @@
 				C8AE36D3263901AB00AF57C4 /* UserProfileViewModel.swift */,
 				C8AE370A2639692C00AF57C4 /* CollectionListViewModel.swift */,
 				C8AC4719263AB08A00178411 /* PhotoExifViewModel.swift */,
+				C89D68F4263F95DB00CA8617 /* AlbumsViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -385,6 +405,7 @@
 				C8AE36EA26390C5300AF57C4 /* UserProfileHeaderView.swift */,
 				C8AE37052639690F00AF57C4 /* CollectionListView.swift */,
 				C8AC4709263A825400178411 /* PhotoExifView.swift */,
+				C89D68EF263F95CE00CA8617 /* AlbumsView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -399,6 +420,7 @@
 				C8AE36D8263901CC00AF57C4 /* UserProfileViewController.swift */,
 				C8AE370F2639693F00AF57C4 /* CollectionListViewController.swift */,
 				C8AC4713263A8B6500178411 /* PhotoExifViewController.swift */,
+				C89D68EA263F95C100CA8617 /* AlbumsViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -431,6 +453,7 @@
 				C8AE36BF2638F1BC00AF57C4 /* UnsplashCollectionRequest.swift */,
 				C8AE36C92639005400AF57C4 /* UnsplashUserListRequest.swift */,
 				C8AC4704263A63BC00178411 /* UnsplashUserPhotoRequest.swift */,
+				C89D690D263F9CF800CA8617 /* UnsplashAlbumsRequest.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -443,6 +466,10 @@
 				C8D6891B2637BC2B008F8B4D /* SearchResultsTableViewCell.swift */,
 				C8D689352637BF72008F8B4D /* SearchResultsHeaderView.swift */,
 				C8D8687F2637F55F00FF672D /* UsersListCollectionViewCell.swift */,
+				C89D68FE263F977300CA8617 /* AlbumItemCell.swift */,
+				C89D6903263F978A00CA8617 /* FeaturedAlbumItemCell.swift */,
+				C89D6908263F979A00CA8617 /* SharedAlbumItemCell.swift */,
+				C89D6912263FACD100CA8617 /* AlbumHeaderCollectionReusableView.swift */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -603,17 +630,22 @@
 				C89A725626034972003E188F /* PhotoListView.swift in Sources */,
 				C8BF2ABB2636994500BE7C51 /* Current_user_contributions.swift in Sources */,
 				C8A8FD412631695A00C38FAF /* Favorite.swift in Sources */,
+				C89D68FA263F967000CA8617 /* AlbumItem.swift in Sources */,
 				C8BF2AB1263696FF00BE7C51 /* Topic.swift in Sources */,
 				C8AC4714263A8B6500178411 /* PhotoExifViewController.swift in Sources */,
 				C89A727526034C89003E188F /* Cover_photo.swift in Sources */,
+				C89D68EB263F95C100CA8617 /* AlbumsViewController.swift in Sources */,
 				C8BF2AD52636B42C00BE7C51 /* SearchViewModel.swift in Sources */,
+				C89D68F5263F95DB00CA8617 /* AlbumsViewModel.swift in Sources */,
 				C8BF2ACD263699EE00BE7C51 /* Preview_Photos.swift in Sources */,
+				C89D6913263FACD100CA8617 /* AlbumHeaderCollectionReusableView.swift in Sources */,
 				C8AE36CF2639019800AF57C4 /* UserProfileView.swift in Sources */,
 				C89A723D260348BD003E188F /* Coordinator.swift in Sources */,
 				C8C91ED32608959A001EAA59 /* DetailViewModel.swift in Sources */,
 				C8D689212637BC3A008F8B4D /* SearchResultsViewModel.swift in Sources */,
 				C89A72D32603532E003E188F /* UnsplashService.swift in Sources */,
 				C8BF2AB62636983900BE7C51 /* Owners.swift in Sources */,
+				C89D6904263F978A00CA8617 /* FeaturedAlbumItemCell.swift in Sources */,
 				C8AE36F52639107400AF57C4 /* ImageDownLoad.swift in Sources */,
 				C8CD0D2C2604818D009B12AA /* UnsplashUser.swift in Sources */,
 				C89A726B26034C55003E188F /* Categories.swift in Sources */,
@@ -637,9 +669,11 @@
 				C89A729326034D38003E188F /* Profile_image.swift in Sources */,
 				C8A8FD4626316CF300C38FAF /* FavoriteTableViewCell.swift in Sources */,
 				C89A727026034C6C003E188F /* Category.swift in Sources */,
+				C89D6909263F979A00CA8617 /* SharedAlbumItemCell.swift in Sources */,
 				C89A72A726034D9D003E188F /* Source.swift in Sources */,
 				C89A72352603489C003E188F /* ImageLoader.swift in Sources */,
 				C8AE36CA2639005400AF57C4 /* UnsplashUserListRequest.swift in Sources */,
+				C89D68FF263F977300CA8617 /* AlbumItemCell.swift in Sources */,
 				C89A72AC26034DB0003E188F /* Tags.swift in Sources */,
 				C89A72342603489C003E188F /* ImageCache.swift in Sources */,
 				C89A728926034D03003E188F /* Location.swift in Sources */,
@@ -650,7 +684,9 @@
 				C8D6893B2637E2E8008F8B4D /* SearchResults.swift in Sources */,
 				C8AC4705263A63BC00178411 /* UnsplashUserPhotoRequest.swift in Sources */,
 				C89A72362603489C003E188F /* Observable.swift in Sources */,
+				C89D68F0263F95CE00CA8617 /* AlbumsView.swift in Sources */,
 				C89A72512603495E003E188F /* PhotoListCollectionViewCell.swift in Sources */,
+				C89D690E263F9CF900CA8617 /* UnsplashAlbumsRequest.swift in Sources */,
 				C8C91EBF260884F1001EAA59 /* Cursor.swift in Sources */,
 				C8AE36FA2639138100AF57C4 /* ImageCombineDownloader.swift in Sources */,
 				C89A728426034CE1003E188F /* Links.swift in Sources */,

@@ -34,6 +34,7 @@ struct Results: Codable, Identifiable {
     let promoted_at: String?
     let sponsorship: Sponsorship?
     let cover_photo: Cover_photo?
+    let preview_photos: [Preview_Photos]?
     let username: String?
     let name: String?
     let first_name: String?
@@ -94,6 +95,7 @@ struct Results: Codable, Identifiable {
         case for_hire
         case followed_by_user
         case photos
+        case preview_photos
     }
 }
 

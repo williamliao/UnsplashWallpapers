@@ -18,6 +18,11 @@ class MainCoordinator: Coordinator {
         self.rootViewController = rootViewController
     }
     
+    lazy var albumsViewModel: AlbumsViewModel! = {
+        let viewdModel = AlbumsViewModel()
+        return viewdModel
+    }()
+    
     lazy var photoListViewModel: PhotoListViewModel! = {
         let viewdModel = PhotoListViewModel()
         return viewdModel
@@ -39,11 +44,12 @@ class MainCoordinator: Coordinator {
     }()
 
     override func start() {
-        let main = createPhotoListView()
+        let albums = createAlbumsView()
+        let photos = createPhotoListView()
         let fav = createFavoriteView()
         let search = createSearchView()
 
-        self.rootViewController.setViewControllers([main, search, fav], animated: false)
+        self.rootViewController.setViewControllers([albums, photos, search, fav], animated: false)
         
         if #available(iOS 13.0, *) {
             
@@ -52,11 +58,14 @@ class MainCoordinator: Coordinator {
             self.rootViewController.tabBar.items?[0].image = UIImage(systemName: "square")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
             self.rootViewController.tabBar.items?[0].selectedImage = UIImage(systemName: "square.fill")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
             
-            self.rootViewController.tabBar.items?[1].image = UIImage(systemName: "magnifyingglass")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
-            self.rootViewController.tabBar.items?[1].selectedImage = UIImage(systemName: "magnifyingglass.circle.fill")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            self.rootViewController.tabBar.items?[1].image = UIImage(systemName: "square")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            self.rootViewController.tabBar.items?[1].selectedImage = UIImage(systemName: "square.fill")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            
+            self.rootViewController.tabBar.items?[2].image = UIImage(systemName: "magnifyingglass")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            self.rootViewController.tabBar.items?[2].selectedImage = UIImage(systemName: "magnifyingglass.circle.fill")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
      
-            self.rootViewController.tabBar.items?[2].image = UIImage(systemName: "heart")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
-            self.rootViewController.tabBar.items?[2].selectedImage = UIImage(systemName: "heart.fill")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            self.rootViewController.tabBar.items?[3].image = UIImage(systemName: "heart")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            self.rootViewController.tabBar.items?[3].selectedImage = UIImage(systemName: "heart.fill")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
         } else {
             // Fallback on earlier versions
         }
@@ -64,6 +73,15 @@ class MainCoordinator: Coordinator {
     
     override func finish() {
         
+    }
+    
+    func createAlbumsView() -> UINavigationController {
+        let albums = AlbumsViewController()
+        albums.title = "Albums"
+        albums.viewModel = albumsViewModel
+        albums.viewModel.coordinator = self
+        let nav = UINavigationController(rootViewController: albums)
+        return nav
     }
     
     func createPhotoListView() -> UINavigationController {

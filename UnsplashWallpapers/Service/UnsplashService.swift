@@ -30,10 +30,18 @@ extension UnsplashService {
         }, completion: completion)
     }
     
-    func topic(keyword: String, pageRequest: UnsplashTopicRequest, completion: @escaping (APIResult<[Topic], ServerError>) -> Void) {
+    func topic(id: String, pageRequest: UnsplashTopicRequest, completion: @escaping (APIResult<Topic, ServerError>) -> Void) {
         
-        networkManager.topic(query: keyword, pageRequest: pageRequest, method: .get, decode: { json -> [Topic]? in
-            guard let feedResult = json as? [Topic] else { return  nil }
+        networkManager.topic(id: id, pageRequest: pageRequest, method: .get, decode: { json -> Topic? in
+            guard let feedResult = json as? Topic else { return  nil }
+            return feedResult
+        }, completion: completion)
+    }
+    
+    func topicPhotos(id: String, pageRequest: UnsplashTopicRequest, completion: @escaping (APIResult<Topic, ServerError>) -> Void) {
+        
+        networkManager.topic(id: id, pageRequest: pageRequest, method: .get, decode: { json -> Topic? in
+            guard let feedResult = json as? Topic else { return  nil }
             return feedResult
         }, completion: completion)
     }
@@ -78,6 +86,15 @@ extension UnsplashService {
         
         networkManager.getPhotoInfo(id: id, pageRequest: pageRequest, method: .get, decode: { json -> UnsplashPhotoInfo? in
             guard let feedResult = json as? UnsplashPhotoInfo else { return  nil }
+            return feedResult
+        }, completion: completion)
+
+    }
+    
+    func getAllAlbum(query: String, pageRequest: UnsplashAlbumsRequest, completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
+        
+        networkManager.getAlbum(query: query, pageRequest: pageRequest, method: .get, decode: { json -> [Response]? in
+            guard let feedResult = json as? [Response] else { return  nil }
             return feedResult
         }, completion: completion)
 
