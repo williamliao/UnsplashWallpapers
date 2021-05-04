@@ -21,8 +21,7 @@ class PhotoListViewController: UIViewController {
         photoListView = PhotoListView(viewModel: viewModel, coordinator: viewModel.coordinator)
         photoListView.configureCollectionView(Add: self.view)
         photoListView.createSegmentView(view: self.view)
-        //photoListView.createSearchBarItem(navItem: self.navigationItem)
-        
+
         if isCollectionMode {
             photoListView.section = .collections
         }
@@ -66,16 +65,8 @@ class PhotoListViewController: UIViewController {
             
             print("error", error)
         }
-        
-//        let searchController = SearchViewController(viewModel: viewModel)
-//
-//        if #available(iOS 11.0, *) {
-//
-//            self.navigationItem.searchController = searchController
-//            searchController.hidesNavigationBarDuringPresentation = false
-//        }
-        
-        //viewModel.fetchData()
+
+        viewModel.fetchData()
     }
     
 }
