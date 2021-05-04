@@ -293,6 +293,9 @@ extension AlbumsView {
 
         cell.title = albumItem.albumTitle
         cell.featuredPhotoURL = albumItem.albumURL
+        cell.userProfileURL = albumItem.ownerURL
+        cell.ownerLabel.text = albumItem.ownerTitle
+        cell.titleLabel.text = albumItem.albumTitle
         return cell
     }
     

@@ -19,6 +19,7 @@ class SharedAlbumItemCell: UICollectionViewCell {
     let contentContainer = UIView()
     
     private let downloader = ImageCombineDownloader()
+    private let downloader2 = ImageCombineDownloader()
     private var act = UIActivityIndicatorView(style: .large)
     
     var title: String? {
@@ -28,6 +29,12 @@ class SharedAlbumItemCell: UICollectionViewCell {
     }
 
     var featuredPhotoURL: URL? {
+      didSet {
+        configure()
+      }
+    }
+    
+    var userProfileURL: URL? {
       didSet {
         configure()
       }
@@ -52,29 +59,28 @@ extension SharedAlbumItemCell {
 
     featuredPhotoView.translatesAutoresizingMaskIntoConstraints = false
     if let featuredPhotoURL = featuredPhotoURL {
-      //featuredPhotoView.image = UIImage(contentsOfFile: featuredPhotoURL.path)
         self.configureImage(with: featuredPhotoURL)
-        
+    }
+    
+    if let userProfileURL = userProfileURL {
+        self.configureImage2(with: userProfileURL)
     }
     featuredPhotoView.layer.cornerRadius = 4
     featuredPhotoView.clipsToBounds = true
     contentContainer.addSubview(featuredPhotoView)
 
     titleLabel.translatesAutoresizingMaskIntoConstraints = false
-    //titleLabel.text = title
     titleLabel.font = UIFont.preferredFont(forTextStyle: .subheadline)
     titleLabel.adjustsFontForContentSizeCategory = true
     contentContainer.addSubview(titleLabel)
 
     ownerLabel.translatesAutoresizingMaskIntoConstraints = false
-    //ownerLabel.text = "From \(owner.name())"
     ownerLabel.font = UIFont.preferredFont(forTextStyle: .subheadline)
     ownerLabel.adjustsFontForContentSizeCategory = true
     ownerLabel.textColor = .placeholderText
     contentContainer.addSubview(ownerLabel)
 
     ownerAvatar.translatesAutoresizingMaskIntoConstraints = false
-    //ownerAvatar.image = owner.avatar()
     ownerAvatar.layer.cornerRadius = 15
     ownerAvatar.layer.borderColor = UIColor.systemBackground.cgColor
     ownerAvatar.layer.borderWidth = 1
@@ -126,6 +132,12 @@ extension SharedAlbumItemCell {
         }
     }
     
+    func configureImage2(with url: URL) {
+        downloader2.download(url: url) { [weak self] (image) in
+            self?.showImage2(image: image)
+        }
+    }
+    
     private func showImage(image: UIImage?) {
         DispatchQueue.main.async {
            
@@ -134,6 +146,17 @@ extension SharedAlbumItemCell {
             }
 
             self.featuredPhotoView.image = image
+        }
+    }
+    
+    private func showImage2(image: UIImage?) {
+        DispatchQueue.main.async {
+           
+            guard let image = image else {
+                return
+            }
+
+            self.ownerAvatar.image = image
         }
     }
     
@@ -150,5 +173,6 @@ extension SharedAlbumItemCell {
         super.prepareForReuse()
         featuredPhotoView.image = nil
         downloader.cancel()
+        downloader2.cancel()
     }
 }

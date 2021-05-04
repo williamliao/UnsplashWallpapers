@@ -51,7 +51,7 @@ extension AlbumsViewModel {
                         
                         var albumDetailItems:[AlbumDetailItem] = [AlbumDetailItem]()
                         
-                        guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name, let profile = respone.results[index].user?.profile_image  else {
+                        guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name, let profile = respone.results[index].user?.profile_image, let owner = respone.results[index].user?.profile_image.small  else {
                             return
                         }
                         
@@ -79,7 +79,11 @@ extension AlbumsViewModel {
                             isLandscape = true
                         }
                         
-                        let albumItem = AlbumItem(albumTitle: title, albumURL: url, isLandscape: isLandscape, imageItems: albumDetailItems)
+                        guard let ownerURL = URL(string: owner) else {
+                            return
+                        }
+                        
+                        let albumItem = AlbumItem(albumTitle: "Cats", albumURL: url, ownerTitle: title, ownerURL: ownerURL, isLandscape: isLandscape, imageItems: albumDetailItems)
                         
                         self.allAlbumsRespone.value.append(albumItem)
                         
@@ -120,7 +124,7 @@ extension AlbumsViewModel {
                         
                         var albumDetailItems:[AlbumDetailItem] = [AlbumDetailItem]()
                         
-                        guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name, let profile = respone.results[index].user?.profile_image  else {
+                        guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name, let profile = respone.results[index].user?.profile_image, let owner = respone.results[index].user?.profile_image.small  else {
                             return
                         }
                         
@@ -148,7 +152,11 @@ extension AlbumsViewModel {
                             isLandscape = true
                         }
                         
-                        let albumItem = AlbumItem(albumTitle: title, albumURL: url, isLandscape: isLandscape, imageItems: albumDetailItems)
+                        guard let ownerURL = URL(string: owner) else {
+                            return
+                        }
+                        
+                        let albumItem = AlbumItem(albumTitle: "Nature", albumURL: url, ownerTitle: title, ownerURL: ownerURL, isLandscape: isLandscape, imageItems: albumDetailItems)
                         
                         self.featuredAlbumsRespone.value.append(albumItem)
                     }
@@ -188,7 +196,7 @@ extension AlbumsViewModel {
                         
                         var albumDetailItems:[AlbumDetailItem] = [AlbumDetailItem]()
                         
-                        guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name, let profile = respone.results[index].user?.profile_image  else {
+                        guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name, let profile = respone.results[index].user?.profile_image, let owner = respone.results[index].user?.profile_image.small  else {
                             return
                         }
                         
@@ -216,7 +224,11 @@ extension AlbumsViewModel {
                             isLandscape = true
                         }
                         
-                        let albumItem = AlbumItem(albumTitle: title, albumURL: url, isLandscape: isLandscape, imageItems: albumDetailItems)
+                        guard let ownerURL = URL(string: owner) else {
+                            return
+                        }
+                        
+                        let albumItem = AlbumItem(albumTitle: "Wallpapers", albumURL: url, ownerTitle: title, ownerURL: ownerURL, isLandscape: isLandscape, imageItems: albumDetailItems)
                         
                         self.sharedAlbumsRespone.value.append(albumItem)
                         

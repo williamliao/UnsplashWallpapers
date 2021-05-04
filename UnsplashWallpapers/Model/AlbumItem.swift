@@ -10,15 +10,19 @@ import Foundation
 class AlbumItem: Codable, Hashable {
     var identifier = UUID()
     let albumURL: URL
+    let ownerTitle: String
+    let ownerURL: URL
     let albumTitle: String
     let imageItems: [AlbumDetailItem]
     let isLandscape: Bool
 
-    init(albumTitle: String, albumURL: URL, isLandscape: Bool, imageItems: [AlbumDetailItem] = []) {
+    init(albumTitle: String, albumURL: URL, ownerTitle: String, ownerURL: URL, isLandscape: Bool, imageItems: [AlbumDetailItem] = []) {
         self.albumURL = albumURL
         self.albumTitle = albumTitle
         self.imageItems = imageItems
         self.isLandscape = isLandscape
+        self.ownerURL = ownerURL
+        self.ownerTitle = ownerTitle
     }
 
     func hash(into hasher: inout Hasher) {
