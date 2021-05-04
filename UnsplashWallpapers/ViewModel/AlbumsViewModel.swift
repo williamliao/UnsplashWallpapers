@@ -51,7 +51,7 @@ extension AlbumsViewModel {
                         
                         var albumDetailItems:[AlbumDetailItem] = [AlbumDetailItem]()
                         
-                        guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name  else {
+                        guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name, let profile = respone.results[index].user?.profile_image  else {
                             return
                         }
                         
@@ -66,8 +66,10 @@ extension AlbumsViewModel {
                                 return
                             }
                             
-                            if !albumDetailItems.contains(AlbumDetailItem(photoURL: detailItemUrl, thumbnailURL: detailItemUrl)) {
-                                albumDetailItems.append(AlbumDetailItem(photoURL: detailItemUrl, thumbnailURL: detailItemUrl))
+                            let albumDetailItem = AlbumDetailItem(identifier: preview_photos[index].id, photoURL: detailItemUrl, thumbnailURL: detailItemUrl, profile_image: profile, urls: preview_photos[index].urls)
+                            
+                            if !albumDetailItems.contains(albumDetailItem) {
+                                albumDetailItems.append(albumDetailItem)
                             }
                             
                         }
@@ -116,7 +118,7 @@ extension AlbumsViewModel {
                         
                         var albumDetailItems:[AlbumDetailItem] = [AlbumDetailItem]()
                         
-                        guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name  else {
+                        guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name, let profile = respone.results[index].user?.profile_image  else {
                             return
                         }
                         
@@ -131,8 +133,10 @@ extension AlbumsViewModel {
                                 return
                             }
                             
-                            if !albumDetailItems.contains(AlbumDetailItem(photoURL: detailItemUrl, thumbnailURL: detailItemUrl)) {
-                                albumDetailItems.append(AlbumDetailItem(photoURL: detailItemUrl, thumbnailURL: detailItemUrl))
+                            let albumDetailItem = AlbumDetailItem(identifier: preview_photos[index].id, photoURL: detailItemUrl, thumbnailURL: detailItemUrl, profile_image: profile, urls: preview_photos[index].urls)
+                            
+                            if !albumDetailItems.contains(albumDetailItem) {
+                                albumDetailItems.append(albumDetailItem)
                             }
                             
                         }
@@ -181,7 +185,7 @@ extension AlbumsViewModel {
                         
                         var albumDetailItems:[AlbumDetailItem] = [AlbumDetailItem]()
                         
-                        guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name  else {
+                        guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name, let profile = respone.results[index].user?.profile_image  else {
                             return
                         }
                         
@@ -196,8 +200,10 @@ extension AlbumsViewModel {
                                 return
                             }
                             
-                            if !albumDetailItems.contains(AlbumDetailItem(photoURL: detailItemUrl, thumbnailURL: detailItemUrl)) {
-                                albumDetailItems.append(AlbumDetailItem(photoURL: detailItemUrl, thumbnailURL: detailItemUrl))
+                            let albumDetailItem = AlbumDetailItem(identifier: preview_photos[index].id, photoURL: detailItemUrl, thumbnailURL: detailItemUrl, profile_image: profile, urls: preview_photos[index].urls)
+                            
+                            if !albumDetailItems.contains(albumDetailItem) {
+                                albumDetailItems.append(albumDetailItem)
                             }
                             
                         }

@@ -162,5 +162,9 @@ extension AlbumDetailView: UICollectionViewDelegate {
     guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
     //let photoDetailVC = PhotoDetailViewController(photoURL: item.photoURL)
     //navigationController?.pushViewController(photoDetailVC, animated: true)
+    
+    let photoInfo = PhotoInfo(id: item.identifier, title: "", url: item.urls, profile_image: item.profile_image)
+    
+    coordinator?.goToDetailView(photoInfo: photoInfo)
   }
 }

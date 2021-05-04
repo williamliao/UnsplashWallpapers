@@ -35,7 +35,7 @@ class AlbumsViewController: UIViewController {
          
         ])
         
-        let dispatchQueue = DispatchQueue(label: "com.prit.TestGCD.DispatchQueue")
+        let dispatchQueue = DispatchQueue(label: "com.UnsplashWallpapers.DispatchQueue")
 
         dispatchQueue.async {
             self.viewModel.getFeaturedAlbums()

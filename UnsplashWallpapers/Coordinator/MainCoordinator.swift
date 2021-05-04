@@ -172,6 +172,7 @@ extension MainCoordinator {
         albumDetailViewModel.detailRespone.value = albumDetailItems
         
         albumDetailVC.viewModel = albumDetailViewModel
+        albumDetailVC.viewModel.coordinator = self
         
         if let currentNavController = self.rootViewController.selectedViewController as? UINavigationController {
             currentNavController.pushViewController(albumDetailVC, animated: true)
