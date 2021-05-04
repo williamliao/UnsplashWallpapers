@@ -47,7 +47,8 @@ class PhotoListView: UIView {
     var firstLoad = true
     var section: CurrentSource = .random
     
-    var currentIndex = 0;
+    var currentIndex = 0
+    var endRect = CGRect.zero
     
     let items = ["Random", "Nature", "Wallpapers"]
     lazy var segmentedControl = UISegmentedControl(items: items)
@@ -484,19 +485,17 @@ extension PhotoListView: UICollectionViewDelegate {
             let spinner = UIActivityIndicatorView(style: .medium)
             spinner.startAnimating()
             spinner.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: collectionView.bounds.width, height: CGFloat(44))
-
-            currentIndex = lastElement
+            
             viewModel.fetchNextPage()
             
+            endRect = self.collectionView.layoutAttributesForItem(at: IndexPath(row: indexPath.row, section: 0))?.frame ?? CGRect.zero
+
+            currentIndex = lastElement
         }
     }
     
     private func reloadCollectionData() {
-//        let offset = collectionView.contentOffset
-//        collectionView.reloadData()
-//        self.layoutIfNeeded()
-//        collectionView.contentOffset = offset
-        
+       
         switch section {
             case .random:
                 if viewModel.respone.value?.count ?? 0 > collectionView.numberOfItems(inSection: 0) {
@@ -516,8 +515,10 @@ extension PhotoListView: UICollectionViewDelegate {
         }
         
         self.collectionView.setNeedsLayout()
+        self.collectionView.layoutIfNeeded()
         UIView.animate(withDuration: 0.25) {
-            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .top, animated: false)
+            self.collectionView.scrollRectToVisible(self.endRect, animated: false)
+            //self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .top, animated: false)
         }
     }
 }
