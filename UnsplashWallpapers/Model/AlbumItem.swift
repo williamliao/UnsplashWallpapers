@@ -32,19 +32,21 @@ class AlbumItem: Codable, Hashable {
 
 class AlbumDetailItem:Codable, Hashable {
     var identifier: String
+    let title: String
     let photoURL: URL
     let thumbnailURL: URL
     let subitems: [AlbumDetailItem]
     let profile_image: Profile_image
     let urls: Urls
 
-    init(identifier: String, photoURL: URL, thumbnailURL: URL, profile_image: Profile_image, urls: Urls, subitems: [AlbumDetailItem] = []) {
-      self.photoURL = photoURL
-      self.thumbnailURL = thumbnailURL
-      self.subitems = subitems
+    init(identifier: String, title: String, photoURL: URL, thumbnailURL: URL, profile_image: Profile_image, urls: Urls, subitems: [AlbumDetailItem] = []) {
+        self.photoURL = photoURL
+        self.thumbnailURL = thumbnailURL
+        self.subitems = subitems
         self.profile_image = profile_image
         self.urls = urls
         self.identifier = identifier
+        self.title = title
     }
 
     func hash(into hasher: inout Hasher) {

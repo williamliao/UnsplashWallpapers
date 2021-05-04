@@ -111,7 +111,7 @@ extension FavoriteTableViewCell {
     
     func configureAImage(with url: URL) {
         downloader2.download(url: url) { [weak self] (image) in
-            self?.showImage(image: image)
+            self?.showImage2(image: image)
         }
     }
     

@@ -163,7 +163,7 @@ extension AlbumDetailView: UICollectionViewDelegate {
     //let photoDetailVC = PhotoDetailViewController(photoURL: item.photoURL)
     //navigationController?.pushViewController(photoDetailVC, animated: true)
     
-    let photoInfo = PhotoInfo(id: item.identifier, title: "", url: item.urls, profile_image: item.profile_image)
+    let photoInfo = PhotoInfo(id: item.identifier, title: item.title, url: item.urls, profile_image: item.profile_image)
     
     coordinator?.goToDetailView(photoInfo: photoInfo)
   }

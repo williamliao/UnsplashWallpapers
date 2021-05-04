@@ -66,7 +66,7 @@ extension AlbumsViewModel {
                                 return
                             }
                             
-                            let albumDetailItem = AlbumDetailItem(identifier: preview_photos[index].id, photoURL: detailItemUrl, thumbnailURL: detailItemUrl, profile_image: profile, urls: preview_photos[index].urls)
+                            let albumDetailItem = AlbumDetailItem(identifier: preview_photos[index].id, title: title, photoURL: detailItemUrl, thumbnailURL: detailItemUrl, profile_image: profile, urls: preview_photos[index].urls)
                             
                             if !albumDetailItems.contains(albumDetailItem) {
                                 albumDetailItems.append(albumDetailItem)
@@ -135,7 +135,7 @@ extension AlbumsViewModel {
                                 return
                             }
                             
-                            let albumDetailItem = AlbumDetailItem(identifier: preview_photos[index].id, photoURL: detailItemUrl, thumbnailURL: detailItemUrl, profile_image: profile, urls: preview_photos[index].urls)
+                            let albumDetailItem = AlbumDetailItem(identifier: preview_photos[index].id , title: title, photoURL: detailItemUrl, thumbnailURL: detailItemUrl, profile_image: profile, urls: preview_photos[index].urls)
                             
                             if !albumDetailItems.contains(albumDetailItem) {
                                 albumDetailItems.append(albumDetailItem)
@@ -203,7 +203,7 @@ extension AlbumsViewModel {
                                 return
                             }
                             
-                            let albumDetailItem = AlbumDetailItem(identifier: preview_photos[index].id, photoURL: detailItemUrl, thumbnailURL: detailItemUrl, profile_image: profile, urls: preview_photos[index].urls)
+                            let albumDetailItem = AlbumDetailItem(identifier: preview_photos[index].id, title: title, photoURL: detailItemUrl, thumbnailURL: detailItemUrl, profile_image: profile, urls: preview_photos[index].urls)
                             
                             if !albumDetailItems.contains(albumDetailItem) {
                                 albumDetailItems.append(albumDetailItem)
