@@ -48,6 +48,7 @@ class PhotoListView: UIView {
     var section: CurrentSource = .random
     
     var currentIndex = 0
+    var offsetY = 0
     var endRect = CGRect.zero
     
     let items = ["Random", "Nature", "Wallpapers"]
@@ -479,21 +480,15 @@ extension PhotoListView: UICollectionViewDelegate {
  
         let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
         if !viewModel.isLoading.value && indexPath.row == lastElement {
-           // indicator.startAnimating()
-            //currentPage =  currentPage + 1
-            
+         
             let spinner = UIActivityIndicatorView(style: .medium)
             spinner.startAnimating()
             spinner.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: collectionView.bounds.width, height: CGFloat(44))
+            
             currentIndex = lastElement
             endRect = collectionView.layoutAttributesForItem(at: IndexPath(row: indexPath.row, section: indexPath.section))?.frame ?? CGRect.zero
-            
-            
+  
             viewModel.fetchNextPage()
-            
-            
-
-            
         }
     }
     
@@ -501,27 +496,10 @@ extension PhotoListView: UICollectionViewDelegate {
        
         self.collectionView.setNeedsLayout()
         //self.collectionView.layoutIfNeeded()
-        
-       /* switch section {
-            case .random:
-                if viewModel.respone.value?.count ?? 0 > collectionView.numberOfItems(inSection: 0) {
-                    return
-                }
-            case .collections:
-                if viewModel.collectionResponse.value?.count ?? 0 > collectionView.numberOfItems(inSection: 0) {
-                    return
-                }
-            case .nature, .wallpapers:
-                guard let topics = viewModel.searchRespone.value else {
-                    return
-                }
-                if topics.results.count > collectionView.numberOfItems(inSection: 0) {
-                    return
-                }
-        }*/
-        
-        collectionView.scrollRectToVisible(endRect, animated: false)
-        //self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .top, animated: false)
+       
+        UIView.animate(withDuration: 0.25) {
+            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .bottom, animated: false)
+        }
     }
 }
 
