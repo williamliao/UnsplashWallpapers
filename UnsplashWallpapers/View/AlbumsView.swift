@@ -30,7 +30,6 @@ class AlbumsView: UIView {
         case myAlbums = "My Albums"
     }
 
-    //var dataSource: UICollectionViewDiffableDataSource<Section, AlbumItem>! = nil
     var albumsCollectionView: UICollectionView! = nil
     
     @available(iOS 13.0, *)
@@ -74,9 +73,6 @@ extension AlbumsView {
         }
         
           let sectionType = Section.allCases[indexPath.section]
-        
-        //print("sectionType \(sectionType), Title \(albumItem.albumURL)")
-        
           switch sectionType {
           case .featuredAlbums:
             let cell = self.configureFeaturedAlbumItemCell(collectionView: collectionView, albumItem: albumItem, indexPath: indexPath)
@@ -133,28 +129,7 @@ extension AlbumsView {
         
         
     }
-    
-    /*func configureDataSource() {
-        
-        
-        dataSource.supplementaryViewProvider = { (
-          collectionView: UICollectionView,
-          kind: String,
-          indexPath: IndexPath) -> UICollectionReusableView? in
-
-          guard let supplementaryView = collectionView.dequeueReusableSupplementaryView(
-            ofKind: kind,
-            withReuseIdentifier: AlbumHeaderCollectionReusableView.reuseIdentifier,
-            for: indexPath) as? AlbumHeaderCollectionReusableView else { fatalError("Cannot create header view") }
-
-          supplementaryView.label.text = Section.allCases[indexPath.section].rawValue
-          return supplementaryView
-        }
-        
-        let snapshot = snapshotForCurrentState()
-        dataSource.apply(snapshot, animatingDifferences: false)
-    }*/
-  
+   
     func generateLayout() -> UICollectionViewLayout {
       let layout = UICollectionViewCompositionalLayout { (sectionIndex: Int,
         layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
@@ -314,9 +289,6 @@ extension AlbumsView {
 extension AlbumsView: UICollectionViewDelegate {
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
-    
     coordinator?.goToAlbumDetailView(albumDetailItems: item.imageItems)
-    
-    //navigationController?.pushViewController(albumDetailVC, animated: true)
   }
 }

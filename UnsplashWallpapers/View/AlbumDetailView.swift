@@ -133,9 +133,7 @@ extension AlbumDetailView {
     func snapshotForCurrentState() -> NSDiffableDataSourceSnapshot<Section, AlbumDetailItem> {
       var snapshot = NSDiffableDataSourceSnapshot<Section, AlbumDetailItem>()
       snapshot.appendSections([Section.albumBody])
-      //let items = itemsForAlbum()
-      //snapshot.appendItems(items)
-        
+   
         self.viewModel.detailRespone.value.forEach { (detail) in
             snapshot.appendItems([detail], toSection: .albumBody)
         }
@@ -160,11 +158,7 @@ extension AlbumDetailView {
 extension AlbumDetailView: UICollectionViewDelegate {
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
-    //let photoDetailVC = PhotoDetailViewController(photoURL: item.photoURL)
-    //navigationController?.pushViewController(photoDetailVC, animated: true)
-    
     let photoInfo = PhotoInfo(id: item.identifier, title: item.title, url: item.urls, profile_image: item.profile_image)
-    
     coordinator?.goToDetailView(photoInfo: photoInfo)
   }
 }

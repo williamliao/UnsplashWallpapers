@@ -48,9 +48,6 @@ class PhotoListView: UIView {
     var section: CurrentSource = .random
     
     var currentIndex = 0;
-    //var currentOffset:CGPoint = CGPoint.zero;
-    var previousContentHeight:CGFloat = 0.0
-    var previousContentOffset:CGFloat = 0.0
     
     let items = ["Random", "Nature", "Wallpapers"]
     lazy var segmentedControl = UISegmentedControl(items: items)
@@ -184,24 +181,7 @@ extension PhotoListView: UICollectionViewDelegateFlowLayout {
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
 
-       /* let cellsPerRow = 1
-        guard let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return CGSize(width: 0, height: 0) }
-        let marginsAndInsets = flowLayout.sectionInset.left + flowLayout.sectionInset.right + collectionView.safeAreaInsets.left + collectionView.safeAreaInsets.right + flowLayout.minimumInteritemSpacing * CGFloat(cellsPerRow - 1)
-        let itemWidth = ((collectionView.bounds.size.width - marginsAndInsets) / CGFloat(cellsPerRow)).rounded(.down)
-        return CGSize(width: itemWidth, height: 300)*/
-        
-       /* let cell = collectionView.cellForItem(at: indexPath) as? PhotoListCollectionViewCell
-        
-        if let cell = cell {
-            print("cell.height \(cell.height)")
-            return CGSize(width: collectionView.bounds.size.width, height: cell.height)
-        } else {
-            return CGSize(width: collectionView.bounds.size.width, height: 300)
-        }*/
-        
         return CGSize(width: collectionView.bounds.size.width, height: 300)
-       
-        
     }
     
     func collectionView(_ collectionView: UICollectionView,
@@ -534,8 +514,6 @@ extension PhotoListView: UICollectionViewDelegate {
             spinner.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: collectionView.bounds.width, height: CGFloat(44))
 
             currentIndex = lastElement
-            previousContentHeight = collectionView.contentSize.height
-            previousContentOffset = collectionView.contentOffset.y
             viewModel.fetchNextPage()
             
         }

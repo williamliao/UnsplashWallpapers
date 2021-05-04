@@ -175,7 +175,7 @@ extension DetailView {
             
             self.imageView.image = image
         
-            //self.updateMinZoomScaleForSize(self.imageView.bounds.size)
+            self.updateMinZoomScaleForSize(self.imageView.bounds.size)
 
             self.scrollView.contentSize = self.imageView.bounds.size
             
@@ -261,38 +261,6 @@ extension DetailView {
 
         scrollView.minimumZoomScale = minScale
         scrollView.zoomScale = minScale
-        
-   /*     // Sizes
-        let boundsSize = scrollView.bounds.size;
-        let imageSize = imageView.frame.size;
-        
-        // Calculate Min
-        let xScale = boundsSize.width / imageSize.width;
-        let yScale = boundsSize.height / imageSize.height;
-        let minScale = min(xScale, yScale);
-
-        // Calculate Max
-        var maxScale = 4.0;
-       // if ([UIScreen instancesRespondToSelector:@selector(scale)]) {
-        maxScale = maxScale / Double(UIScreen.main.scale);
-    
-            if Double(maxScale) < Double(minScale) {
-                maxScale = Double(minScale * 2);
-            }
-    
-//            if Double(minScale) >= 0.1 && Double(minScale) < 0.5 {
-//                maxScale = 0.7;
-//            }
-//
-//            if minScale >= 0.5 {
-//                maxScale = max(1.0, Double(minScale));
-//            }
-     //   }
-        
-        // Apply zoom
-        self.scrollView.maximumZoomScale = CGFloat(maxScale);
-        self.scrollView.minimumZoomScale = minScale;
-        self.scrollView.zoomScale = minScale;*/
     }
     
     func updateConstraintsForSize(_ size: CGSize) {
@@ -303,12 +271,6 @@ extension DetailView {
         let xOffset = max(0, (size.width - imageView.frame.width) / 2)
         imageViewLeadingConstraint.constant = xOffset
         imageViewTrailingConstraint.constant = xOffset
-        
-//        let imageViewSize = imageView.frame.size
-//        let scrollViewSize = scrollView.bounds.size
-//        let verticalInset = imageViewSize.height < scrollViewSize.height ? (scrollViewSize.height - imageViewSize.height) / 2 : 0
-//        let horizontalInset = imageViewSize.width < scrollViewSize.width ? (scrollViewSize.width - imageViewSize.width) / 2 : 0
-//        scrollView.contentInset = UIEdgeInsets(top: verticalInset, left: horizontalInset, bottom: verticalInset, right: horizontalInset)
 
         self.layoutIfNeeded()
     }

@@ -448,8 +448,6 @@ extension SearchView: UICollectionViewDelegate {
         let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
         if !viewModel.isLoading.value && indexPath.row == lastElement {
             
-            print("lastElement \(lastElement)")
-        
             let spinner = UIActivityIndicatorView(style: .medium)
             spinner.startAnimating()
             spinner.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: collectionView.bounds.width, height: CGFloat(44))
