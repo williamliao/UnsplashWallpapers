@@ -32,15 +32,15 @@ class AlbumsViewModel {
 
 extension AlbumsViewModel {
     
-    func getAllAlbums() {
+    func getAllAlbums(completionHandler: @escaping (Bool) -> Void) {
         service.networkManager = NetworkManager(endPoint: .collections)
-        
-        isLoading.value = true
         
         if allCursor == nil {
             allCursor = Cursor(query: "cat", page: 1, perPage: 10, parameters: [:])
             unsplashAllPagedRequest = UnsplashSearchPagedRequest(with: allCursor)
         }
+        
+        isLoading.value = true
         
         service.search(keyword: unsplashAllPagedRequest.cursor.query ?? "", pageRequest: unsplashAllPagedRequest) { (result) in
             self.isLoading.value = false
@@ -85,7 +85,7 @@ extension AlbumsViewModel {
                         
                     }
                     
-                    
+                    completionHandler(true)
         
                 case .failure(let error):
                     
@@ -95,19 +95,21 @@ extension AlbumsViewModel {
                         default:
                             self.error.value = error
                     }
+                    
+                    completionHandler(false)
             }
         }
     }
     
-    func getFeaturedAlbums() {
+    func getFeaturedAlbums(completionHandler: @escaping (Bool) -> Void) {
         service.networkManager = NetworkManager(endPoint: .collections)
-        
-        isLoading.value = true
         
         if featureCursor == nil {
             featureCursor = Cursor(query: "nature", page: 1, perPage: 10, parameters: [:])
             unsplashFeaturePagedRequest = UnsplashSearchPagedRequest(with: featureCursor)
         }
+        
+        isLoading.value = true
         
         service.search(keyword: unsplashFeaturePagedRequest.cursor.query ?? "", pageRequest: unsplashFeaturePagedRequest) { (result) in
             self.isLoading.value = false
@@ -149,9 +151,9 @@ extension AlbumsViewModel {
                         let albumItem = AlbumItem(albumTitle: title, albumURL: url, isLandscape: isLandscape, imageItems: albumDetailItems)
                         
                         self.featuredAlbumsRespone.value.append(albumItem)
-                        
                     }
                     
+                    completionHandler(true)
                     
         
                 case .failure(let error):
@@ -162,19 +164,20 @@ extension AlbumsViewModel {
                         default:
                             self.error.value = error
                     }
+                    completionHandler(false)
             }
         }
     }
     
-    func getSharedAlbums() {
+    func getSharedAlbums(completionHandler: @escaping (Bool) -> Void) {
         service.networkManager = NetworkManager(endPoint: .collections)
-        
-        isLoading.value = true
         
         if shareCursor == nil {
             shareCursor = Cursor(query: "wallpapers", page: 1, perPage: 10, parameters: [:])
             unsplashSharePagedRequest = UnsplashSearchPagedRequest(with: shareCursor)
         }
+        
+        isLoading.value = true
         
         service.search(keyword: unsplashSharePagedRequest.cursor.query ?? "", pageRequest: unsplashSharePagedRequest) { (result) in
             self.isLoading.value = false
@@ -218,7 +221,7 @@ extension AlbumsViewModel {
                         self.sharedAlbumsRespone.value.append(albumItem)
                         
                     }
-                    
+                    completionHandler(true)
                     
         
                 case .failure(let error):
@@ -229,11 +232,18 @@ extension AlbumsViewModel {
                         default:
                             self.error.value = error
                     }
+                    completionHandler(false)
             }
         }
     }
     
     func reset() {
+        allCursor = nil
+        featureCursor = nil
+        shareCursor = nil
         
+        unsplashFeaturePagedRequest = nil
+        unsplashSharePagedRequest  = nil
+        unsplashAllPagedRequest  = nil
     }
 }

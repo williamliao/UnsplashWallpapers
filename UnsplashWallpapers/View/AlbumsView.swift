@@ -68,8 +68,15 @@ extension AlbumsView {
       dataSource = UICollectionViewDiffableDataSource
         <Section, AlbumItem>(collectionView: albumsCollectionView) {
           (collectionView: UICollectionView, indexPath: IndexPath, albumItem: AlbumItem) -> UICollectionViewCell? in
-
+        
+        if (albumItem.albumTitle.count == 0) {
+            return UICollectionViewCell()
+        }
+        
           let sectionType = Section.allCases[indexPath.section]
+        
+        //print("sectionType \(sectionType), Title \(albumItem.albumURL)")
+        
           switch sectionType {
           case .featuredAlbums:
             let cell = self.configureFeaturedAlbumItemCell(collectionView: collectionView, albumItem: albumItem, indexPath: indexPath)

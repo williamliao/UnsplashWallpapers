@@ -34,38 +34,55 @@ class AlbumsViewController: UIViewController {
             albumsView.bottomAnchor.constraint(equalTo: guide.bottomAnchor),
          
         ])
+       
+        multipleAsyncOperations()
+    }
+    
+    func multipleAsyncOperations() {
+        let group = DispatchGroup()
         
-        let dispatchQueue = DispatchQueue(label: "com.UnsplashWallpapers.DispatchQueue")
-
-        dispatchQueue.async {
-            self.viewModel.getFeaturedAlbums()
-        }
-            
-        dispatchQueue.async {
-            self.viewModel.getSharedAlbums()
-        }
-            
-        dispatchQueue.async {
-            self.viewModel.getAllAlbums()
-        }
+        let apiGroup = [0, 1, 2]
         
-        viewModel.featuredAlbumsRespone.bind { [weak self] (_) in
-
-            self?.albumsView.configureDataSource()
-
-        }
-
-        viewModel.sharedAlbumsRespone.bind { [weak self] (_) in
-
-            self?.albumsView.configureDataSource()
-
-        }
         
-        viewModel.allAlbumsRespone.bind { [weak self] (_) in
+        for url in apiGroup {
             
-            self?.albumsView.configureDataSource()
+            group.enter()
+            
+            if url == 0 {
+                self.viewModel.getFeaturedAlbums { (success) in
+                    group.leave()
+                }
+                
+            } else if url == 1 {
+                self.viewModel.getSharedAlbums { (success) in
+                    group.leave()
+                }
+
+            } else {
+                self.viewModel.getAllAlbums { (success) in
+                    group.leave()
+                }
+
+            }
             
         }
         
+        group.notify(queue: .main) {
+
+            self.viewModel.featuredAlbumsRespone.bind { [weak self] (_) in
+
+                self?.albumsView.configureDataSource()
+            }
+
+            self.viewModel.allAlbumsRespone.bind { [weak self] (_) in
+
+                self?.albumsView.configureDataSource()
+            }
+            
+            self.viewModel.sharedAlbumsRespone.bind { [weak self] (_) in
+                
+                self?.albumsView.configureDataSource()
+            }
+        }
     }
 }
