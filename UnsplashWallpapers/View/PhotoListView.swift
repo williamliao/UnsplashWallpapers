@@ -282,13 +282,7 @@ extension PhotoListView {
                 //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
                 DispatchQueue.main.async {
                     self.dataSource.apply(snapshot, animatingDifferences: false)
-                    
-                    if (self.currentIndex > 0) {
-                        UIView.animate(withDuration: 0.25) {
-                            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: Section.main.rawValue), at: .bottom, animated: false)
-                        }
-                    }
-                    
+                    self.reloadCollectionData()
                 }
                 
             case .nature:
@@ -316,13 +310,7 @@ extension PhotoListView {
                 //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
                 DispatchQueue.main.async {
                     self.natureDataSource.apply(snapshot, animatingDifferences: false)
-                    
-                    if (self.currentIndex > 0) {
-                        UIView.animate(withDuration: 0.25) {
-                            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .bottom, animated: false)
-                        }
-                    }
-                    
+                    self.reloadCollectionData()
                 }
                 
             case .wallpapers:
@@ -350,12 +338,7 @@ extension PhotoListView {
                 //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
                 DispatchQueue.main.async {
                     self.wallpapersDataSource.apply(snapshot, animatingDifferences: false)
-                    
-                    if (self.currentIndex > 0) {
-                        UIView.animate(withDuration: 0.25) {
-                            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .bottom, animated: false)
-                        }
-                    }
+                    self.reloadCollectionData()
                     
                 }
             case .collections:
@@ -382,12 +365,7 @@ extension PhotoListView {
                 //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
                 DispatchQueue.main.async {
                     self.collectionDataSource.apply(snapshot, animatingDifferences: false)
-                    
-                    if (self.currentIndex > 0) {
-                        UIView.animate(withDuration: 0.25) {
-                            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .bottom, animated: false)
-                        }
-                    }
+                    self.reloadCollectionData()
                     
                 }
                 
@@ -497,13 +475,7 @@ extension PhotoListView: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        
-//        guard let result = viewModel.searchRespone.value?.results else {
-//            return
-//        }
-        
-    //    print("indexPath row, \(indexPath.row)")
-        
+ 
         let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
         if !viewModel.isLoading.value && indexPath.row == lastElement {
            // indicator.startAnimating()
@@ -516,6 +488,36 @@ extension PhotoListView: UICollectionViewDelegate {
             currentIndex = lastElement
             viewModel.fetchNextPage()
             
+        }
+    }
+    
+    private func reloadCollectionData() {
+//        let offset = collectionView.contentOffset
+//        collectionView.reloadData()
+//        self.layoutIfNeeded()
+//        collectionView.contentOffset = offset
+        
+        switch section {
+            case .random:
+                if viewModel.respone.value?.count ?? 0 > collectionView.numberOfItems(inSection: 0) {
+                    return
+                }
+            case .collections:
+                if viewModel.collectionResponse.value?.count ?? 0 > collectionView.numberOfItems(inSection: 0) {
+                    return
+                }
+            case .nature, .wallpapers:
+                guard let topics = viewModel.searchRespone.value else {
+                    return
+                }
+                if topics.results.count > collectionView.numberOfItems(inSection: 0) {
+                    return
+                }
+        }
+        
+        self.collectionView.setNeedsLayout()
+        UIView.animate(withDuration: 0.25) {
+            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .top, animated: false)
         }
     }
 }
