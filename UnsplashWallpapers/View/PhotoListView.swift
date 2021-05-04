@@ -485,18 +485,24 @@ extension PhotoListView: UICollectionViewDelegate {
             let spinner = UIActivityIndicatorView(style: .medium)
             spinner.startAnimating()
             spinner.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: collectionView.bounds.width, height: CGFloat(44))
+            currentIndex = lastElement
+            endRect = collectionView.layoutAttributesForItem(at: IndexPath(row: indexPath.row, section: indexPath.section))?.frame ?? CGRect.zero
+            
             
             viewModel.fetchNextPage()
             
-            endRect = self.collectionView.layoutAttributesForItem(at: IndexPath(row: indexPath.row, section: 0))?.frame ?? CGRect.zero
+            
 
-            currentIndex = lastElement
+            
         }
     }
     
     private func reloadCollectionData() {
        
-        switch section {
+        self.collectionView.setNeedsLayout()
+        //self.collectionView.layoutIfNeeded()
+        
+       /* switch section {
             case .random:
                 if viewModel.respone.value?.count ?? 0 > collectionView.numberOfItems(inSection: 0) {
                     return
@@ -512,14 +518,10 @@ extension PhotoListView: UICollectionViewDelegate {
                 if topics.results.count > collectionView.numberOfItems(inSection: 0) {
                     return
                 }
-        }
+        }*/
         
-        self.collectionView.setNeedsLayout()
-        self.collectionView.layoutIfNeeded()
-        UIView.animate(withDuration: 0.25) {
-            self.collectionView.scrollRectToVisible(self.endRect, animated: false)
-            //self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .top, animated: false)
-        }
+        collectionView.scrollRectToVisible(endRect, animated: false)
+        //self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .top, animated: false)
     }
 }
 
