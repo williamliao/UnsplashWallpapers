@@ -33,7 +33,7 @@ extension SearchResultsTableViewCell {
         
         titleLabel = UILabel()
         titleLabel.font = UIFont.systemFont(ofSize: 20)
-        titleLabel.textColor = .white
+        titleLabel.textColor = .label
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byTruncatingTail
         titleLabel.textAlignment = .left

@@ -30,7 +30,7 @@ extension SearchResultsHeaderView {
     func configureView() {
         titleLabel = UILabel()
         titleLabel.font = UIFont.systemFont(ofSize: 16)
-        titleLabel.textColor = .white
+        titleLabel.textColor = .label
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byTruncatingTail
         titleLabel.textAlignment = .left
