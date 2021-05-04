@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Combine
 
 class FavoriteTableViewCell: UITableViewCell {
 
@@ -18,8 +17,8 @@ class FavoriteTableViewCell: UITableViewCell {
     var thumbnailImageView: UIImageView!
     var avatarImageView: UIImageView!
     
-    private var cancellable: AnyCancellable?
-    private var cancellable2: AnyCancellable?
+    private let downloader = ImageCombineDownloader()
+    private let downloader2 = ImageCombineDownloader()
     private var animator: UIViewPropertyAnimator?
     private var act = UIActivityIndicatorView(style: .large)
   
@@ -103,15 +102,16 @@ extension FavoriteTableViewCell {
     
     func configureImage(with url: URL) {
         isLoading(isLoading: true)
-        cancellable = self.loadImage(for: url).sink { [weak self] image in
+        
+        downloader.download(url: url) { [weak self] (image) in
             self?.showImage(image: image)
             self?.isLoading(isLoading: false)
         }
     }
     
     func configureAImage(with url: URL) {
-        cancellable2 = self.loadImage(for: url).sink { [weak self] image in
-            self?.showImage2(image: image)
+        downloader2.download(url: url) { [weak self] (image) in
+            self?.showImage(image: image)
         }
     }
     
@@ -157,7 +157,6 @@ extension FavoriteTableViewCell {
         }
     }
 
-    
     func isLoading(isLoading: Bool) {
         if isLoading {
             act.startAnimating()
@@ -167,14 +166,6 @@ extension FavoriteTableViewCell {
         act.isHidden = !isLoading
     }
     
-    private func loadImage(for url: URL) -> AnyPublisher<UIImage?, Never> {
-        return Just(url)
-        .flatMap({ poster -> AnyPublisher<UIImage?, Never> in
-            return ImageLoader.shared.loadImage(from: url)
-        })
-        .eraseToAnyPublisher()
-    }
-    
     override func prepareForReuse() {
         super.prepareForReuse()
         thumbnailImageView.image = nil
@@ -182,7 +173,7 @@ extension FavoriteTableViewCell {
         avatarImageView.image = nil
         avatarImageView.alpha = 0.0
         animator?.stopAnimation(true)
-        cancellable?.cancel()
-        cancellable2?.cancel()
+        downloader.cancel()
+        downloader2.cancel()
     }
 }

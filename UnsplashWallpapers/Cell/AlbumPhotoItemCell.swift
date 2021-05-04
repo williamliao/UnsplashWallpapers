@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Combine
 
 class AlbumPhotoItemCell: UICollectionViewCell {
     
@@ -17,7 +16,7 @@ class AlbumPhotoItemCell: UICollectionViewCell {
     let imageView = UIImageView()
     let contentContainer = UIView()
     
-    private var cancellable: AnyCancellable?
+    private let downloader = ImageCombineDownloader()
     private var act = UIActivityIndicatorView(style: .large)
 
     var photoURL: URL? {
@@ -75,7 +74,8 @@ extension AlbumPhotoItemCell {
 extension AlbumPhotoItemCell {
     func configureImage(with url: URL) {
         isLoading(isLoading: true)
-        cancellable = self.loadImage(for: url).sink { [weak self] image in
+        
+        downloader.download(url: url) { [weak self] (image) in
             self?.showImage(image: image)
             self?.isLoading(isLoading: false)
         }
@@ -87,22 +87,11 @@ extension AlbumPhotoItemCell {
             guard let image = image else {
                 return
             }
-           
-            //let resizeImage = self.resizedImage(at: image, for: CGSize(width: UIScreen.main.bounds.size.width, height: image.size.height))
             self.imageView.image = image
             
         }
     }
-    
-    func resizedImage(at image: UIImage, for size: CGSize) -> UIImage? {
-       
-        let renderer = UIGraphicsImageRenderer(size: size)
-        return renderer.image { (context) in
-            image.draw(in: CGRect(origin: .zero, size: size))
-        }
-    }
-
-    
+ 
     func isLoading(isLoading: Bool) {
         if isLoading {
             act.startAnimating()
@@ -111,19 +100,11 @@ extension AlbumPhotoItemCell {
         }
         act.isHidden = !isLoading
     }
-    
-    private func loadImage(for url: URL) -> AnyPublisher<UIImage?, Never> {
-        return Just(url)
-        .flatMap({ poster -> AnyPublisher<UIImage?, Never> in
-            return ImageLoader.shared.loadImage(from: url)
-        })
-        .eraseToAnyPublisher()
-    }
-    
+ 
     override func prepareForReuse() {
         super.prepareForReuse()
         photoURL = nil
         imageView.image = nil
-        cancellable?.cancel()
+        downloader.cancel()
     }
 }

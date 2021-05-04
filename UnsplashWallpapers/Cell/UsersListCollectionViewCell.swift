@@ -17,9 +17,10 @@ class UsersListCollectionViewCell: UICollectionViewCell {
     var titleLabel: UILabel!
     var avatarImageView: UIImageView!
     
-    private var cancellable: AnyCancellable?
+    private let downloader = ImageCombineDownloader()
     private var animator: UIViewPropertyAnimator?
     private var isHeightCalculated: Bool = false
+    private var act = UIActivityIndicatorView(style: .large)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -50,6 +51,10 @@ extension UsersListCollectionViewCell {
         
         contentView.addSubview(avatarImageView)
         contentView.addSubview(titleLabel)
+        
+        act.color = traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
+        act.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(act)
     }
     
     func configureConstraints() {
@@ -69,7 +74,8 @@ extension UsersListCollectionViewCell {
             //titleLabel.bottomAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: -5),
             titleLabel.heightAnchor.constraint(equalToConstant: 16),
             
-            
+            act.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            act.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
 }
@@ -78,8 +84,11 @@ extension UsersListCollectionViewCell {
 extension UsersListCollectionViewCell {
     
     func configureImage(with url: URL) {
-        cancellable = self.loadImage(for: url).sink { [weak self] image in
+        isLoading(isLoading: true)
+        
+        downloader.download(url: url) { [weak self] (image) in
             self?.showImage(image: image)
+            self?.isLoading(isLoading: false)
         }
     }
     
@@ -99,21 +108,22 @@ extension UsersListCollectionViewCell {
             })
         }
     }
-
-    private func loadImage(for url: URL) -> AnyPublisher<UIImage?, Never> {
-        return Just(url)
-        .flatMap({ poster -> AnyPublisher<UIImage?, Never> in
-            return ImageLoader.shared.loadImage(from: url)
-        })
-        .eraseToAnyPublisher()
-    }
     
+    func isLoading(isLoading: Bool) {
+        if isLoading {
+            act.startAnimating()
+        } else {
+            act.stopAnimating()
+        }
+        act.isHidden = !isLoading
+    }
+
     override func prepareForReuse() {
         super.prepareForReuse()
         avatarImageView.image = nil
         avatarImageView.alpha = 0.0
         animator?.stopAnimation(true)
-        cancellable?.cancel()
+        downloader.cancel()
     }
     
 }

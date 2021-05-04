@@ -67,19 +67,19 @@ class AlbumsViewController: UIViewController {
             
         }
         
-        group.notify(queue: .main) {
+        group.notify(queue: .main) { [weak self] in
 
-            self.viewModel.featuredAlbumsRespone.bind { [weak self] (_) in
+            self?.viewModel.featuredAlbumsRespone.bind { [weak self] (_) in
 
                 self?.albumsView.configureDataSource()
             }
 
-            self.viewModel.allAlbumsRespone.bind { [weak self] (_) in
+            self?.viewModel.allAlbumsRespone.bind { [weak self] (_) in
 
                 self?.albumsView.configureDataSource()
             }
             
-            self.viewModel.sharedAlbumsRespone.bind { [weak self] (_) in
+            self?.viewModel.sharedAlbumsRespone.bind { [weak self] (_) in
                 
                 self?.albumsView.configureDataSource()
             }

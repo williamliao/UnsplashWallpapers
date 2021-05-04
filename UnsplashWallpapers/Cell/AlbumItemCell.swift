@@ -6,14 +6,13 @@
 //
 
 import UIKit
-import Combine
 
 class AlbumItemCell: UICollectionViewCell {
     static var reuseIdentifier: String {
         return String(describing: AlbumItemCell.self)
     }
     
-    private var cancellable: AnyCancellable?
+    private let downloader = ImageCombineDownloader()
     private var act = UIActivityIndicatorView(style: .large)
     
     let titleLabel = UILabel()
@@ -100,7 +99,8 @@ extension AlbumItemCell {
     
     func configureImage(with url: URL) {
         isLoading(isLoading: true)
-        cancellable = self.loadImage(for: url).sink { [weak self] image in
+        
+        downloader.download(url: url) { [weak self] (image) in
             self?.showImage(image: image)
             self?.isLoading(isLoading: false)
         }
@@ -113,20 +113,10 @@ extension AlbumItemCell {
                 return
             }
 
-            let resizeImage = self.resizedImage(at: image, for: CGSize(width: UIScreen.main.bounds.size.width, height: image.size.height))
-            self.featuredPhotoView.image = resizeImage
+            self.featuredPhotoView.image = image
             
         }
     }
-    
-    func resizedImage(at image: UIImage, for size: CGSize) -> UIImage? {
-       
-        let renderer = UIGraphicsImageRenderer(size: size)
-        return renderer.image { (context) in
-            image.draw(in: CGRect(origin: .zero, size: size))
-        }
-    }
-
     
     func isLoading(isLoading: Bool) {
         if isLoading {
@@ -137,17 +127,9 @@ extension AlbumItemCell {
         act.isHidden = !isLoading
     }
     
-    private func loadImage(for url: URL) -> AnyPublisher<UIImage?, Never> {
-        return Just(url)
-        .flatMap({ poster -> AnyPublisher<UIImage?, Never> in
-            return ImageLoader.shared.loadImage(from: url)
-        })
-        .eraseToAnyPublisher()
-    }
-    
     override func prepareForReuse() {
         super.prepareForReuse()
         featuredPhotoView.image = nil
-        cancellable?.cancel()
+        downloader.cancel()
     }
 }

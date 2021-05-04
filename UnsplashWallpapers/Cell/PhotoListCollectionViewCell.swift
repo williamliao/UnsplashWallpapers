@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Combine
 
 class PhotoListCollectionViewCell: UICollectionViewCell {
     static var reuseIdentifier: String {
@@ -16,7 +15,7 @@ class PhotoListCollectionViewCell: UICollectionViewCell {
     var titleLabel: UILabel!
     var thumbnailImageView: UIImageView!
     
-    private var cancellable: AnyCancellable?
+    private let downloader = ImageCombineDownloader()
     private var animator: UIViewPropertyAnimator?
     private var act = UIActivityIndicatorView(style: .large)
 
@@ -84,7 +83,8 @@ extension PhotoListCollectionViewCell {
     
     func configureImage(with url: URL) {
         isLoading(isLoading: true)
-        cancellable = self.loadImage(for: url).sink { [weak self] image in
+        
+        downloader.download(url: url) { [weak self] (image) in
             self?.showImage(image: image)
             self?.isLoading(isLoading: false)
         }
@@ -116,7 +116,6 @@ extension PhotoListCollectionViewCell {
         }
     }
 
-    
     func isLoading(isLoading: Bool) {
         if isLoading {
             act.startAnimating()
@@ -126,20 +125,12 @@ extension PhotoListCollectionViewCell {
         act.isHidden = !isLoading
     }
     
-    private func loadImage(for url: URL) -> AnyPublisher<UIImage?, Never> {
-        return Just(url)
-        .flatMap({ poster -> AnyPublisher<UIImage?, Never> in
-            return ImageLoader.shared.loadImage(from: url)
-        })
-        .eraseToAnyPublisher()
-    }
-    
     override func prepareForReuse() {
         super.prepareForReuse()
         thumbnailImageView.image = nil
         thumbnailImageView.alpha = 0.0
         animator?.stopAnimation(true)
-        cancellable?.cancel()
+        downloader.cancel()
     }
     
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {

@@ -27,17 +27,19 @@ class ImageCombineDownloader: ImageDownLoader {
                 completionHandler(image)
             }
         }
+        
     }
     
     func cancel() {
         cancellable?.cancel()
     }
-
+    
     private func loadImage(for url: URL) -> AnyPublisher<UIImage?, Never> {
         return Just(url)
         .flatMap({ poster -> AnyPublisher<UIImage?, Never> in
             return ImageLoader.shared.loadImage(from: url)
         })
         .eraseToAnyPublisher()
+        
     }
 }
