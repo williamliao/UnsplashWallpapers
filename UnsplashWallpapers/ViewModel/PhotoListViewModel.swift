@@ -32,17 +32,14 @@ class PhotoListViewModel  {
     var isSearching: Observable<Bool> = Observable(false)
     let service: UnsplashService = UnsplashService()
     
-    var searchCursor: Cursor!
     var fetchCursor: Cursor!
     var fetchNatureCursor: Cursor!
     var fetchWallpapersCursor: Cursor!
-    var collectionCursor: Cursor!
     
     var unsplashPagedRequest: UnsplashPagedRequest!
     var unsplashSearchPagedRequest: UnsplashSearchPagedRequest!
     
     var unsplashTopicRequest: UnsplashTopicRequest!
-    var unsplashCollectionRequest: UnsplashCollectionRequest!
     
     var segmentedIndex = SegmentedIndex.random
 }
@@ -128,8 +125,6 @@ extension PhotoListViewModel {
                     
                     self.fetchWallpapersCursor = self.unsplashSearchPagedRequest.nextCursor()
                     
-                    print("configureTopicCell location 1 \(self.fetchWallpapersCursor)")
-        
                 case .failure(let error):
                     
                     switch error {
@@ -141,35 +136,6 @@ extension PhotoListViewModel {
             }
         }
 
-    }
-    
-    func fetchCollection(id:String) {
-        service.networkManager = NetworkManager(endPoint: .get_collection)
-        
-        isLoading.value = true
-        
-        if fetchWallpapersCursor == nil {
-            fetchWallpapersCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
-            unsplashCollectionRequest = UnsplashCollectionRequest(with: fetchWallpapersCursor)
-        }
-        
-        service.collection(id: id, pageRequest: unsplashCollectionRequest) { (result) in
-            self.isLoading.value = false
-            switch result {
-                case .success(let respone):
-                    
-                    self.collectionResponse.value = respone
-        
-                case .failure(let error):
-                    
-                    switch error {
-                        case .statusCodeError(let code):
-                            print(code)
-                        default:
-                            self.error.value = error
-                    }
-            }
-        }
     }
     
     func fetchNextPage() {
@@ -316,9 +282,6 @@ extension PhotoListViewModel {
                     }
                 }
         }
-        
-        
-        
     }
     
     func reset() {
@@ -326,12 +289,28 @@ extension PhotoListViewModel {
         canFetchMore = true
         unsplashSearchPagedRequest = nil
         unsplashPagedRequest = nil
-        collectionCursor = nil
+        unsplashTopicRequest = nil
         fetchNatureCursor = nil
         fetchWallpapersCursor = nil
         fetchCursor = nil
         isLoading.value = false
         self.searchRespone.value = nil
+        self.respone.value = nil
+        
+        if fetchCursor == nil {
+            fetchCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+            unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
+        }
+        
+        if fetchNatureCursor == nil {
+            fetchNatureCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+            unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: fetchNatureCursor)
+        }
+        
+        if fetchWallpapersCursor == nil {
+            fetchWallpapersCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+            unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: fetchWallpapersCursor)
+        }
     }
     
     func didCloseSearchFunction() {
