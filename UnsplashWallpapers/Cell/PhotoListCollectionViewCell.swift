@@ -96,7 +96,7 @@ extension PhotoListCollectionViewCell {
         }
     }
     
-    private func showImage(image: UIImage?) {
+    func showImage(image: UIImage?) {
         DispatchQueue.main.async {
             self.thumbnailImageView.alpha = 0.0
 

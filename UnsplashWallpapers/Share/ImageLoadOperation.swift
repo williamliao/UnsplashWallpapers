@@ -10,7 +10,8 @@ import UIKit
 class ImageLoadOperation: Operation {
     private var imgUrl: URL
     private let downloader = ImageCombineDownloader()
-    var completionHandler: (() -> Void)?
+    var completionHandler: ((UIImage?) -> Void)?
+    var image: UIImage?
     
     init(imgUrl: URL) {
         self.imgUrl = imgUrl
@@ -26,9 +27,10 @@ class ImageLoadOperation: Operation {
             return
         }
 
-        downloader.download(url: self.imgUrl) { [weak self] (_) in
+        downloader.download(url: self.imgUrl) { [weak self] (downloadImage) in
             guard let strongSelf = self else { return }
-            strongSelf.completionHandler?()
+            strongSelf.image = downloadImage
+            strongSelf.completionHandler?(downloadImage)
         }
     }
 }

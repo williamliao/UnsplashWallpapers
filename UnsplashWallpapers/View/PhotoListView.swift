@@ -646,8 +646,25 @@ extension PhotoListView {
         
         cell?.titleLabel.text = respone.user?.name
         
-        if let url = URL(string: respone.urls.small) {
-            cell?.configureImage(with: url)
+        if let loader = imageLoadOperations?[indexPath] {
+            cell?.isLoading(isLoading: true)
+            if let image = loader.image {
+                cell?.isLoading(isLoading: false)
+                cell?.showImage(image: image)
+            } else {
+                cell?.isLoading(isLoading: true)
+                loader.completionHandler = { [weak cell] image in
+                    cell?.isLoading(isLoading: false)
+                    cell?.showImage(image: image)
+                }
+            }
+        } else {
+            if let url = URL(string: respone.urls.small) {
+                let imageLoadOperation = ImageLoadOperation(imgUrl: url)
+                imageLoadQueue?.addOperation(imageLoadOperation)
+                imageLoadOperations?[indexPath] = imageLoadOperation
+                cell?.configureImage(with: url)
+            }
         }
         
         return cell
@@ -666,10 +683,32 @@ extension PhotoListView {
             cell?.titleLabel.text = "Wallpapers"
         }
         
-        if let url = URL(string: respone.urls!.small) {
-            cell?.configureImage(with: url)
+        if let loader = imageLoadOperations?[indexPath] {
+            cell?.isLoading(isLoading: true)
+            if let image = loader.image {
+                cell?.isLoading(isLoading: false)
+                cell?.showImage(image: image)
+            } else {
+                cell?.isLoading(isLoading: true)
+                loader.completionHandler = { [weak cell] image in
+                    cell?.isLoading(isLoading: false)
+                    cell?.showImage(image: image)
+                }
+            }
+        } else {
+            
+            guard let urls = respone.urls else {
+                return cell
+            }
+            
+            if let url = URL(string: urls.small) {
+                let imageLoadOperation = ImageLoadOperation(imgUrl: url)
+                imageLoadQueue?.addOperation(imageLoadOperation)
+                imageLoadOperations?[indexPath] = imageLoadOperation
+                cell?.configureImage(with: url)
+            }
         }
-        
+
         return cell
     }
 
