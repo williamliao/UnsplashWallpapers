@@ -104,8 +104,8 @@ extension PhotoListCollectionViewCell {
                 return
             }
 
-            let resizeImage = self.resizedImage(at: image, for: CGSize(width: UIScreen.main.bounds.size.width, height: image.size.height))
-            self.thumbnailImageView.image = resizeImage
+            //let resizeImage = self.resizedImage(at: image, for: CGSize(width: UIScreen.main.bounds.size.width, height: image.size.height))
+            self.thumbnailImageView.image = image
             
             self.animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: [.curveEaseOut, .transitionCrossDissolve], animations: {
                 self.thumbnailImageView.alpha = 1.0

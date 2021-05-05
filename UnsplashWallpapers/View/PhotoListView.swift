@@ -190,8 +190,48 @@ extension PhotoListView: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-
-        return CGSize(width: collectionView.bounds.size.width, height: 300)
+        
+        if section == .nature, section == .wallpapers {
+            let res = viewModel.searchRespone.value
+            let height = res?.results[indexPath.row].height
+            let width = res?.results[indexPath.row].width
+            
+            if let safeHeight = height, let safeWidth = width {
+                
+                if safeHeight > safeWidth {
+                    let resizeH = CGFloat(safeHeight) / 8
+                    
+                    let resizeHeight: CGFloat = CGFloat(resizeH)
+                    
+                    return CGSize(width: collectionView.bounds.size.width, height: resizeHeight)
+                } else {
+                    return CGSize(width: collectionView.bounds.size.width, height: 300)
+                }
+                
+            } else {
+                return CGSize(width: collectionView.bounds.size.width, height: 300)
+            }
+        } else {
+            let res = viewModel.respone.value
+            let height = res?[indexPath.row].height
+            let width = res?[indexPath.row].width
+            
+            if let safeHeight = height, let safeWidth = width {
+                
+                if safeHeight > safeWidth {
+                    let resizeH = CGFloat(safeHeight) / 8
+                    
+                    let resizeHeight: CGFloat = CGFloat(resizeH)
+                    
+                    return CGSize(width: collectionView.bounds.size.width, height: resizeHeight)
+                } else {
+                    return CGSize(width: collectionView.bounds.size.width, height: 300)
+                }
+                
+            } else {
+                return CGSize(width: collectionView.bounds.size.width, height: 300)
+            }
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView,

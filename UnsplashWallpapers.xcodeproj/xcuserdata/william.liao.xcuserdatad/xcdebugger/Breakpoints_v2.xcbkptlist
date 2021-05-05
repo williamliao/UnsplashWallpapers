@@ -334,8 +334,8 @@
             filePath = "UnsplashWallpapers/View/PhotoListView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "329"
-            endingLineNumber = "329"
+            startingLineNumber = "369"
+            endingLineNumber = "369"
             landmarkName = "applyInitialSnapshots()"
             landmarkType = "7">
          </BreakpointContent>
