@@ -155,20 +155,15 @@ extension SearchResultsTableView: UITableViewDelegate {
         
         switch indexPath.section {
         case 0:
-            
-            let querys = Array(viewModel.searchHistory.value)
+            let querys = self.dataSource.snapshot().itemIdentifiers(inSection: .recent)
             
             searchResultsDidSelectedDelegate.searchResultsDidSelected(query: querys[indexPath.row].title, category: querys[indexPath.row].category)
         case 1:
-            guard let querys = viewModel.trending.value else {
-                return
-            }
+            let querys = self.dataSource.snapshot().itemIdentifiers(inSection: .trending)
 
             searchResultsDidSelectedDelegate.searchResultsDidSelected(query: querys[indexPath.row].title, category: querys[indexPath.row].category)
         default:
             break
         }
-        
-        
     }
 }

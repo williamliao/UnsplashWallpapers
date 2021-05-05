@@ -141,4 +141,29 @@ extension FavoriteView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 200
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //1
+        guard let photoInfo = dataSource.itemIdentifier(for: indexPath) else {
+            tableView.deselectRow(at: indexPath, animated: true)
+            return
+        }
+        
+        var tempInfo = photoInfo
+        
+        //2 Update title
+        tempInfo.title = tempInfo.title.appending(" ★")
+        
+        // 3
+        // Create a new copy of data source snapshot for modification
+        var newSnapshot = dataSource.snapshot()
+        
+        // 4
+        // Reload selectedHero in newSnapshot
+        newSnapshot.reloadItems([tempInfo])
+        
+        // 5
+        // Apply snapshot changes to data source
+        dataSource.apply(newSnapshot)
+    }
 }
