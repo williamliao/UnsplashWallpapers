@@ -37,6 +37,10 @@ class PhotoListCollectionViewCell: UICollectionViewCell {
 extension PhotoListCollectionViewCell {
     
     func configureView() {
+        
+        self.layer.shouldRasterize = true;
+        self.layer.rasterizationScale = UIScreen.main.scale;
+        
         titleLabel = UILabel()
         titleLabel.font = UIFont.systemFont(ofSize: 16)
         titleLabel.textColor = .white
@@ -84,9 +88,11 @@ extension PhotoListCollectionViewCell {
     func configureImage(with url: URL) {
         isLoading(isLoading: true)
         
-        downloader.download(url: url) { [weak self] (image) in
-            self?.showImage(image: image)
-            self?.isLoading(isLoading: false)
+        DispatchQueue.global().async { [weak self] in
+            self?.downloader.download(url: url) { [weak self] (image) in
+                self?.showImage(image: image)
+                self?.isLoading(isLoading: false)
+            }
         }
     }
     
@@ -147,7 +153,6 @@ extension PhotoListCollectionViewCell {
         }
         return layoutAttributes
     }
-    
 }
 
 

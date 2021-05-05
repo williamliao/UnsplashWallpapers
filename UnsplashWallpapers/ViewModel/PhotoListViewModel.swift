@@ -28,8 +28,8 @@ class PhotoListViewModel  {
     private var canFetchMore = true
     
     var isLoading: Observable<Bool> = Observable(false)
-    
     var isSearching: Observable<Bool> = Observable(false)
+    
     let service: UnsplashService = UnsplashService()
     
     var fetchCursor: Cursor!
@@ -37,10 +37,9 @@ class PhotoListViewModel  {
     var fetchWallpapersCursor: Cursor!
     
     var unsplashPagedRequest: UnsplashPagedRequest!
-    var unsplashSearchPagedRequest: UnsplashSearchPagedRequest!
-    
-    var unsplashTopicRequest: UnsplashTopicRequest!
-    
+    var unsplashNaturePagedRequest: UnsplashSearchPagedRequest!
+    var unsplashWallpaperPagedRequest: UnsplashSearchPagedRequest!
+  
     var segmentedIndex = SegmentedIndex.random
 }
 
@@ -52,7 +51,7 @@ extension PhotoListViewModel {
         isLoading.value = true
         
         if fetchCursor == nil {
-            fetchCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+            fetchCursor = Cursor(query: "", page: 1, perPage: 30, parameters: [:])
             unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
         }
         
@@ -81,18 +80,18 @@ extension PhotoListViewModel {
         isLoading.value = true
         
         if fetchNatureCursor == nil {
-            fetchNatureCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
-            unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: fetchNatureCursor)
+            fetchNatureCursor = Cursor(query: "", page: 1, perPage: 30, parameters: [:])
+            unsplashNaturePagedRequest = UnsplashSearchPagedRequest(with: fetchNatureCursor)
         }
         
-        service.search(keyword: "nature", pageRequest: unsplashSearchPagedRequest) { (result) in
+        service.search(keyword: "nature", pageRequest: unsplashNaturePagedRequest) { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):
                    
                     self.searchRespone.value = respone
                     
-                    self.fetchNatureCursor = self.unsplashSearchPagedRequest.nextCursor()
+                    self.fetchNatureCursor = self.unsplashNaturePagedRequest.nextCursor()
         
                 case .failure(let error):
                     
@@ -112,18 +111,18 @@ extension PhotoListViewModel {
         isLoading.value = true
         
         if fetchWallpapersCursor == nil {
-            fetchWallpapersCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
-            unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: fetchWallpapersCursor)
+            fetchWallpapersCursor = Cursor(query: "", page: 1, perPage: 30, parameters: [:])
+            unsplashWallpaperPagedRequest = UnsplashSearchPagedRequest(with: fetchWallpapersCursor)
         }
         
-        service.search(keyword: "wallpapers", pageRequest: unsplashSearchPagedRequest) { (result) in
+        service.search(keyword: "wallpapers", pageRequest: unsplashWallpaperPagedRequest) { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):
                    
                     self.searchRespone.value = respone
                     
-                    self.fetchWallpapersCursor = self.unsplashSearchPagedRequest.nextCursor()
+                    self.fetchWallpapersCursor = self.unsplashWallpaperPagedRequest.nextCursor()
                     
                 case .failure(let error):
                     
@@ -197,9 +196,9 @@ extension PhotoListViewModel {
                 }
                 
             case .nature:
-                unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: fetchNatureCursor)
+                unsplashNaturePagedRequest = UnsplashSearchPagedRequest(with: fetchNatureCursor)
                 
-                service.search(keyword: "nature", pageRequest: unsplashSearchPagedRequest) { [weak self] (result) in
+                service.search(keyword: "nature", pageRequest: unsplashNaturePagedRequest) { [weak self] (result) in
                     self?.isLoading.value = false
                     switch result {
                         case .success(let respone):
@@ -225,7 +224,7 @@ extension PhotoListViewModel {
                             if new.results.count < cursor.perPage {
                                 self?.canFetchMore = false
                             } else {
-                                self?.fetchNatureCursor = self?.unsplashSearchPagedRequest.nextCursor()
+                                self?.fetchNatureCursor = self?.unsplashNaturePagedRequest.nextCursor()
                             }
                            
                         case .failure(let error):
@@ -240,9 +239,9 @@ extension PhotoListViewModel {
                 }
                 
             case .wallpapers:
-                unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: fetchWallpapersCursor)
+                unsplashWallpaperPagedRequest = UnsplashSearchPagedRequest(with: fetchWallpapersCursor)
                 
-                service.search(keyword: "wallpapers", pageRequest: unsplashSearchPagedRequest) { [weak self] (result) in
+                service.search(keyword: "wallpapers", pageRequest: unsplashWallpaperPagedRequest) { [weak self] (result) in
                     self?.isLoading.value = false
                     switch result {
                         case .success(let respone):
@@ -268,7 +267,7 @@ extension PhotoListViewModel {
                             if new.results.count < cursor.perPage {
                                 self?.canFetchMore = false
                             } else {
-                                self?.fetchWallpapersCursor = self?.unsplashSearchPagedRequest.nextCursor()
+                                self?.fetchWallpapersCursor = self?.unsplashWallpaperPagedRequest.nextCursor()
                             }
                 
                         case .failure(let error):
@@ -287,9 +286,10 @@ extension PhotoListViewModel {
     func reset() {
         isFetching = false
         canFetchMore = true
-        unsplashSearchPagedRequest = nil
+        unsplashNaturePagedRequest = nil
+        unsplashWallpaperPagedRequest = nil
+        
         unsplashPagedRequest = nil
-        unsplashTopicRequest = nil
         fetchNatureCursor = nil
         fetchWallpapersCursor = nil
         fetchCursor = nil
@@ -298,18 +298,18 @@ extension PhotoListViewModel {
         self.respone.value = nil
         
         if fetchCursor == nil {
-            fetchCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+            fetchCursor = Cursor(query: "", page: 1, perPage: 30, parameters: [:])
             unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
         }
         
         if fetchNatureCursor == nil {
-            fetchNatureCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
-            unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: fetchNatureCursor)
+            fetchNatureCursor = Cursor(query: "", page: 1, perPage: 30, parameters: [:])
+            unsplashNaturePagedRequest = UnsplashSearchPagedRequest(with: fetchNatureCursor)
         }
         
         if fetchWallpapersCursor == nil {
-            fetchWallpapersCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
-            unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: fetchWallpapersCursor)
+            fetchWallpapersCursor = Cursor(query: "", page: 1, perPage: 30, parameters: [:])
+            unsplashWallpaperPagedRequest = UnsplashSearchPagedRequest(with: fetchWallpapersCursor)
         }
     }
     

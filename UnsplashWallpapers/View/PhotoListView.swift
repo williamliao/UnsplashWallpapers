@@ -25,6 +25,8 @@ class PhotoListView: UIView {
     
     var viewModel: PhotoListViewModel
     
+    fileprivate var refreshControl: UIRefreshControl!
+    
     @available(iOS 13.0, *)
     lazy var dataSource  = makeDataSource()
 
@@ -54,6 +56,9 @@ class PhotoListView: UIView {
     let items = ["Random", "Nature", "Wallpapers"]
     lazy var segmentedControl = UISegmentedControl(items: items)
     
+    var imageLoadQueue: OperationQueue?
+    var imageLoadOperations: [IndexPath: ImageLoadOperation]?
+    
     init(viewModel: PhotoListViewModel, coordinator: MainCoordinator?) {
         self.viewModel = viewModel
         self.coordinator = viewModel.coordinator
@@ -73,22 +78,25 @@ extension PhotoListView {
         to.backgroundColor = .systemBackground
         
         let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        //flowLayout.estimatedItemSize = .zero
-        flowLayout.estimatedItemSize = CGSize(width: 1.0, height: 1.0)
+        flowLayout.itemSize = CGSize(width: UIScreen.main.bounds.size.width, height: 300)
 
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         
         collectionView.delegate = self
-        //collectionView.contentInsetAdjustmentBehavior = .always
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         makeDateSourceForCollectionView()
         
+        setupRefreshControl()
+        
+        if #available(iOS 10.0, *) {
+            collectionView.prefetchDataSource = self
+            imageLoadQueue = OperationQueue()
+            imageLoadOperations = [IndexPath: ImageLoadOperation]()
+        }
+        
         collectionView.register(PhotoListCollectionViewCell.self
                                 , forCellWithReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier)
-        
-        
         
         to.addSubview(collectionView)
         
@@ -283,6 +291,7 @@ extension PhotoListView {
                 
                 //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
                 DispatchQueue.main.async {
+                    self.collectionView.setNeedsLayout()
                     self.dataSource.apply(snapshot, animatingDifferences: false)
                     self.reloadCollectionData()
                 }
@@ -311,6 +320,7 @@ extension PhotoListView {
                 
                 //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
                 DispatchQueue.main.async {
+                    self.collectionView.setNeedsLayout()
                     self.natureDataSource.apply(snapshot, animatingDifferences: false)
                     self.reloadCollectionData()
                 }
@@ -339,6 +349,7 @@ extension PhotoListView {
                 
                 //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
                 DispatchQueue.main.async {
+                    self.collectionView.setNeedsLayout()
                     self.wallpapersDataSource.apply(snapshot, animatingDifferences: false)
                     self.reloadCollectionData()
                     
@@ -371,6 +382,53 @@ extension PhotoListView {
                     
                 }
                 
+        }
+    }
+}
+
+// MARK: - UICollectionViewDataSourcePrefetching
+
+extension PhotoListView: UICollectionViewDataSourcePrefetching {
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        
+        for indexPath in indexPaths {
+            
+            guard let res = viewModel.searchRespone.value else {
+              return
+            }
+            
+            if section == .nature {
+                
+                if let _ = imageLoadOperations?[indexPath] {
+                    return
+                }
+                
+                guard let urls = res.results[indexPath.row].urls else {
+                    return
+                }
+                
+                if let url = URL(string: urls.small) {
+                    let imageLoadOperation = ImageLoadOperation(imgUrl: url)
+                    imageLoadQueue?.addOperation(imageLoadOperation)
+                    imageLoadOperations?[indexPath] = imageLoadOperation
+                }
+                
+            }else if section == .wallpapers {
+                
+                
+            }
+            
+            //let _ = self.configureCell(collectionView: collectionView, respone: res[indexPath.row], indexPath: indexPath)
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
+        for indexPath in indexPaths {
+            guard let imageLoadOperation = imageLoadOperations?[indexPath] else {
+                return
+            }
+            imageLoadOperation.cancel()
+            _ = imageLoadOperations?.removeValue(forKey: indexPath)
         }
     }
 }
@@ -484,25 +542,61 @@ extension PhotoListView: UICollectionViewDelegate {
             let spinner = UIActivityIndicatorView(style: .medium)
             spinner.startAnimating()
             spinner.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: collectionView.bounds.width, height: CGFloat(44))
+            spinner.color = traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
             
             currentIndex = lastElement
-            endRect = collectionView.layoutAttributesForItem(at: IndexPath(row: indexPath.row, section: indexPath.section))?.frame ?? CGRect.zero
-  
+            
+            let lastIndexPath = IndexPath(row: indexPath.row, section: indexPath.section)
+            let theAttributes = collectionView.layoutAttributesForItem(at: lastIndexPath)
+            
+            endRect = theAttributes?.frame ?? CGRect.zero
             viewModel.fetchNextPage()
         }
     }
     
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let imageLoadOperation = imageLoadOperations?[indexPath] else {
+            return
+        }
+        imageLoadOperation.cancel()
+        _ = imageLoadOperations?.removeValue(forKey: indexPath)
+    }
+    
     private func reloadCollectionData() {
        
-        self.collectionView.setNeedsLayout()
-        //self.collectionView.layoutIfNeeded()
+        self.collectionView.layoutIfNeeded()
        
         UIView.animate(withDuration: 0.25) {
-            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: self.section.rawValue), at: .bottom, animated: false)
+            self.collectionView.scrollRectToVisible(self.endRect, animated: false)
         }
     }
 }
 
+// MARK: - RefreshControll
+extension PhotoListView {
+    func setupRefreshControl() {
+        refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        if #available(iOS 10.0, *) {
+            collectionView.refreshControl = refreshControl
+        } else {
+            collectionView.addSubview(refreshControl)
+        }
+    }
+    
+    @objc func refresh() {
+        // Call when only refresh is needness.
+        if refreshControl.isRefreshing {
+            refreshControl.endRefreshing()
+        }
+
+        if #available(iOS 10.0, *) {
+            imageLoadOperations?.forEach { $1.cancel() }
+        }
+        viewModel.reset()
+        collectionView.reloadData()
+    }
+}
 
 // MARK: - Private
 extension PhotoListView {
@@ -533,7 +627,6 @@ extension PhotoListView {
         }
         
         if let url = URL(string: respone.urls!.small) {
-            
             cell?.configureImage(with: url)
         }
         

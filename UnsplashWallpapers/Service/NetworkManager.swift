@@ -142,7 +142,7 @@ class NetworkManager {
                 components.path = "/photos/random"
                 
                 components.queryItems = [
-                    URLQueryItem(name: "count", value: "10"),
+                    URLQueryItem(name: "count", value: "30"),
                     
                 ]
                 
