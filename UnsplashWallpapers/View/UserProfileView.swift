@@ -360,11 +360,11 @@ extension UserProfileView: UICollectionViewDelegate {
             
             switch section {
                 case .photos:
-                    guard let res = dataSource.itemIdentifier(for: indexPath)  else {
+                    guard let res = dataSource.itemIdentifier(for: indexPath)   else {
                         return
                     }
                     
-                    let photoInfo = PhotoInfo(id: res.id, title: res.user.name, url: res.urls, profile_image: res.user.profile_image)
+                    let photoInfo = PhotoInfo(id: res.id, title: res.user.name, url: res.urls, profile_image: res.user.profile_image, width: CGFloat(res.width), height: CGFloat(res.height))
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                     
                 case .likes:
@@ -373,7 +373,7 @@ extension UserProfileView: UICollectionViewDelegate {
                         return
                     }
                     
-                    let photoInfo = PhotoInfo(id: res.id, title: res.user.name, url: res.urls, profile_image: res.user.profile_image)
+                    let photoInfo = PhotoInfo(id: res.id, title: res.user.name, url: res.urls, profile_image: res.user.profile_image, width: CGFloat(res.width), height: CGFloat(res.height))
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                     break
                     

@@ -50,7 +50,7 @@ extension FavoriteTableViewCell {
         titleLabel.textAlignment = .center
      
         thumbnailImageView = UIImageView()
-        thumbnailImageView.contentMode = .scaleAspectFit
+        //thumbnailImageView.contentMode = .scaleAspectFit
         thumbnailImageView.clipsToBounds = true
         
         avatarImageView = UIImageView()
@@ -81,8 +81,8 @@ extension FavoriteTableViewCell {
             avatarImageView.widthAnchor.constraint(equalToConstant: 48),
             avatarImageView.heightAnchor.constraint(equalToConstant: 48),
             
-            thumbnailImageView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor),
-            thumbnailImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            thumbnailImageView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 10),
+            thumbnailImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
             thumbnailImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             thumbnailImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
          
@@ -117,24 +117,29 @@ extension FavoriteTableViewCell {
     
     private func showImage(image: UIImage?) {
         DispatchQueue.main.async {
-            self.thumbnailImageView.alpha = 0.0
+            //self.thumbnailImageView.alpha = 0.0
 
             guard let image = image else {
                 return
             }
-
-            let resizeImage = self.resizedImage(at: image, for: CGSize(width: self.contentView.frame.size.width - 80, height: 200))
+            
+            let resizeImage = self.resizedImage(at: image, for: CGSize(width: self.contentView.frame.size.width, height: 200))
             self.thumbnailImageView.image = resizeImage
             
-            self.animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: [.curveEaseOut, .transitionCrossDissolve], animations: {
-                self.thumbnailImageView.alpha = 1.0
-            })
+            //let resizeImage = self.resizedImage(at: image, for: CGSize(width: self.contentView.frame.size.width - 80, height: 200))
+            
+            
+           // self.animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: [.curveEaseOut, .transitionCrossDissolve], animations: {
+            
+            //self.thumbnailImageView.alpha = 1.0
+                
+          //  })
         }
     }
     
     private func showImage2(image: UIImage?) {
         DispatchQueue.main.async {
-            self.avatarImageView.alpha = 0.0
+            //self.avatarImageView.alpha = 0.0
 
             guard let image = image else {
                 return
@@ -143,9 +148,9 @@ extension FavoriteTableViewCell {
             self.avatarImageView.image = image
             self.avatarImageView.layer.cornerRadius = image.size.height/2
             
-            self.animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: [.curveEaseOut, .transitionCrossDissolve], animations: {
-                self.avatarImageView.alpha = 1.0
-            })
+          //  self.animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: [.curveEaseOut, .transitionCrossDissolve], animations: {
+               // self.avatarImageView.alpha = 1.0
+           // })
         }
     }
     
@@ -169,9 +174,9 @@ extension FavoriteTableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         thumbnailImageView.image = nil
-        thumbnailImageView.alpha = 0.0
+        //thumbnailImageView.alpha = 0.0
         avatarImageView.image = nil
-        avatarImageView.alpha = 0.0
+        //avatarImageView.alpha = 0.0
         animator?.stopAnimation(true)
         downloader.cancel()
         downloader2.cancel()

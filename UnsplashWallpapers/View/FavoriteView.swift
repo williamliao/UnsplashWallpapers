@@ -125,7 +125,7 @@ extension FavoriteView {
         
         cell?.titleLabel.text = respone.title
         
-        if let url = URL(string: respone.url.small) {
+        if let url = URL(string: respone.url.regular) {
             cell?.configureImage(with: url)
         }
         
@@ -139,7 +139,24 @@ extension FavoriteView {
 
 extension FavoriteView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 200
+        
+        guard let photoInfo = dataSource.itemIdentifier(for: indexPath) else {
+            return 200
+        }
+         
+        let height = photoInfo.height
+        let width = photoInfo.width
+        
+        if height > width {
+            let resizeH = CGFloat(height) / 8
+            
+            let resizeHeight: CGFloat = CGFloat(resizeH)
+            
+            return resizeHeight
+        } else {
+            return 200
+        }
+
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -149,21 +166,39 @@ extension FavoriteView: UITableViewDelegate {
             return
         }
         
-        var tempInfo = photoInfo
-        
+
         //2 Update title
-        tempInfo.title = tempInfo.title.appending(" ★")
+        var updatePhotoInfo = photoInfo
+        updatePhotoInfo.title = updatePhotoInfo.title.appending(" ★")
         
         // 3
         // Create a new copy of data source snapshot for modification
         var newSnapshot = dataSource.snapshot()
         
         // 4
-        // Reload selectedHero in newSnapshot
-        newSnapshot.reloadItems([tempInfo])
+        /* only work for class type
+        // Reload photoInfo in newSnapshot
+        newSnapshot.reloadItems([updatePhotoInfo])*/
         
-        // 5
-        // Apply snapshot changes to data source
-        dataSource.apply(newSnapshot)
+        let favoriteManager = FavoriteManager.sharedInstance
+        
+        // Replacing photoInfo with updatePhotoInfo
+        UIView.performWithoutAnimation {
+            newSnapshot.insertItems([updatePhotoInfo], beforeItem: photoInfo)
+            newSnapshot.deleteItems([photoInfo])
+            
+            if favoriteManager.favorites.value.contains(photoInfo) {
+                favoriteManager.favorites.value.remove(photoInfo)
+            }
+            
+            favoriteManager.handleSaveAction(photo: updatePhotoInfo, isFavorite: true)
+            favoriteManager.saveToFavorite()
+            
+            // 5
+            // Apply snapshot changes to data source
+            dataSource.apply(newSnapshot)
+        }
+        
+        
     }
 }

@@ -398,11 +398,11 @@ extension SearchView: UICollectionViewDelegate {
             
             switch viewModel.category {
             case .photos:
-                guard let res = searchDataSource.itemIdentifier(for: indexPath), let urls = res.urls, let user = res.user  else {
+                guard let res = searchDataSource.itemIdentifier(for: indexPath), let urls = res.urls, let user = res.user, let width = res.width, let height = res.height  else {
                     return
                 }
                 
-                let photoInfo = PhotoInfo(id: res.id, title: user.name, url: urls, profile_image: user.profile_image)
+                let photoInfo = PhotoInfo(id: res.id, title: user.name, url: urls, profile_image: user.profile_image, width: CGFloat(width), height: CGFloat(height))
                 coordinator?.goToDetailView(photoInfo: photoInfo)
             case .collections:
                 

@@ -511,24 +511,26 @@ extension PhotoListView: UICollectionViewDelegate {
                         return
                     }
                     
-                    let photoInfo = PhotoInfo(id: res.id, title: res.user?.name ?? "", url: res.urls, profile_image: profile)
+                    
+                    
+                    let photoInfo = PhotoInfo(id: res.id, title: res.user?.name ?? "", url: res.urls, profile_image: profile, width: CGFloat(res.width), height: CGFloat(res.height))
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                     
                 case .nature:
-                    guard let res = natureDataSource.itemIdentifier(for: indexPath), let profile = res.user?.profile_image, let urls = res.urls else {
+                    guard let res = natureDataSource.itemIdentifier(for: indexPath), let profile = res.user?.profile_image, let urls = res.urls, let width = res.width, let height = res.height else {
                         return
                     }
 
-                    let photoInfo = PhotoInfo(id: res.id, title: res.user?.name ?? "", url: urls, profile_image: profile)
+                    let photoInfo = PhotoInfo(id: res.id, title: res.user?.name ?? "", url: urls, profile_image: profile, width: CGFloat(width), height: CGFloat(height))
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                     
                 case .wallpapers:
                     
-                    guard let res = wallpapersDataSource.itemIdentifier(for: indexPath), let profile = res.user?.profile_image, let urls = res.urls else {
+                    guard let res = wallpapersDataSource.itemIdentifier(for: indexPath), let profile = res.user?.profile_image, let urls = res.urls, let width = res.width, let height = res.height else {
                         return
                     }
                     
-                    let photoInfo = PhotoInfo(id: res.id, title: res.user?.name ?? "", url: urls, profile_image: profile)
+                    let photoInfo = PhotoInfo(id: res.id, title: res.user?.name ?? "", url: urls, profile_image: profile, width: CGFloat(width), height: CGFloat(height))
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                 case .collections:
                     break
@@ -541,7 +543,8 @@ extension PhotoListView: UICollectionViewDelegate {
                     guard let res = viewModel.respone.value?[indexPath.row], let profile = res.user?.profile_image else {
                         return
                     }
-                    let photoInfo = PhotoInfo(id: res.id, title: res.user?.name ?? "", url: res.urls, profile_image: profile)
+                    
+                    let photoInfo = PhotoInfo(id: res.id, title: res.user?.name ?? "", url: res.urls, profile_image: profile, width: CGFloat(res.width), height: CGFloat(res.height))
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                     
                 case .nature:
@@ -553,7 +556,7 @@ extension PhotoListView: UICollectionViewDelegate {
                         return
                     }
                     
-                    let photoInfo = PhotoInfo(id: res.id, title: "Nature", url: res.preview_photos[indexPath.row].urls, profile_image: owners[indexPath.row].profile_image)
+                    let photoInfo = PhotoInfo(id: res.id, title: "Nature", url: res.preview_photos[indexPath.row].urls, profile_image: owners[indexPath.row].profile_image, width: CGFloat(0), height: CGFloat(0))
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                     
                 case .wallpapers:
@@ -566,7 +569,7 @@ extension PhotoListView: UICollectionViewDelegate {
                         return
                     }
                     
-                    let photoInfo = PhotoInfo(id: res.id, title: "Wallpapers", url: res.preview_photos[indexPath.row].urls, profile_image: owners[indexPath.row].profile_image)
+                    let photoInfo = PhotoInfo(id: res.id, title: "Wallpapers", url: res.preview_photos[indexPath.row].urls, profile_image: owners[indexPath.row].profile_image, width: CGFloat(0), height: CGFloat(0))
                     coordinator?.goToDetailView(photoInfo: photoInfo)
                 case .collections:
                     break

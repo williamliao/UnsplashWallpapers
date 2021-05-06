@@ -9,7 +9,6 @@ import UIKit
 
 class FavoriteViewModel {
     var coordinator: MainCoordinator?
-    var respone: Observable<[Response]?> = Observable([])
     var photoInfo: Observable<[PhotoInfo]?> = Observable([])
     var error: Observable<Error?> = Observable(nil)
     

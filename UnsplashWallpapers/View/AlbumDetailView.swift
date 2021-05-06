@@ -158,7 +158,21 @@ extension AlbumDetailView {
 extension AlbumDetailView: UICollectionViewDelegate {
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
-    let photoInfo = PhotoInfo(id: item.identifier, title: item.title, url: item.urls, profile_image: item.profile_image)
-    coordinator?.goToDetailView(photoInfo: photoInfo)
+    
+    guard let url = URL(string: item.urls.full)  else {
+        return
+    }
+    
+    if let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil) {
+        if let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as Dictionary? {
+             let pixelWidth = imageProperties[kCGImagePropertyPixelWidth] as! Int
+             let pixelHeight = imageProperties[kCGImagePropertyPixelHeight] as! Int
+             
+            let photoInfo = PhotoInfo(id: item.identifier, title: item.title, url: item.urls, profile_image: item.profile_image, width: CGFloat(pixelWidth), height: CGFloat(pixelHeight))
+            coordinator?.goToDetailView(photoInfo: photoInfo)
+        }
+    }
+    
+    
   }
 }
