@@ -42,9 +42,8 @@ class SearchView: UIView {
     @available(iOS 13.0, *)
     lazy var searchUserDataSource  = makeSearchUserDataSource()
     
-    
     var firstLoad = true
-    var currentIndex = 0;
+    var currentIndex = 0
 }
 
 // MARK: - View
@@ -218,9 +217,7 @@ extension SearchView {
         //Force the update on the main thread to silence a warning about tableview not being in the hierarchy!
         DispatchQueue.main.async {
             dataSource.apply(snapshot, animatingDifferences: false)
-            
-            self.searchViewController.isActive = false
-            
+
             if let count = self.viewModel.searchRespone.value?.results.count {
                 if count > 0 {
                     self.searchResultsView.isHidden = true
@@ -316,6 +313,10 @@ extension SearchView: UISearchBarDelegate {
             return
         }
         
+        let text = searchBar.text
+        self.searchViewController.isActive = false
+        self.searchViewController.searchBar.text = text
+        
         viewModel.search(keyword: strippedString, category: category)
         let searchResults = SearchResults(title: strippedString, category: category)
         
@@ -386,6 +387,10 @@ extension SearchView: UISearchBarDelegate {
         
         viewModel.reset()
         viewModel.search(keyword: strippedString, category: category)
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+
     }
 }
 

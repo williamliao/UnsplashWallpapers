@@ -168,7 +168,7 @@ extension SearchViewModel {
     
     func reset() {
         isSearching.value = false
-        query = ""
+        //query = ""
         isLoading.value = false
         canFetchMore = false
         searchCursor = nil
