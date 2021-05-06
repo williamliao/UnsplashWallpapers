@@ -26,6 +26,7 @@ class PhotoListViewModel  {
     var error: Observable<Error?> = Observable(nil)
     private(set) var isFetching = false
     private var canFetchMore = true
+    private var isFetchingNextPage = false
     
     var isLoading: Observable<Bool> = Observable(false)
     var isSearching: Observable<Bool> = Observable(false)
@@ -147,6 +148,7 @@ extension PhotoListViewModel {
         }
         
         isLoading.value = true
+        isFetchingNextPage = true
         
         switch segmentedIndex {
             case .random:
@@ -154,6 +156,8 @@ extension PhotoListViewModel {
                 
                 service.fetchDataWithNetworkManager(pageRequest: unsplashPagedRequest) { [weak self] (result) in
                     self?.isLoading.value = false
+                    self?.isFetchingNextPage = false
+                    
                     switch result {
                         case .success(let respone):
                             
@@ -164,14 +168,9 @@ extension PhotoListViewModel {
                             guard var new = self?.respone.value  else {
                                 return
                             }
-                            
-                            if new.count == respone.count {
-                               self?.canFetchMore = false
-                                return
-                            }
-                            
+
                             new.append(contentsOf: respone)
-                            
+
                             self?.respone.value = new
                            
                             guard let cursor = self?.fetchCursor ,let count = self?.respone.value?.count else {
@@ -200,6 +199,8 @@ extension PhotoListViewModel {
                 
                 service.search(keyword: "nature", pageRequest: unsplashNaturePagedRequest) { [weak self] (result) in
                     self?.isLoading.value = false
+                    self?.isFetchingNextPage = false
+                    
                     switch result {
                         case .success(let respone):
                             
@@ -243,6 +244,8 @@ extension PhotoListViewModel {
                 
                 service.search(keyword: "wallpapers", pageRequest: unsplashWallpaperPagedRequest) { [weak self] (result) in
                     self?.isLoading.value = false
+                    self?.isFetchingNextPage = false
+                    
                     switch result {
                         case .success(let respone):
                            
@@ -285,6 +288,7 @@ extension PhotoListViewModel {
     
     func reset() {
         isFetching = false
+        isFetchingNextPage = false
         canFetchMore = true
         unsplashNaturePagedRequest = nil
         unsplashWallpaperPagedRequest = nil

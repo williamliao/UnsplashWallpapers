@@ -431,34 +431,52 @@ extension PhotoListView {
 extension PhotoListView: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         
-        for indexPath in indexPaths {
-            
-            guard let res = viewModel.searchRespone.value else {
-              return
-            }
-            
-            if section == .nature {
+        switch section {
+            case .random:
                 
-                if let _ = imageLoadOperations?[indexPath] {
+                guard let res = viewModel.respone.value else {
                     return
                 }
                 
-                guard let urls = res.results[indexPath.row].urls else {
+                for indexPath in indexPaths {
+                    
+                    if let _ = imageLoadOperations?[indexPath] {
+                        return
+                    }
+                    
+                    let urls = res[indexPath.row].urls
+                    
+                    if let url = URL(string: urls.small) {
+                        let imageLoadOperation = ImageLoadOperation(imgUrl: url)
+                        imageLoadQueue?.addOperation(imageLoadOperation)
+                        imageLoadOperations?[indexPath] = imageLoadOperation
+                    }
+                }
+
+            case .nature, .wallpapers:
+                
+                guard let res = viewModel.searchRespone.value else {
                     return
                 }
                 
-                if let url = URL(string: urls.small) {
-                    let imageLoadOperation = ImageLoadOperation(imgUrl: url)
-                    imageLoadQueue?.addOperation(imageLoadOperation)
-                    imageLoadOperations?[indexPath] = imageLoadOperation
+                for indexPath in indexPaths {
+                    if let _ = imageLoadOperations?[indexPath] {
+                        return
+                    }
+                    
+                    guard let urls = res.results[indexPath.row].urls else {
+                        return
+                    }
+                    
+                    if let url = URL(string: urls.small) {
+                        let imageLoadOperation = ImageLoadOperation(imgUrl: url)
+                        imageLoadQueue?.addOperation(imageLoadOperation)
+                        imageLoadOperations?[indexPath] = imageLoadOperation
+                    }
                 }
                 
-            }else if section == .wallpapers {
-                
-                
-            }
-            
-            //let _ = self.configureCell(collectionView: collectionView, respone: res[indexPath.row], indexPath: indexPath)
+            case .collections:
+                break
         }
     }
     
@@ -510,8 +528,6 @@ extension PhotoListView: UICollectionViewDelegate {
                     guard let res = dataSource.itemIdentifier(for: indexPath), let profile = res.user?.profile_image  else {
                         return
                     }
-                    
-                    
                     
                     let photoInfo = PhotoInfo(id: res.id, title: res.user?.name ?? "", url: res.urls, profile_image: profile, width: CGFloat(res.width), height: CGFloat(res.height))
                     coordinator?.goToDetailView(photoInfo: photoInfo)

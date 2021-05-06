@@ -302,8 +302,8 @@
             filePath = "UnsplashWallpapers/ViewModel/PhotoListViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "271"
-            endingLineNumber = "271"
+            startingLineNumber = "274"
+            endingLineNumber = "274"
             landmarkName = "fetchNextPage()"
             landmarkType = "7">
          </BreakpointContent>
@@ -545,6 +545,22 @@
             startingLineNumber = "286"
             endingLineNumber = "286"
             landmarkName = "query(query:pageRequest:method:decode:completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D4ADFA89-9764-41ED-A3DC-F695E42A2B37"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "UnsplashWallpapers/ViewModel/PhotoListViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "142"
+            endingLineNumber = "142"
+            landmarkName = "fetchNextPage()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

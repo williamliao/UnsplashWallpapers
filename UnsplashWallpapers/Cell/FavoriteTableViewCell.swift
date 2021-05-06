@@ -51,6 +51,8 @@ extension FavoriteTableViewCell {
      
         thumbnailImageView = UIImageView()
         thumbnailImageView.clipsToBounds = true
+        thumbnailImageView.contentMode = .scaleAspectFill
+        thumbnailImageView.layer.masksToBounds = true
         
         avatarImageView = UIImageView()
         avatarImageView.contentMode = .scaleAspectFit
