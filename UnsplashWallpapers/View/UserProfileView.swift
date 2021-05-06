@@ -32,7 +32,7 @@ class UserProfileView: UIView {
     
     var coordinator: MainCoordinator?
     
-    var section: UserProfileCurrentSource = .photos
+    //var section: UserProfileCurrentSource = .photos
     
     var currentIndex = 0;
     
@@ -145,7 +145,7 @@ extension UserProfileView {
     @objc func segmentAction(_ segmentedControl: UISegmentedControl) {
         switch (segmentedControl.selectedSegmentIndex) {
             case 0:
-                section = .photos
+                viewModel.section = .photos
                 
                 guard let count = viewModel.userPhotosResponse.value?.count  else {
                     return
@@ -158,7 +158,7 @@ extension UserProfileView {
                 }
                 break
             case 1:
-                section = .likes
+                viewModel.section = .likes
                 
                 guard let count = viewModel.userLikesResponse.value?.count  else {
                     return
@@ -171,7 +171,7 @@ extension UserProfileView {
                 }
                 break
             case 2:
-                section = .collections
+                viewModel.section = .collections
                 guard let count = viewModel.userCollectionsResponse.value?.count  else {
                     return
                 }
@@ -273,7 +273,7 @@ extension UserProfileView {
         //Append available sections
         Section.allCases.forEach { snapshot.appendSections([$0]) }
         
-        switch section {
+        switch viewModel.section {
             case .photos:
                 
                 if (!firstLoad) {
@@ -358,7 +358,7 @@ extension UserProfileView: UICollectionViewDelegate {
         
         if #available(iOS 13.0, *) {
             
-            switch section {
+            switch viewModel.section {
                 case .photos:
                     guard let res = dataSource.itemIdentifier(for: indexPath)   else {
                         return
@@ -388,7 +388,7 @@ extension UserProfileView: UICollectionViewDelegate {
             
         } else {
             
-            switch section {
+            switch viewModel.section {
                 case .photos:
                     break
                     

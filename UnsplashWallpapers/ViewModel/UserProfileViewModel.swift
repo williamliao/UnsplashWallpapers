@@ -31,13 +31,15 @@ class UserProfileViewModel {
     var userCollectionsPhotosCursor: Cursor!
     var unsplashUserCollectionsPhotosdRequest: UnsplashUserListRequest!
     
-    //var segmentedIndex = SegmentedIndex.random
+    var section: UserProfileCurrentSource = .photos
+    
+    var query = ""
 }
 
 extension UserProfileViewModel {
     func fetchUserPhotos(username: String) {
         service.networkManager = NetworkManager(endPoint: .user_photo)
-        
+        query = username
         isLoading.value = true
         
         if userPhotosCursor == nil {
@@ -45,12 +47,12 @@ extension UserProfileViewModel {
             unsplashUserPhotosdRequest = UnsplashUserListRequest(with: userPhotosCursor)
         }
         
-        service.listUserPhotos(username: username, pageRequest: unsplashUserPhotosdRequest) { (result) in
-            self.isLoading.value = false
+        service.listUserPhotos(username: username, pageRequest: unsplashUserPhotosdRequest) { [weak self] (result) in
+            self?.isLoading.value = false
             switch result {
                 case .success(let respone):
                     
-                    self.userPhotosResponse.value = respone
+                    self?.userPhotosResponse.value = respone
         
                 case .failure(let error):
                     
@@ -58,7 +60,7 @@ extension UserProfileViewModel {
                         case .statusCodeError(let code):
                             print("statusCodeError \(code)")
                         default:
-                            self.error.value = error
+                            self?.error.value = error
                     }
             }
         }
@@ -66,7 +68,7 @@ extension UserProfileViewModel {
     
     func fetchUserLikePhotos(username: String) {
         service.networkManager = NetworkManager(endPoint: .user_photo)
-        
+        query = username
         isLoading.value = true
         
         if userLikePhotosCursor == nil {
@@ -74,12 +76,12 @@ extension UserProfileViewModel {
             unsplashUserLikePhotosdRequest = UnsplashUserListRequest(with: userLikePhotosCursor)
         }
         
-        service.listUserLikePhotos(username: username, pageRequest: unsplashUserPhotosdRequest) { (result) in
-            self.isLoading.value = false
+        service.listUserLikePhotos(username: username, pageRequest: unsplashUserLikePhotosdRequest) { [weak self] (result) in
+            self?.isLoading.value = false
             switch result {
                 case .success(let respone):
                     
-                    self.userLikesResponse.value = respone
+                    self?.userLikesResponse.value = respone
         
                 case .failure(let error):
                     
@@ -87,7 +89,7 @@ extension UserProfileViewModel {
                         case .statusCodeError(let code):
                             print("statusCodeError \(code)")
                         default:
-                            self.error.value = error
+                            self?.error.value = error
                     }
             }
         }
@@ -95,7 +97,7 @@ extension UserProfileViewModel {
     
     func fetchUserCollectons(username: String) {
         service.networkManager = NetworkManager(endPoint: .user_photo)
-        
+        query = username
         isLoading.value = true
         
         if userCollectionsPhotosCursor == nil {
@@ -103,12 +105,12 @@ extension UserProfileViewModel {
             unsplashUserCollectionsPhotosdRequest = UnsplashUserListRequest(with: userCollectionsPhotosCursor)
         }
         
-        service.listUserCollections(username: username, pageRequest: unsplashUserPhotosdRequest) { (result) in
-            self.isLoading.value = false
+        service.listUserCollections(username: username, pageRequest: unsplashUserCollectionsPhotosdRequest) { [weak self] (result) in
+            self?.isLoading.value = false
             switch result {
                 case .success(let respone):
                     
-                    self.userCollectionsResponse.value = respone
+                    self?.userCollectionsResponse.value = respone
         
                 case .failure(let error):
                     
@@ -116,7 +118,7 @@ extension UserProfileViewModel {
                         case .statusCodeError(let code):
                             print("statusCodeError \(code)")
                         default:
-                            self.error.value = error
+                            self?.error.value = error
                     }
             }
         }
@@ -124,6 +126,159 @@ extension UserProfileViewModel {
     
     func fetchNextPage() {
         
+        if isLoading.value {
+            return
+        }
+        
+        if canFetchMore == false {
+            return
+        }
+        
+        isLoading.value = true
+        
+        switch section {
+            case .photos:
+                unsplashUserPhotosdRequest = UnsplashUserListRequest(with: userPhotosCursor)
+                
+                service.listUserPhotos(username: query, pageRequest: unsplashUserPhotosdRequest) { [weak self] (result) in
+                    self?.isLoading.value = false
+                    switch result {
+                        case .success(let respone):
+                            
+                            if (respone.count == 0) {
+                                return
+                            }
+                           
+                            guard var new = self?.userPhotosResponse.value  else {
+                                return
+                            }
+                            
+                            for index in 0...respone.count - 1 {
+                                
+                                if !new.contains(respone[index]) {
+                                    new.append(respone[index])
+                                }
+                            }
+
+                            self?.userPhotosResponse.value = new
+                           
+                            guard let cursor = self?.userPhotosCursor ,let count = self?.userPhotosResponse.value?.count else {
+                                return
+                            }
+
+                            if count < cursor.perPage {
+                                self?.canFetchMore = false
+                            } else {
+                                self?.userPhotosCursor = self?.unsplashUserPhotosdRequest.nextCursor()
+                            }
+                
+                        case .failure(let error):
+                            
+                            switch error {
+                                case .statusCodeError(let code):
+                                    print("statusCodeError \(code)")
+                                default:
+                                    self?.error.value = error
+                            }
+                    }
+                }
+                
+                break
+            case .likes:
+                unsplashUserLikePhotosdRequest = UnsplashUserListRequest(with: userLikePhotosCursor)
+                
+                service.listUserLikePhotos(username: query, pageRequest: unsplashUserLikePhotosdRequest) { [weak self] (result) in
+                    self?.isLoading.value = false
+                    switch result {
+                        case .success(let respone):
+
+                            if (respone.count == 0) {
+                                return
+                            }
+                           
+                            guard var new = self?.userLikesResponse.value  else {
+                                return
+                            }
+                            
+                            for index in 0...respone.count - 1 {
+                                
+                                if !new.contains(respone[index]) {
+                                    new.append(respone[index])
+                                }
+                            }
+
+                            self?.userLikesResponse.value = new
+                           
+                            guard let cursor = self?.userLikePhotosCursor ,let count = self?.userLikesResponse.value?.count else {
+                                return
+                            }
+
+                            if count < cursor.perPage {
+                                self?.canFetchMore = false
+                            } else {
+                                self?.userLikePhotosCursor = self?.unsplashUserLikePhotosdRequest.nextCursor()
+                            }
+                
+                        case .failure(let error):
+                            
+                            switch error {
+                                case .statusCodeError(let code):
+                                    print("statusCodeError \(code)")
+                                default:
+                                    self?.error.value = error
+                            }
+                    }
+                }
+                
+                break
+            case .collections:
+                unsplashUserCollectionsPhotosdRequest = UnsplashUserListRequest(with: userCollectionsPhotosCursor)
+                
+                service.listUserCollections(username: query, pageRequest: unsplashUserCollectionsPhotosdRequest) { [weak self] (result) in
+                    self?.isLoading.value = false
+                    switch result {
+                        case .success(let respone):
+                            
+                            if (respone.count == 0) {
+                                return
+                            }
+                           
+                            guard var new = self?.userCollectionsResponse.value  else {
+                                return
+                            }
+                            
+                            for index in 0...respone.count - 1 {
+                                
+                                if !new.contains(respone[index]) {
+                                    new.append(respone[index])
+                                }
+                            }
+
+                            self?.userCollectionsResponse.value = new
+                           
+                            guard let cursor = self?.userCollectionsPhotosCursor ,let count = self?.userCollectionsResponse.value?.count else {
+                                return
+                            }
+
+                            if count < cursor.perPage {
+                                self?.canFetchMore = false
+                            } else {
+                                self?.userCollectionsPhotosCursor = self?.unsplashUserCollectionsPhotosdRequest.nextCursor()
+                            }
+                
+                        case .failure(let error):
+                            
+                            switch error {
+                                case .statusCodeError(let code):
+                                    print("statusCodeError \(code)")
+                                default:
+                                    self?.error.value = error
+                            }
+                    }
+                }
+                
+                break
+        }
     }
     
     func reset() {
@@ -138,5 +293,6 @@ extension UserProfileViewModel {
         isFetching = false
         canFetchMore = false
         isLoading.value = false
+        query = ""
     }
 }
