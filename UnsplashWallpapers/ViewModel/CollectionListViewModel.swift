@@ -84,13 +84,13 @@ extension CollectionListViewModel {
                         return
                     }
                     
-                    if new.count == respone.count {
-                       self?.canFetchMore = false
-                        return
+                    for index in 0...respone.count - 1 {
+                        
+                        if !new.contains(respone[index]) {
+                            new.append(respone[index])
+                        }
                     }
-                    
-                    new.append(contentsOf: respone)
-                    
+                   
                     self?.collectionListResponse.value = new
                    
                     guard let cursor = self?.collectionListCursor ,let count = self?.collectionListResponse.value?.count else {

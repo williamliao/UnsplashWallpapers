@@ -136,9 +136,12 @@ extension SearchViewModel {
                     
                     new.total = respone.total
                     new.total_pages = respone.total_pages
-                    new.results.append(contentsOf: respone.results)
+                    for index in 0...respone.results.count - 1 {
+                        if !new.results.contains(respone.results[index]) {
+                            new.results.append(respone.results[index])
+                        }
+                    }
                     
-                
                     self?.searchRespone.value = new
                     
                     guard let cursor = self?.searchCursor else {

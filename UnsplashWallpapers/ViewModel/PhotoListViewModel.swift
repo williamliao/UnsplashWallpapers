@@ -168,8 +168,13 @@ extension PhotoListViewModel {
                             guard var new = self?.respone.value  else {
                                 return
                             }
-
-                            new.append(contentsOf: respone)
+                            
+                            for index in 0...respone.count - 1 {
+                                
+                                if !new.contains(respone[index]) {
+                                    new.append(respone[index])
+                                }
+                            }
 
                             self?.respone.value = new
                            
@@ -214,7 +219,13 @@ extension PhotoListViewModel {
          
                             new.total = respone.total
                             new.total_pages = respone.total_pages
-                            new.results.append(contentsOf: respone.results)
+                          
+                            for index in 0...respone.results.count - 1 {
+                                
+                                if !new.results.contains(respone.results[index]) {
+                                    new.results.append(respone.results[index])
+                                }
+                            }
                             
                             self?.searchRespone.value = new
                            
@@ -259,7 +270,12 @@ extension PhotoListViewModel {
                             
                             new.total = respone.total
                             new.total_pages = respone.total_pages
-                            new.results.append(contentsOf: respone.results)
+                            for index in 0...respone.results.count - 1 {
+                                
+                                if !new.results.contains(respone.results[index]) {
+                                    new.results.append(respone.results[index])
+                                }
+                            }
                             
                             self?.searchRespone.value = new
                             
