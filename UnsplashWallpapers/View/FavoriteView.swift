@@ -183,7 +183,31 @@ extension FavoriteView: UITableViewDelegate {
         let favoriteManager = FavoriteManager.sharedInstance
         
         // Replacing photoInfo with updatePhotoInfo
-        UIView.performWithoutAnimation {
+        
+        UIView.setAnimationsEnabled(false)
+        CATransaction.begin()
+
+        CATransaction.setCompletionBlock { () -> Void in
+            UIView.setAnimationsEnabled(true)
+        }
+
+        newSnapshot.insertItems([updatePhotoInfo], beforeItem: photoInfo)
+        newSnapshot.deleteItems([photoInfo])
+        
+        if favoriteManager.favorites.value.contains(photoInfo) {
+            favoriteManager.favorites.value.remove(photoInfo)
+        }
+        
+        favoriteManager.handleSaveAction(photo: updatePhotoInfo, isFavorite: true)
+        favoriteManager.saveToFavorite()
+        
+        // 5
+        // Apply snapshot changes to data source
+        dataSource.apply(newSnapshot)
+
+        CATransaction.commit()
+        
+       /* UIView.performWithoutAnimation {
             newSnapshot.insertItems([updatePhotoInfo], beforeItem: photoInfo)
             newSnapshot.deleteItems([photoInfo])
             
@@ -197,7 +221,7 @@ extension FavoriteView: UITableViewDelegate {
             // 5
             // Apply snapshot changes to data source
             dataSource.apply(newSnapshot)
-        }
+        }*/
         
         
     }

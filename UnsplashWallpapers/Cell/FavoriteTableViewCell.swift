@@ -50,7 +50,6 @@ extension FavoriteTableViewCell {
         titleLabel.textAlignment = .center
      
         thumbnailImageView = UIImageView()
-        //thumbnailImageView.contentMode = .scaleAspectFit
         thumbnailImageView.clipsToBounds = true
         
         avatarImageView = UIImageView()
@@ -117,40 +116,24 @@ extension FavoriteTableViewCell {
     
     private func showImage(image: UIImage?) {
         DispatchQueue.main.async {
-            //self.thumbnailImageView.alpha = 0.0
 
             guard let image = image else {
                 return
             }
             
-            let resizeImage = self.resizedImage(at: image, for: CGSize(width: self.contentView.frame.size.width, height: 200))
-            self.thumbnailImageView.image = resizeImage
-            
-            //let resizeImage = self.resizedImage(at: image, for: CGSize(width: self.contentView.frame.size.width - 80, height: 200))
-            
-            
-           // self.animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: [.curveEaseOut, .transitionCrossDissolve], animations: {
-            
-            //self.thumbnailImageView.alpha = 1.0
-                
-          //  })
+            self.thumbnailImageView.image = image
         }
     }
     
     private func showImage2(image: UIImage?) {
         DispatchQueue.main.async {
-            //self.avatarImageView.alpha = 0.0
-
+    
             guard let image = image else {
                 return
             }
 
             self.avatarImageView.image = image
             self.avatarImageView.layer.cornerRadius = image.size.height/2
-            
-          //  self.animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: [.curveEaseOut, .transitionCrossDissolve], animations: {
-               // self.avatarImageView.alpha = 1.0
-           // })
         }
     }
     
@@ -174,10 +157,7 @@ extension FavoriteTableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         thumbnailImageView.image = nil
-        //thumbnailImageView.alpha = 0.0
         avatarImageView.image = nil
-        //avatarImageView.alpha = 0.0
-        animator?.stopAnimation(true)
         downloader.cancel()
         downloader2.cancel()
     }
