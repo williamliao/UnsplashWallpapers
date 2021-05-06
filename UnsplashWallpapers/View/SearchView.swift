@@ -351,6 +351,17 @@ extension SearchView: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
         
+        switch selectedScope {
+            case 0:
+                currentSource = .photos
+            case 1:
+                currentSource = .collections
+            case 2:
+                currentSource = .user
+            default:
+                break
+        }
+        
         guard let scopeButtonTitles = searchBar.scopeButtonTitles else {
             return
         }
@@ -372,17 +383,6 @@ extension SearchView: UISearchBarDelegate {
         let whitespaceCharacterSet = CharacterSet.whitespaces
         let strippedString =
             searchText.trimmingCharacters(in: whitespaceCharacterSet)
-        
-        switch selectedScope {
-            case 0:
-                currentSource = .photos
-            case 1:
-                currentSource = .collections
-            case 2:
-                currentSource = .user
-            default:
-                break
-        }
         
         viewModel.reset()
         viewModel.search(keyword: strippedString, category: category)
@@ -467,10 +467,13 @@ extension SearchView: SearchResultsDidSelectedDelegate {
         switch category {
             case .photos:
                 searchViewController.searchBar.selectedScopeButtonIndex = 0
+                currentSource = .photos
             case .collections:
                 searchViewController.searchBar.selectedScopeButtonIndex = 1
+                currentSource = .collections
             case .users:
                 searchViewController.searchBar.selectedScopeButtonIndex = 2
+                currentSource = .user
         }
         
         viewModel.search(keyword: query, category: category)
