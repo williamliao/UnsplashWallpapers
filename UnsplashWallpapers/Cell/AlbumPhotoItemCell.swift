@@ -20,54 +20,49 @@ class AlbumPhotoItemCell: UICollectionViewCell {
     private var act = UIActivityIndicatorView(style: .large)
 
     var photoURL: URL? {
-      didSet {
-        configure()
-      }
+        didSet {
+            configure()
+        }
     }
     
     var isLandscape = false
 
     override init(frame: CGRect) {
-      super.init(frame: frame)
-      configure()
+        super.init(frame: frame)
+        configure()
     }
 
     required init?(coder: NSCoder) {
-      fatalError("init(coder:) has not been implemented")
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
 extension AlbumPhotoItemCell {
     func configure() {
-      contentContainer.translatesAutoresizingMaskIntoConstraints = false
-      contentView.addSubview(contentContainer)
-        
-      //  imageView.contentMode = .scaleAspectFit
+        contentContainer.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(contentContainer)
 
-      guard let photoURL = self.photoURL else { return }
-       // self.configureImage(with: photoURL)
-        let adjustString = photoURL.absoluteString.replacingOccurrences(of: "fit=max", with: "&ar=16:9&fit=crop")
-        
-        guard let url = URL(string: adjustString) else {
-            return
-        }
-        self.configureImage(with: url)
-    
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        imageView.layer.masksToBounds = true
 
-      imageView.translatesAutoresizingMaskIntoConstraints = false
-      contentContainer.addSubview(imageView)
+        guard let photoURL = self.photoURL else { return }
+        self.configureImage(with: photoURL)
 
-      NSLayoutConstraint.activate([
-        contentContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-        contentContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-        contentContainer.topAnchor.constraint(equalTo: contentView.topAnchor),
-        contentContainer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        contentContainer.addSubview(imageView)
 
-        imageView.leadingAnchor.constraint(equalTo: contentContainer.leadingAnchor),
-        imageView.trailingAnchor.constraint(equalTo: contentContainer.trailingAnchor),
-        imageView.bottomAnchor.constraint(equalTo: contentContainer.bottomAnchor),
-        imageView.topAnchor.constraint(equalTo: contentContainer.topAnchor)
-      ])
+        NSLayoutConstraint.activate([
+            contentContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            contentContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            contentContainer.topAnchor.constraint(equalTo: contentView.topAnchor),
+            contentContainer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+
+            imageView.leadingAnchor.constraint(equalTo: contentContainer.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: contentContainer.trailingAnchor),
+            imageView.bottomAnchor.constraint(equalTo: contentContainer.bottomAnchor),
+            imageView.topAnchor.constraint(equalTo: contentContainer.topAnchor)
+        ])
     }
 }
 
