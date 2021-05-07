@@ -13,7 +13,7 @@ class SearchViewModel {
     var isLoading: Observable<Bool> = Observable(false)
     
     var isSearching: Observable<Bool> = Observable(false)
-    let service: UnsplashService = UnsplashService()
+    var service: UnsplashService = UnsplashService()
     
     var searchCursor: Cursor!
     var collectionsCursor: Cursor!
@@ -43,7 +43,7 @@ extension SearchViewModel {
         switch category {
             case .photos:
                 
-                service.networkManager = NetworkManager(endPoint: .search)
+                service = UnsplashService(endPoint: .search)
                 
                 if searchCursor == nil {
                     searchCursor = Cursor(query: keyword, page: 1, perPage: 10, parameters: [:])
@@ -53,7 +53,7 @@ extension SearchViewModel {
                 break
             case .collections:
                 
-                service.networkManager = NetworkManager(endPoint: .collections)
+                service = UnsplashService(endPoint: .collections)
                 
                 if collectionsCursor == nil {
                     collectionsCursor = Cursor(query: keyword, page: 1, perPage: 10, parameters: [:])
@@ -63,7 +63,7 @@ extension SearchViewModel {
                 break
             case .users:
                 
-                service.networkManager = NetworkManager(endPoint: .users)
+                service = UnsplashService(endPoint: .users)
                 
                 if usersCursor == nil {
                     usersCursor = Cursor(query: keyword, page: 1, perPage: 10, parameters: [:])

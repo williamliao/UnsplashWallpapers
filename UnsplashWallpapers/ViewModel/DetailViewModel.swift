@@ -25,7 +25,7 @@ class DetailViewModel {
     var navItem: UINavigationItem!
     let favoriteManager = FavoriteManager.sharedInstance
     
-    let service: UnsplashService = UnsplashService()
+    var service: UnsplashService = UnsplashService()
     
     var userPhotosCursor: Cursor!
     var unsplashUserPhotosdRequest: UnsplashUserPhotoRequest!
@@ -36,7 +36,7 @@ class DetailViewModel {
 extension DetailViewModel {
     
     func getPhotoInfo() {
-        service.networkManager = NetworkManager(endPoint: .random)
+        service = UnsplashService(endPoint: .random)
         
         if userPhotosCursor == nil {
             userPhotosCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])

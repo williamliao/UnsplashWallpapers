@@ -9,7 +9,7 @@ import Foundation
 
 class UserProfileViewModel {
     var coordinator: MainCoordinator?
-    let service: UnsplashService = UnsplashService()
+    var service: UnsplashService = UnsplashService()
     
     var userPhotosResponse: Observable<[CollectionResponse]?> = Observable([])
     var userLikesResponse: Observable<[CollectionResponse]?> = Observable([])
@@ -38,7 +38,7 @@ class UserProfileViewModel {
 
 extension UserProfileViewModel {
     func fetchUserPhotos(username: String) {
-        service.networkManager = NetworkManager(endPoint: .user_photo)
+        service = UnsplashService(endPoint: .user_photo)
         query = username
         isLoading.value = true
         
@@ -67,7 +67,7 @@ extension UserProfileViewModel {
     }
     
     func fetchUserLikePhotos(username: String) {
-        service.networkManager = NetworkManager(endPoint: .user_photo)
+        service = UnsplashService(endPoint: .user_photo)
         query = username
         isLoading.value = true
         
@@ -96,7 +96,7 @@ extension UserProfileViewModel {
     }
     
     func fetchUserCollectons(username: String) {
-        service.networkManager = NetworkManager(endPoint: .user_photo)
+        service = UnsplashService(endPoint: .user_photo)
         query = username
         isLoading.value = true
         

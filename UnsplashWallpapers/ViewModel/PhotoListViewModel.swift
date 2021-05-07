@@ -32,7 +32,7 @@ class PhotoListViewModel  {
     var isSearching: Observable<Bool> = Observable(false)
     var isInOfflineMode: Observable<Bool> = Observable(false)
     
-    let service: UnsplashService = UnsplashService()
+    var service: UnsplashService = UnsplashService()
     
     var fetchCursor: Cursor!
     var fetchNatureCursor: Cursor!
@@ -49,7 +49,7 @@ extension PhotoListViewModel {
     
     func fetchData() {
         
-        service.networkManager = NetworkManager(endPoint: .random)
+        service = UnsplashService(endPoint: .random)
         
         isLoading.value = true
         
@@ -85,7 +85,7 @@ extension PhotoListViewModel {
     }
     
     func fetchNature() {
-        service.networkManager = NetworkManager(endPoint: .search)
+        service = UnsplashService(endPoint: .search)
         
         isLoading.value = true
         
@@ -116,7 +116,7 @@ extension PhotoListViewModel {
     }
     
     func fetchWallpapers() {
-        service.networkManager = NetworkManager(endPoint: .search)
+        service = UnsplashService(endPoint: .search)
         
         isLoading.value = true
         

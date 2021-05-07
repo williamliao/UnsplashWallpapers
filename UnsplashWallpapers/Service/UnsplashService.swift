@@ -9,14 +9,14 @@ import Foundation
 
 class UnsplashService: NetworkManager {
     
-    var networkManager: NetworkManager!
+    //var networkManager: NetworkManager!
 }
 
 extension UnsplashService {
     
     func fetchDataWithNetworkManager(pageRequest: UnsplashPagedRequest, completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
         
-        networkManager.fetch(method: .get, decode: { json -> [Response]? in
+        self.fetch(method: .get, decode: { json -> [Response]? in
             guard let feedResult = json as? [Response] else { return  nil }
             return feedResult
         }, completion: completion)
@@ -24,7 +24,7 @@ extension UnsplashService {
     
     func search(keyword: String, pageRequest: UnsplashSearchPagedRequest, completion: @escaping (APIResult<SearchRespone, ServerError>) -> Void) {
         
-        networkManager.query(query: keyword, pageRequest: pageRequest, method: .get, decode: { json -> SearchRespone? in
+        self.query(query: keyword, pageRequest: pageRequest, method: .get, decode: { json -> SearchRespone? in
             guard let feedResult = json as? SearchRespone else { return  nil }
             return feedResult
         }, completion: completion)
@@ -32,7 +32,7 @@ extension UnsplashService {
     
     func topic(id: String, pageRequest: UnsplashTopicRequest, completion: @escaping (APIResult<Topic, ServerError>) -> Void) {
         
-        networkManager.topic(id: id, pageRequest: pageRequest, method: .get, decode: { json -> Topic? in
+        self.topic(id: id, pageRequest: pageRequest, method: .get, decode: { json -> Topic? in
             guard let feedResult = json as? Topic else { return  nil }
             return feedResult
         }, completion: completion)
@@ -40,7 +40,7 @@ extension UnsplashService {
     
     func topicPhotos(id: String, pageRequest: UnsplashTopicRequest, completion: @escaping (APIResult<Topic, ServerError>) -> Void) {
         
-        networkManager.topic(id: id, pageRequest: pageRequest, method: .get, decode: { json -> Topic? in
+        self.topic(id: id, pageRequest: pageRequest, method: .get, decode: { json -> Topic? in
             guard let feedResult = json as? Topic else { return  nil }
             return feedResult
         }, completion: completion)
@@ -48,7 +48,7 @@ extension UnsplashService {
     
     func listUserPhotos(username: String, pageRequest: UnsplashUserListRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
         
-        networkManager.listUserData(username: username, endPoint:"photos", pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
+        self.listUserData(username: username, endPoint:"photos", pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
             guard let feedResult = json as? [CollectionResponse] else { return  nil }
             return feedResult
         }, completion: completion)
@@ -57,7 +57,7 @@ extension UnsplashService {
     
     func listUserLikePhotos(username: String, pageRequest: UnsplashUserListRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
         
-        networkManager.listUserData(username: username, endPoint:"likes", pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
+        self.listUserData(username: username, endPoint:"likes", pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
             guard let feedResult = json as? [CollectionResponse] else { return  nil }
             return feedResult
         }, completion: completion)
@@ -66,7 +66,7 @@ extension UnsplashService {
     
     func listUserCollections(username: String, pageRequest: UnsplashUserListRequest, completion: @escaping (APIResult<[UserCollectionRespone], ServerError>) -> Void) {
         
-        networkManager.listUserData(username: username, endPoint:"collections" , pageRequest: pageRequest, method: .get, decode: { json -> [UserCollectionRespone]? in
+        self.listUserData(username: username, endPoint:"collections" , pageRequest: pageRequest, method: .get, decode: { json -> [UserCollectionRespone]? in
             guard let feedResult = json as? [UserCollectionRespone] else { return  nil }
             return feedResult
         }, completion: completion)
@@ -75,7 +75,7 @@ extension UnsplashService {
     
     func collection(id: String, pageRequest: UnsplashCollectionRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
         
-        networkManager.get_Collection(id: id, pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
+        self.get_Collection(id: id, pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
             guard let feedResult = json as? [CollectionResponse] else { return  nil }
             return feedResult
         }, completion: completion)
@@ -84,7 +84,7 @@ extension UnsplashService {
     
     func getPhotoInfo(id: String, pageRequest: UnsplashUserPhotoRequest, completion: @escaping (APIResult<UnsplashPhotoInfo, ServerError>) -> Void) {
         
-        networkManager.getPhotoInfo(id: id, pageRequest: pageRequest, method: .get, decode: { json -> UnsplashPhotoInfo? in
+        self.getPhotoInfo(id: id, pageRequest: pageRequest, method: .get, decode: { json -> UnsplashPhotoInfo? in
             guard let feedResult = json as? UnsplashPhotoInfo else { return  nil }
             return feedResult
         }, completion: completion)
@@ -93,7 +93,7 @@ extension UnsplashService {
     
     func getAllAlbum(query: String, pageRequest: UnsplashAlbumsRequest, completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
         
-        networkManager.getAlbum(query: query, pageRequest: pageRequest, method: .get, decode: { json -> [Response]? in
+        self.getAlbum(query: query, pageRequest: pageRequest, method: .get, decode: { json -> [Response]? in
             guard let feedResult = json as? [Response] else { return  nil }
             return feedResult
         }, completion: completion)
@@ -102,10 +102,14 @@ extension UnsplashService {
     
     func fetchRandomWithQuery(query: String, pageRequest: UnsplashPagedRequest, completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
         
-        networkManager.queryWithRandom(query: query, pageRequest: pageRequest, method: .get, decode: { json -> [Response]? in
+        self.queryWithRandom(query: query, pageRequest: pageRequest, method: .get, decode: { json -> [Response]? in
             guard let feedResult = json as? [Response] else { return  nil }
             return feedResult
         }, completion: completion)
+    }
+    
+    func mock(pageRequest: UnsplashSearchPagedRequest, completion: @escaping (APIResult<Data, Error>) -> Void) {
+        self.mock(pageRequest: pageRequest, method: .get, completion: completion)
     }
 }
 

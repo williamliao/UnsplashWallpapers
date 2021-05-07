@@ -18,7 +18,7 @@ class AlbumsViewModel {
     var isLoading: Observable<Bool> = Observable(false)
     var error: Observable<Error?> = Observable(nil)
     
-    let service: UnsplashService = UnsplashService()
+    var service: UnsplashService = UnsplashService()
     
     var featureCursor: Cursor!
     var shareCursor: Cursor!
@@ -33,7 +33,7 @@ class AlbumsViewModel {
 extension AlbumsViewModel {
     
     func getAllAlbums(completionHandler: @escaping (Bool) -> Void) {
-        service.networkManager = NetworkManager(endPoint: .collections)
+        service = UnsplashService(endPoint: .collections)
         
         if allCursor == nil {
             allCursor = Cursor(query: "cat", page: 1, perPage: 10, parameters: [:])
@@ -106,7 +106,7 @@ extension AlbumsViewModel {
     }
     
     func getFeaturedAlbums(completionHandler: @escaping (Bool) -> Void) {
-        service.networkManager = NetworkManager(endPoint: .collections)
+        service = UnsplashService(endPoint: .collections)
         
         if featureCursor == nil {
             featureCursor = Cursor(query: "nature", page: 1, perPage: 10, parameters: [:])
@@ -178,7 +178,7 @@ extension AlbumsViewModel {
     }
     
     func getSharedAlbums(completionHandler: @escaping (Bool) -> Void) {
-        service.networkManager = NetworkManager(endPoint: .collections)
+        service = UnsplashService(endPoint: .collections)
         
         if shareCursor == nil {
             shareCursor = Cursor(query: "wallpapers", page: 1, perPage: 10, parameters: [:])

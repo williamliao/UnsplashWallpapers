@@ -121,6 +121,7 @@ class NetworkManager {
         case users
         case get_collection
         case user_photo
+        case mock(URL)
     }
     //APIResult
     typealias JSONTaskCompletionHandler = (Decodable?, ServerError?) -> Void
@@ -225,6 +226,14 @@ class NetworkManager {
                 components.scheme = UnsplashAPI.scheme
                 components.host = UnsplashAPI.host
                 components.path = "/users"
+                
+                return components
+            case .mock(let url):
+                
+                var components = URLComponents()
+                components.scheme = UnsplashAPI.scheme
+                components.host = "api.testExample.com"
+                components.path = url.absoluteString
                 
                 return components
         }
@@ -581,6 +590,28 @@ class NetworkManager {
             }
         }
         task?.resume()
+    }
+    
+    func mock(pageRequest: UnsplashSearchPagedRequest, method: RequestType, completion: @escaping (APIResult<Data, Error>) -> Void) {
+        
+        let components = prepareURLComponents()
+        
+        guard let url = components?.url else {
+            return
+        }
+       
+        let task = session.dataTask(with: url) { data, _, error in
+            
+            if let data = data {
+                let string = String(data: data, encoding: String.Encoding.utf8)
+                print(string ?? "(no data)")
+            }
+            
+            let result = data.map(APIResult.success) ?? .failure(error!)
+            completion(result)
+        }
+
+        task.resume()
     }
    
     func createURLRequest(params: Dictionary<String, AnyObject>? = nil) throws -> URLRequest {

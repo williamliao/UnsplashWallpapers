@@ -15,7 +15,7 @@ class CollectionListViewModel {
     private(set) var isFetching = false
     private var canFetchMore = true
     
-    let service: UnsplashService = UnsplashService()
+    var service: UnsplashService = UnsplashService()
     
     var collectionListResponse: Observable<[CollectionResponse]?> = Observable([])
     
@@ -29,7 +29,7 @@ class CollectionListViewModel {
 extension CollectionListViewModel {
     
     func fetchCollection(id:String) {
-        service.networkManager = NetworkManager(endPoint: .get_collection)
+        service = UnsplashService(endPoint: .get_collection)
         
         query = id
         
@@ -68,7 +68,7 @@ extension CollectionListViewModel {
             return
         }
         
-        service.networkManager = NetworkManager(endPoint: .get_collection)
+        service = UnsplashService(endPoint: .get_collection)
         
         
         service.collection(id: query, pageRequest: unsplashCollectionRequest) { [weak self] (result) in
