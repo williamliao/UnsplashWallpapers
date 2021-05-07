@@ -14,7 +14,7 @@ class PhotoListViewController: UIViewController {
     var photoListView: PhotoListView!
     
     var isCollectionMode: Bool = false
-
+   
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -22,6 +22,7 @@ class PhotoListViewController: UIViewController {
         photoListView.configureCollectionView()
         photoListView.createSegmentView()
         photoListView.translatesAutoresizingMaskIntoConstraints = false
+        photoListView.registerOffLineNotification()
         self.view.addSubview(photoListView)
         
         NSLayoutConstraint.activate([
@@ -82,12 +83,8 @@ class PhotoListViewController: UIViewController {
             print("errorCode \(errorCode)")
             
             if errorCode == 6 {
-                print("switchToOfflineView")
-                self.photoListView.switchToOfflineView()
+                print("timeout")
             }
-            
-            
-            
         }
 
         viewModel.fetchData()

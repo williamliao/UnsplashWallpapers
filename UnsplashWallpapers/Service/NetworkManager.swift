@@ -122,15 +122,48 @@ class NetworkManager {
         case get_collection
         case user_photo
     }
-    
+    //APIResult
     typealias JSONTaskCompletionHandler = (Decodable?, ServerError?) -> Void
 
     private var session: URLSessionProtocol
     private var endPoint: NetworkEndpoint
-
-    init(endPoint: NetworkEndpoint = .random, withSession session: URLSessionProtocol = URLSession.shared) {
+    
+    init(endPoint: NetworkEndpoint = .random, withSession session: URLSessionProtocol = urlSession()) {
         self.session = session
         self.endPoint = endPoint
+    }
+    
+    public static var urlSessionConfiguration: URLSessionConfiguration = {
+        let sessionConfiguration = URLSessionConfiguration.default
+        sessionConfiguration.requestCachePolicy = .returnCacheDataElseLoad
+        sessionConfiguration.timeoutIntervalForRequest = 3.0
+        sessionConfiguration.timeoutIntervalForResource = 15.0
+        sessionConfiguration.urlCache = cache
+        sessionConfiguration.waitsForConnectivity = true
+        return sessionConfiguration
+    }()
+    
+    internal static func urlSession() -> URLSession {
+        let networkingHandler = NetworkingHandler()
+        let session = URLSession(configuration: NetworkManager.urlSessionConfiguration, delegate: networkingHandler, delegateQueue: nil)
+        return session
+    }
+
+    static let defaultHeaders = [
+        "Content-Type": "application/json",
+        "cache-control": "no-cache",
+    ]
+    
+    internal static func buildHeaders(key: String, value: String) -> [String: String] {
+        var headers = defaultHeaders
+        headers[key] = value
+        return headers
+    }
+    
+    internal static func basicAuthorization(email: String, password: String) -> String {
+        let loginString = String(format: "%@:%@", email, password)
+        let loginData: Data = loginString.data(using: .utf8)!
+        return loginData.base64EncodedString()
     }
     
     func prepareURLComponents() -> URLComponents? {
@@ -226,7 +259,6 @@ class NetworkManager {
                 request.addValue(etag, forHTTPHeaderField: "If-None-Match")
             }
         }
-        
         
         let task = decodingTask(with: request, decodingType: T.self) { (json , error) in
             
@@ -604,7 +636,15 @@ extension NetworkManager {
             
             guard error == nil else {
                 if let error = error {
-                    completion(nil, ServerError.encounteredError(error))
+                    
+                    let errorCode = (error as NSError).code
+                    
+                    switch errorCode {
+                        case NSURLErrorTimedOut:
+                            completion(nil, ServerError.timeOut)
+                        default:
+                            completion(nil, ServerError.encounteredError(error))
+                    }
                     return
                 }
                 return
@@ -645,7 +685,7 @@ extension NetworkManager {
                     NSLocalizedDescriptionKey: "Request failed with code \(httpResponse.statusCode)",
                     NSLocalizedFailureReasonErrorKey: "Wrong handling logic, wrong endpoing mapping or backend bug."
                 ]
-                let error = NSError(domain: "NetworkService", code: 0, userInfo: info)
+                let error = NSError(domain: "NetworkService", code: httpResponse.statusCode, userInfo: info)
                 completion(nil, ServerError.encounteredError(error))
             }
         }
@@ -673,4 +713,17 @@ extension NetworkManager {
 
 private extension Int {
     var megabytes: Int { return self * 1024 * 1024 }
+}
+
+class NetworkingHandler: NSObject, URLSessionTaskDelegate {
+    
+    func urlSession(_ session: URLSession, taskIsWaitingForConnectivity task: URLSessionTask) {
+        // Indicate network status, e.g., offline mode
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "OfflineModeOn"), object: nil)
+    }
+    
+    func urlSession(_ session: URLSession, task: URLSessionTask, willBeginDelayedRequest: URLRequest, completionHandler: (URLSession.DelayedRequestDisposition, URLRequest?) -> Void) {
+        // Indicate network status, e.g., back to online
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "OfflineModeOff"), object: nil)
+    }
 }

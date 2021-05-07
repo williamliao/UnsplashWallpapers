@@ -30,6 +30,7 @@ class PhotoListViewModel  {
     
     var isLoading: Observable<Bool> = Observable(false)
     var isSearching: Observable<Bool> = Observable(false)
+    var isInOfflineMode: Observable<Bool> = Observable(false)
     
     let service: UnsplashService = UnsplashService()
     
@@ -45,6 +46,7 @@ class PhotoListViewModel  {
 }
 
 extension PhotoListViewModel {
+    
     func fetchData() {
         
         service.networkManager = NetworkManager(endPoint: .random)
@@ -78,6 +80,8 @@ extension PhotoListViewModel {
                     }
             }
         }
+        
+        
     }
     
     func fetchNature() {

@@ -44,6 +44,7 @@ class PhotoListView: UIView {
     var coordinator: MainCoordinator?
     
     var searchButton: UIButton!
+    let waringLabel = UILabel()
     
     // MARK:- property
     var firstLoad = true
@@ -73,6 +74,12 @@ class PhotoListView: UIView {
 
 extension PhotoListView {
     
+    func registerOffLineNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(switchToOfflineView), name: NSNotification.Name(rawValue: "OfflineModeOn"), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(switchOfflineModeOff), name: NSNotification.Name(rawValue: "OfflineModeOff"), object: nil)
+    }
+    
     func configureCollectionView() {
        
         self.backgroundColor = .systemBackground
@@ -88,6 +95,7 @@ extension PhotoListView {
         makeDateSourceForCollectionView()
         
         setupRefreshControl()
+        createWaringLabel()
         
         if #available(iOS 10.0, *) {
             collectionView.prefetchDataSource = self
@@ -182,11 +190,7 @@ extension PhotoListView {
         collectionView.reloadData()
     }
     
-    
-    func switchToOfflineView() {
-       
-        hideCollectionView(hide: true)
-        let waringLabel = UILabel()
+    func createWaringLabel() {
         waringLabel.text = "You Are OffLine Check Out Your Internet Connection"
         waringLabel.font = UIFont.systemFont(ofSize: 32)
         waringLabel.numberOfLines = 0
@@ -194,6 +198,7 @@ extension PhotoListView {
         waringLabel.textColor = .label
         waringLabel.textAlignment = .center
         waringLabel.translatesAutoresizingMaskIntoConstraints = false
+        waringLabel.isHidden = true
         self.addSubview(waringLabel)
         
         NSLayoutConstraint.activate([
@@ -205,8 +210,23 @@ extension PhotoListView {
         ])
     }
     
+    
+    @objc func switchToOfflineView() {
+        DispatchQueue.main.async {
+            self.hideCollectionView(hide: true)
+            self.waringLabel.isHidden = false
+        }
+    }
+    
+    @objc func switchOfflineModeOff() {
+        DispatchQueue.main.async {
+            self.hideCollectionView(hide: false)
+            self.waringLabel.isHidden = true
+        }
+    }
+    
     func hideCollectionView(hide: Bool) {
-        collectionView.isHidden = hide
+        self.collectionView.isHidden = hide
     }
 }
 
