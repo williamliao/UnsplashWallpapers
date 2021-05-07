@@ -73,9 +73,9 @@ class PhotoListView: UIView {
 
 extension PhotoListView {
     
-    func configureCollectionView(Add to: UIView) {
+    func configureCollectionView() {
        
-        to.backgroundColor = .systemBackground
+        self.backgroundColor = .systemBackground
         
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.itemSize = CGSize(width: UIScreen.main.bounds.size.width, height: 300)
@@ -98,13 +98,13 @@ extension PhotoListView {
         collectionView.register(PhotoListCollectionViewCell.self
                                 , forCellWithReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier)
         
-        to.addSubview(collectionView)
+        self.addSubview(collectionView)
         
         NSLayoutConstraint.activate([
-            collectionView.leadingAnchor.constraint(equalTo: to.safeAreaLayoutGuide.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: to.safeAreaLayoutGuide.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: to.safeAreaLayoutGuide.bottomAnchor),
-            collectionView.topAnchor.constraint(equalTo: to.safeAreaLayoutGuide.topAnchor, constant: 44),
+            collectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            collectionView.topAnchor.constraint(equalTo: self.topAnchor, constant: 44),
         ])
     }
     
@@ -125,18 +125,18 @@ extension PhotoListView {
         }
     }
     
-    func createSegmentView(view : UIView) {
+    func createSegmentView() {
         segmentedControl.frame = CGRect.zero
         segmentedControl.addTarget(self, action: #selector(segmentAction(_:)), for: .valueChanged)
         segmentedControl.selectedSegmentIndex = 0
-        view.addSubview(segmentedControl)
+        self.addSubview(segmentedControl)
         
         segmentedControl.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            segmentedControl.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            segmentedControl.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            segmentedControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            segmentedControl.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            segmentedControl.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            segmentedControl.topAnchor.constraint(equalTo: self.topAnchor),
             segmentedControl.heightAnchor.constraint(equalToConstant: 44),
         ])
     }
@@ -180,6 +180,33 @@ extension PhotoListView {
 
     func reloadData() {
         collectionView.reloadData()
+    }
+    
+    
+    func switchToOfflineView() {
+       
+        hideCollectionView(hide: true)
+        let waringLabel = UILabel()
+        waringLabel.text = "You Are OffLine Check Out Your Internet Connection"
+        waringLabel.font = UIFont.systemFont(ofSize: 32)
+        waringLabel.numberOfLines = 0
+        waringLabel.lineBreakMode = .byTruncatingTail
+        waringLabel.textColor = .label
+        waringLabel.textAlignment = .center
+        waringLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(waringLabel)
+        
+        NSLayoutConstraint.activate([
+            waringLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            waringLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            waringLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            waringLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            waringLabel.heightAnchor.constraint(equalToConstant: 100),
+        ])
+    }
+    
+    func hideCollectionView(hide: Bool) {
+        collectionView.isHidden = hide
     }
 }
 

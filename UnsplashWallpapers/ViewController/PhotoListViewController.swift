@@ -19,14 +19,26 @@ class PhotoListViewController: UIViewController {
         super.viewDidLoad()
 
         photoListView = PhotoListView(viewModel: viewModel, coordinator: viewModel.coordinator)
-        photoListView.configureCollectionView(Add: self.view)
-        photoListView.createSegmentView(view: self.view)
+        photoListView.configureCollectionView()
+        photoListView.createSegmentView()
+        photoListView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(photoListView)
+        
+        NSLayoutConstraint.activate([
+            photoListView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
+            photoListView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
+            photoListView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
+            photoListView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+        ])
 
         if isCollectionMode {
             photoListView.section = .collections
         }
         
         viewModel.respone.bind { [weak self] (_) in
+            
+            self?.photoListView.hideCollectionView(hide: false)
+            
             if #available(iOS 13.0, *) {
                 self?.photoListView.applyInitialSnapshots()
             } else {
@@ -35,6 +47,7 @@ class PhotoListViewController: UIViewController {
         }
         
         viewModel.searchRespone.bind { [weak self] (_) in
+            self?.photoListView.hideCollectionView(hide: false)
             if #available(iOS 13.0, *) {
                 self?.photoListView.applyInitialSnapshots()
             } else {
@@ -43,6 +56,7 @@ class PhotoListViewController: UIViewController {
         }
         
         viewModel.wallpapersTopic.bind { [weak self] (_) in
+            self?.photoListView.hideCollectionView(hide: false)
             if #available(iOS 13.0, *) {
                 self?.photoListView.applyInitialSnapshots()
             } else {
@@ -63,7 +77,17 @@ class PhotoListViewController: UIViewController {
                 return
             }
             
-            print("error", error)
+            let errorCode = (error as NSError).code
+
+            print("errorCode \(errorCode)")
+            
+            if errorCode == 6 {
+                print("switchToOfflineView")
+                self.photoListView.switchToOfflineView()
+            }
+            
+            
+            
         }
 
         viewModel.fetchData()

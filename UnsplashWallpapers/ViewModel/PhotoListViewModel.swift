@@ -58,6 +58,7 @@ extension PhotoListViewModel {
         
         service.fetchDataWithNetworkManager(pageRequest: unsplashPagedRequest) { (result) in
             self.isLoading.value = false
+            
             switch result {
                 case .success(let respone):
                    
@@ -68,7 +69,11 @@ extension PhotoListViewModel {
                     switch error {
                         case .statusCodeError(let code):
                             print(code)
+                            
+                        case .encounteredError(let error):
+                            self.error.value = error
                         default:
+                            
                             self.error.value = error
                     }
             }
