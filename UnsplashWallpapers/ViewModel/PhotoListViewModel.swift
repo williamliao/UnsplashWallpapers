@@ -34,11 +34,9 @@ class PhotoListViewModel  {
     
     var service: UnsplashService = UnsplashService()
     
-    var fetchCursor: Cursor!
     var fetchNatureCursor: Cursor!
     var fetchWallpapersCursor: Cursor!
     
-    var unsplashPagedRequest: UnsplashPagedRequest!
     var unsplashNaturePagedRequest: UnsplashSearchPagedRequest!
     var unsplashWallpaperPagedRequest: UnsplashSearchPagedRequest!
   
@@ -53,12 +51,7 @@ extension PhotoListViewModel {
         
         isLoading.value = true
         
-        if fetchCursor == nil {
-            fetchCursor = Cursor(query: "", page: 1, perPage: 30, parameters: [:])
-            unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
-        }
-        
-        service.fetchDataWithNetworkManager(pageRequest: unsplashPagedRequest) { (result) in
+        service.fetchDataWithNetworkManager() { (result) in
             self.isLoading.value = false
             
             switch result {
@@ -161,9 +154,8 @@ extension PhotoListViewModel {
         
         switch segmentedIndex {
             case .random:
-                unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
                 
-                service.fetchDataWithNetworkManager(pageRequest: unsplashPagedRequest) { [weak self] (result) in
+                service.fetchDataWithNetworkManager() { [weak self] (result) in
                     self?.isLoading.value = false
                     self?.isFetchingNextPage = false
                     
@@ -187,14 +179,12 @@ extension PhotoListViewModel {
 
                             self?.respone.value = new
                            
-                            guard let cursor = self?.fetchCursor ,let count = self?.respone.value?.count else {
+                            guard let count = self?.respone.value?.count else {
                                 return
                             }
 
-                            if count < cursor.perPage {
+                            if count < 10 {
                                 self?.canFetchMore = false
-                            } else {
-                                self?.fetchCursor = self?.unsplashPagedRequest.nextCursor()
                             }
                 
                         case .failure(let error):
@@ -318,19 +308,13 @@ extension PhotoListViewModel {
         unsplashNaturePagedRequest = nil
         unsplashWallpaperPagedRequest = nil
         
-        unsplashPagedRequest = nil
         fetchNatureCursor = nil
         fetchWallpapersCursor = nil
-        fetchCursor = nil
+
         isLoading.value = false
         self.searchRespone.value = nil
         self.respone.value = nil
-        
-        if fetchCursor == nil {
-            fetchCursor = Cursor(query: "", page: 1, perPage: 30, parameters: [:])
-            unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
-        }
-        
+       
         if fetchNatureCursor == nil {
             fetchNatureCursor = Cursor(query: "", page: 1, perPage: 30, parameters: [:])
             unsplashNaturePagedRequest = UnsplashSearchPagedRequest(with: fetchNatureCursor)

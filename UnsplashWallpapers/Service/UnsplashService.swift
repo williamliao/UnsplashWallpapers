@@ -14,7 +14,7 @@ class UnsplashService: NetworkManager {
 
 extension UnsplashService {
     
-    func fetchDataWithNetworkManager(pageRequest: UnsplashPagedRequest, completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
+    func fetchDataWithNetworkManager(completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
         
         self.fetch(method: .get, decode: { json -> [Response]? in
             guard let feedResult = json as? [Response] else { return  nil }
@@ -91,9 +91,9 @@ extension UnsplashService {
 
     }
     
-    func getAllAlbum(query: String, pageRequest: UnsplashAlbumsRequest, completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
+    func getAllAlbum(pageRequest: UnsplashAlbumsRequest, completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
         
-        self.getAlbum(query: query, pageRequest: pageRequest, method: .get, decode: { json -> [Response]? in
+        self.getAlbum(pageRequest: pageRequest, method: .get, decode: { json -> [Response]? in
             guard let feedResult = json as? [Response] else { return  nil }
             return feedResult
         }, completion: completion)
