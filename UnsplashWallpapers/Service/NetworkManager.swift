@@ -14,7 +14,7 @@ public enum APIResult<T, U> where U: Error  {
 
 public enum ServerError: Error {
     case encounteredError(Error)
-    case statusCodeError(Int)
+    case statusCodeError(Error)
     case badRequest
     case forbidden
     case notFound
@@ -52,8 +52,8 @@ public enum ServerError: Error {
             return NSLocalizedString("forbidden", comment: "")
         case .badData:
             return NSLocalizedString("badData", comment: "")
-        case .statusCodeError(let code):
-            return NSLocalizedString("statusCodeError:\(code)", comment: "")
+        case .statusCodeError(let error):
+            return NSLocalizedString("statusCodeError:\(error.localizedDescription)", comment: "")
         case .invalidURL:
             return NSLocalizedString("invalidURL", comment: "")
         case .noHTTPResponse:
@@ -714,7 +714,13 @@ extension NetworkManager {
                 if let data = data, let responseBody = try? JSONSerialization.jsonObject(with: data, options: []) {
                     debugPrint(responseBody)
                 }
-                completion(nil, ServerError.statusCodeError(httpResponse.statusCode))
+                
+                let info = [
+                    NSLocalizedDescriptionKey: "Failure statusCode \(httpResponse.statusCode)",
+                ]
+                let error = NSError(domain: "NetworkService", code: httpResponse.statusCode, userInfo: info)
+                
+                completion(nil, ServerError.statusCodeError(error))
             } else {
                 // Server returned response with status code different than expected `successCodes`.
                 let info = [
