@@ -108,8 +108,8 @@ extension UnsplashService {
         }, completion: completion)
     }
     
-    func mock(pageRequest: UnsplashSearchPagedRequest, completion: @escaping (APIResult<Data, Error>) -> Void) {
-        self.mock(pageRequest: pageRequest, method: .get, completion: completion)
+    func mock(completion: @escaping (APIResult<Data, Error>) -> Void) {
+        self.mock(method: .get, completion: completion)
     }
 }
 

@@ -35,7 +35,7 @@ class AlbumsViewController: UIViewController {
          
         ])
        
-        multipleAsyncOperations()
+        //multipleAsyncOperations()
     }
     
     func multipleAsyncOperations() {

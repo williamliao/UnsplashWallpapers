@@ -38,15 +38,63 @@ class UnsplashWallpapersTests: XCTestCase {
 }
 
 extension UnsplashWallpapersTests {
+    
+    func test_GET_StartsTheRequest() {
+     
+        let fakeData = Data([0, 1, 0, 1])
+        mockSession = createMockSession(data: fakeData, andStatusCode: 200, andError: nil)
+
+        let dataTask = MockURLSessionDataTask()
+        mockSession.dataTask = dataTask
+
+        let url = URL(string: "https://api.unsplash.com/photos/random?count=30&client_id=d0bd0d66796be14d38b9f5e45852397c35457a7479978ff4db3eea2fcd7e2383")!
+        
+        sut = UnsplashService(endPoint: .random, withSession: mockSession)
+        
+        sut.get { (data, res, error) in
+            XCTAssertNotNil(data)
+        }
+        
+        XCTAssertEqual(mockSession.lastURL, url)
+        XCTAssert(dataTask.resumeWasCalled)
+    }
+    
+    func test_GET_WithResponseData_ReturnsTheData() {
+        
+        let expectedData = "{}".data(using: .utf8)
+        mockSession = createMockSession(data: expectedData!, andStatusCode: 200, andError: nil)
+        mockSession.nextData = expectedData
+
+        var actualData: Data?
+        sut = UnsplashService(endPoint: .random, withSession: mockSession)
+        sut.get() { (data, _, _)  in
+            actualData = data
+        }
+
+        XCTAssertEqual(actualData, expectedData)
+    }
+    
+    func test_GET_WithANetworkError_ReturnsANetworkError() {
+        
+        mockSession = createMockSessionFromFile(fromJsonFile: "A", andStatusCode: 200, andError: nil)
+        
+        mockSession.nextError = NSError(domain: "error", code: 0, userInfo: nil)
+
+        var error: Error?
+        sut = UnsplashService(endPoint: .random, withSession: mockSession)
+        sut.get() { (_, _, networkError) -> Void in
+            error = networkError
+        }
+        
+        XCTAssertNotNil(error)
+    }
+    
     func testNetworkClient_successResult() {
         
         let exception = XCTestExpectation()
         sut = UnsplashService(endPoint: .random)
         
-        let fetchCursor = Cursor(query: "", page: 1, perPage: 30, parameters: [:])
-        let unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
-        
-        sut.fetchDataWithNetworkManager(pageRequest: unsplashPagedRequest) { (result) in
+        sut.fetchDataWithNetworkManager() { (result) in
 
             switch result {
                 case .success(let respone):
@@ -76,7 +124,7 @@ extension UnsplashWallpapersTests {
         
         sut = UnsplashService(endPoint: .collections("mock", unsplashPagedRequest), withSession: mockSession)
         
-        sut.mock(pageRequest: unsplashPagedRequest) { (result) in
+        sut.mock() { (result) in
             switch result {
                 case .success(let data):
                     XCTAssertEqual(fakeData, data)
@@ -93,14 +141,11 @@ extension UnsplashWallpapersTests {
         let fakeData = Data([0, 1, 0, 1])
         mockSession = createMockSession(data: fakeData, andStatusCode: 404, andError: nil)
         
-        let fetchCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
-        let unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
-        
         sut = UnsplashService(endPoint: .random, withSession: mockSession)
         
         let exception = XCTestExpectation()
         
-        sut.fetchDataWithNetworkManager(pageRequest: unsplashPagedRequest) { (result) in
+        sut.fetchDataWithNetworkManager() { (result) in
 
             switch result {
                 case .success(let respone):
@@ -127,15 +172,12 @@ extension UnsplashWallpapersTests {
     func testNetworkClient_NoData() {
         
         mockSession = createMockSessionFromFile(fromJsonFile: "A", andStatusCode: 200, andError: nil)
-        
-        let fetchCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
-        let unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
-        
+       
         sut = UnsplashService(endPoint: .random, withSession: mockSession)
         
         let exception = XCTestExpectation()
 
-        sut.fetchDataWithNetworkManager(pageRequest: unsplashPagedRequest) { (result) in
+        sut.fetchDataWithNetworkManager() { (result) in
 
             switch result {
                 case .success(_):
@@ -160,14 +202,11 @@ extension UnsplashWallpapersTests {
         let fakeData = Data([0, 1, 0, 1])
         mockSession = createMockSession(data: fakeData, andStatusCode: 500, andError: nil)
         
-        let fetchCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
-        let unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
-        
         sut = UnsplashService(endPoint: .random, withSession: mockSession)
         
         let exception = XCTestExpectation()
         
-        sut.fetchDataWithNetworkManager(pageRequest: unsplashPagedRequest) { (result) in
+        sut.fetchDataWithNetworkManager() { (result) in
 
             switch result {
                 case .success(_):
@@ -190,6 +229,11 @@ extension UnsplashWallpapersTests {
        
         let wait = XCTWaiter()
         _ = wait.wait(for: [exception], timeout: 1)
+    }
+    
+    func testWithPageNumber() {
+        //let fetchCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+        //let unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
     }
 }
 

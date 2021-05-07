@@ -22,7 +22,7 @@ protocol URLSessionProtocol {
     
     func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTaskProtocol
     
-    func dataTaskWithURL(_ url: URL, completion: @escaping DataTaskResult) -> URLSessionDataTask
+    func dataTaskWithURL(_ url: URL, completion: @escaping DataTaskResult) -> URLSessionDataTaskProtocol
 }
 
 extension URLSession: URLSessionProtocol {
@@ -37,7 +37,12 @@ extension URLSession: URLSessionProtocol {
         return (dataTask(with: request, completionHandler: completionHandler) as URLSessionDataTask) as URLSessionDataTaskProtocol
     }
     
-    func dataTaskWithURL(_ url: URL, completion: @escaping DataTaskResult) -> URLSessionDataTask {
-        return URLSession.shared.dataTask(with: url)
+//    func dataTaskWithURL(_ url: URL, completion: @escaping DataTaskResult) -> URLSessionDataTaskProtocol {
+//        return (dataTask(with: url, completionHandler: completion) as URLSessionDataTask) as URLSessionDataTaskProtocol
+//    }
+    
+    func dataTaskWithURL(_ url: URL, completion completionHandler: @escaping DataTaskResult)
+          -> URLSessionDataTaskProtocol {
+        return (dataTask(with: url, completionHandler: completionHandler) as URLSessionDataTask) as URLSessionDataTaskProtocol
     }
 }

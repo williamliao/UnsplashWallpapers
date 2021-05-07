@@ -178,6 +178,7 @@ class NetworkManager {
                 
                 components.queryItems = [
                     URLQueryItem(name: "count", value: "30"),
+                    URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey),
                 ]
                 
                 return components
@@ -451,25 +452,37 @@ class NetworkManager {
         createRequestWithURL(url: url, decode: decode, completion: completion)
     }
   
-    func mock(pageRequest: UnsplashSearchPagedRequest, method: RequestType, completion: @escaping (APIResult<Data, Error>) -> Void) {
+    func mock(method: RequestType, completion: @escaping (APIResult<Data, Error>) -> Void) {
         
         let components = prepareURLComponents()
         
         guard let url = components?.url else {
             return
         }
-       
-        let task = session.dataTask(with: url) { data, _, error in
-            
-            if let data = data {
-                let string = String(data: data, encoding: String.Encoding.utf8)
-                print(string ?? "(no data)")
-            }
-            
+        
+        let task = session.dataTaskWithURL(url) { (data, _, error) in
             let result = data.map(APIResult.success) ?? .failure(error!)
             completion(result)
         }
-
+       
+        task.resume()
+    }
+    
+    func get(completion: @escaping DataTaskResult) {
+        
+        let components = prepareURLComponents()
+        
+        guard let url = components?.url else {
+            return
+        }
+        
+        let task = session.dataTaskWithURL(url) { (data, _, error) -> Void in
+            if let _ = error {
+                completion(nil, nil, ServerError.badURL)
+            } else {
+                completion(data, nil, nil)
+            }
+        }
         task.resume()
     }
     

@@ -8,12 +8,21 @@
 import Foundation
 
 class MockURLSessionDataTask: URLSessionDataTaskProtocol {
+    
+    private (set) var resumeWasCalled = false
+    
     func cancel() {}
-    func resume() {}
+    func resume() {
+        resumeWasCalled = true
+    }
 }
 
 class MockURLSession: URLSessionProtocol {
     private (set) var lastURL: URL?
+    
+    var nextData: Data?
+    var nextError: Error?
+    
     var dataTask = MockURLSessionDataTask()
     var completionHandler: (Data?, URLResponse?, Error?)
 
@@ -31,9 +40,16 @@ class MockURLSession: URLSessionProtocol {
         return dataTask
     }
     
-    func dataTaskWithURL(_ url: URL, completion: @escaping DataTaskResult) -> URLSessionDataTask {
+    func dataTaskWithURL(_ url: URL, completion: @escaping DataTaskResult) -> URLSessionDataTaskProtocol {
         lastURL = url
-        return URLSession.shared.dataTask(with: url)
+        
+        nextData = self.completionHandler.0
+        nextError = self.completionHandler.2
+        
+        completion(self.completionHandler.0, self.completionHandler.1, self.completionHandler.2)
+        
+        //completion(nextData, nil, nextError)
+        return dataTask
     }
 }
 
