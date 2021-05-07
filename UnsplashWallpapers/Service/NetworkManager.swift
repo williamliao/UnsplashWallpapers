@@ -116,11 +116,11 @@ class NetworkManager {
     enum NetworkEndpoint {
         case random
         case topic
-        case search
-        case collections
-        case users
-        case get_collection
-        case user_photo
+        case search(String, UnsplashSearchPagedRequest)
+        case collections(String, UnsplashSearchPagedRequest)
+        case users(String, UnsplashSearchPagedRequest)
+        case get_collection(String, UnsplashCollectionRequest)
+        case user_photo(String, String, UnsplashUserListRequest)
         case mock(URL)
     }
     //APIResult
@@ -190,42 +190,77 @@ class NetworkManager {
                 
                 return components
 
-            case .search:
+            case .search(let query, let request):
                 var components = URLComponents()
                 components.scheme = UnsplashAPI.scheme
                 components.host = UnsplashAPI.host
-                  components.path = "/search/photos"
+                components.path = "/search/photos"
+                
+                components.queryItems = [
+                    URLQueryItem(name: "query", value: query),
+                    URLQueryItem(name: "per_page", value: String(request.cursor.perPage)),
+                    URLQueryItem(name: "page", value: String(request.cursor.page)),
+                    URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey),
+                    URLQueryItem(name: "orientation", value: "landscape"),
+                ]
                 
                 return components
                 
-            case .collections:
+            case .collections(let query, let request):
                 var components = URLComponents()
                 components.scheme = UnsplashAPI.scheme
                 components.host = UnsplashAPI.host
                 components.path = "/search/collections"
                 
+                components.queryItems = [
+                    URLQueryItem(name: "query", value: query),
+                    URLQueryItem(name: "per_page", value: String(request.cursor.perPage)),
+                    URLQueryItem(name: "page", value: String(request.cursor.page)),
+                    URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey),
+                    URLQueryItem(name: "orientation", value: "landscape"),
+                ]
+                
                 return components
             
-            case .users:
+            case .users(let query, let request):
                 var components = URLComponents()
                 components.scheme = UnsplashAPI.scheme
                 components.host = UnsplashAPI.host
                   components.path = "/search/users"
                 
+                components.queryItems = [
+                    URLQueryItem(name: "query", value: query),
+                    URLQueryItem(name: "per_page", value: String(request.cursor.perPage)),
+                    URLQueryItem(name: "page", value: String(request.cursor.page)),
+                    URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey),
+                ]
+                
                 return components
                 
-            case .get_collection:
+            case .get_collection(let id, let request):
                 var components = URLComponents()
                 components.scheme = UnsplashAPI.scheme
                 components.host = UnsplashAPI.host
-                components.path = "/collections"
+                components.path = "/collections/\(id)/photos"
+                
+                components.queryItems = [
+                    URLQueryItem(name: "per_page", value: String(request.cursor.perPage)),
+                    URLQueryItem(name: "page", value: String(request.cursor.page)),
+                    URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey)
+                ]
                 
                 return components
-            case .user_photo:
+            case .user_photo(let username, let endPoint, let request):
                 var components = URLComponents()
                 components.scheme = UnsplashAPI.scheme
                 components.host = UnsplashAPI.host
-                components.path = "/users"
+                components.path = "/users/\(username)/\(endPoint)"
+                
+                components.queryItems = [
+                    URLQueryItem(name: "per_page", value: String(request.cursor.perPage)),
+                    URLQueryItem(name: "page", value: String(request.cursor.page)),
+                    URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey)
+                ]
                 
                 return components
             case .mock(let url):
@@ -322,17 +357,9 @@ class NetworkManager {
         task?.resume()
     }
     
-    func query<T: Decodable>(query: String, pageRequest: UnsplashSearchPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+    func query<T: Decodable>(pageRequest: UnsplashSearchPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
         
-        var components = prepareURLComponents()
-        
-        components?.queryItems = [
-            URLQueryItem(name: "query", value: query),
-            URLQueryItem(name: "per_page", value: String(pageRequest.cursor.perPage)),
-            URLQueryItem(name: "page", value: String(pageRequest.cursor.page)),
-            URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey),
-            URLQueryItem(name: "orientation", value: "landscape"),
-        ]
+        let components = prepareURLComponents()
         
         guard let url = components?.url else {
             return
@@ -434,22 +461,11 @@ class NetworkManager {
         task?.resume()
     }
     
-    func get_Collection<T: Decodable>(id: String, pageRequest: UnsplashCollectionRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+    func get_Collection<T: Decodable>(pageRequest: UnsplashCollectionRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
         
-        let urlString = "/collections/\(id)/photos"
+        let components = prepareURLComponents()
         
-        var components = URLComponents()
-        components.scheme = UnsplashAPI.scheme
-        components.host = UnsplashAPI.host
-        components.path = urlString
-        
-        components.queryItems = [
-            URLQueryItem(name: "per_page", value: String(pageRequest.cursor.perPage)),
-            URLQueryItem(name: "page", value: String(pageRequest.cursor.page)),
-            URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey)
-        ]
-        
-        guard let url = components.url else {
+        guard let url = components?.url else {
             return
         }
         
@@ -473,22 +489,11 @@ class NetworkManager {
         task?.resume()
     }
     
-    func listUserData<T: Decodable>(username: String, endPoint: String, pageRequest: UnsplashUserListRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+    func listUserData<T: Decodable>(pageRequest: UnsplashUserListRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
         
-        let urlString = "/users/\(username)/\(endPoint)"
+        let components = prepareURLComponents()
         
-        var components = URLComponents()
-        components.scheme = UnsplashAPI.scheme
-        components.host = UnsplashAPI.host
-        components.path = urlString
-        
-        components.queryItems = [
-            URLQueryItem(name: "per_page", value: String(pageRequest.cursor.perPage)),
-            URLQueryItem(name: "page", value: String(pageRequest.cursor.page)),
-            URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey)
-        ]
-        
-        guard let url = components.url else {
+        guard let url = components?.url else {
             return
         }
         

@@ -85,7 +85,7 @@ extension PhotoListViewModel {
     }
     
     func fetchNature() {
-        service = UnsplashService(endPoint: .search)
+        service = UnsplashService(endPoint: .search("nature", unsplashNaturePagedRequest))
         
         isLoading.value = true
         
@@ -94,7 +94,7 @@ extension PhotoListViewModel {
             unsplashNaturePagedRequest = UnsplashSearchPagedRequest(with: fetchNatureCursor)
         }
         
-        service.search(keyword: "nature", pageRequest: unsplashNaturePagedRequest) { (result) in
+        service.search(pageRequest: unsplashNaturePagedRequest) { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):
@@ -116,7 +116,7 @@ extension PhotoListViewModel {
     }
     
     func fetchWallpapers() {
-        service = UnsplashService(endPoint: .search)
+        service = UnsplashService(endPoint: .search("wallpapers", unsplashNaturePagedRequest))
         
         isLoading.value = true
         
@@ -125,7 +125,7 @@ extension PhotoListViewModel {
             unsplashWallpaperPagedRequest = UnsplashSearchPagedRequest(with: fetchWallpapersCursor)
         }
         
-        service.search(keyword: "wallpapers", pageRequest: unsplashWallpaperPagedRequest) { (result) in
+        service.search(pageRequest: unsplashWallpaperPagedRequest) { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):
@@ -211,7 +211,7 @@ extension PhotoListViewModel {
             case .nature:
                 unsplashNaturePagedRequest = UnsplashSearchPagedRequest(with: fetchNatureCursor)
                 
-                service.search(keyword: "nature", pageRequest: unsplashNaturePagedRequest) { [weak self] (result) in
+                service.search(pageRequest: unsplashNaturePagedRequest) { [weak self] (result) in
                     self?.isLoading.value = false
                     self?.isFetchingNextPage = false
                     
@@ -262,7 +262,7 @@ extension PhotoListViewModel {
             case .wallpapers:
                 unsplashWallpaperPagedRequest = UnsplashSearchPagedRequest(with: fetchWallpapersCursor)
                 
-                service.search(keyword: "wallpapers", pageRequest: unsplashWallpaperPagedRequest) { [weak self] (result) in
+                service.search(pageRequest: unsplashWallpaperPagedRequest) { [weak self] (result) in
                     self?.isLoading.value = false
                     self?.isFetchingNextPage = false
                     

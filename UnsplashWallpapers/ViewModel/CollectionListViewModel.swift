@@ -29,7 +29,7 @@ class CollectionListViewModel {
 extension CollectionListViewModel {
     
     func fetchCollection(id:String) {
-        service = UnsplashService(endPoint: .get_collection)
+        
         
         query = id
         
@@ -40,7 +40,9 @@ extension CollectionListViewModel {
             unsplashCollectionRequest = UnsplashCollectionRequest(with: collectionListCursor)
         }
         
-        service.collection(id: id, pageRequest: unsplashCollectionRequest) { (result) in
+        service = UnsplashService(endPoint: .get_collection(id, unsplashCollectionRequest))
+        
+        service.collection(pageRequest: unsplashCollectionRequest) { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):
@@ -68,10 +70,9 @@ extension CollectionListViewModel {
             return
         }
         
-        service = UnsplashService(endPoint: .get_collection)
+        service = UnsplashService(endPoint: .get_collection(query, unsplashCollectionRequest))
         
-        
-        service.collection(id: query, pageRequest: unsplashCollectionRequest) { [weak self] (result) in
+        service.collection(pageRequest: unsplashCollectionRequest) { [weak self] (result) in
             self?.isLoading.value = false
             switch result {
                 case .success(let respone):

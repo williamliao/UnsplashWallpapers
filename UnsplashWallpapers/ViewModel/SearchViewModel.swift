@@ -43,38 +43,38 @@ extension SearchViewModel {
         switch category {
             case .photos:
                 
-                service = UnsplashService(endPoint: .search)
-                
                 if searchCursor == nil {
                     searchCursor = Cursor(query: keyword, page: 1, perPage: 10, parameters: [:])
                     unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: searchCursor)
                 }
                 
+                service = UnsplashService(endPoint: .search(keyword, unsplashSearchPagedRequest))
+                
                 break
             case .collections:
-                
-                service = UnsplashService(endPoint: .collections)
                 
                 if collectionsCursor == nil {
                     collectionsCursor = Cursor(query: keyword, page: 1, perPage: 10, parameters: [:])
                     unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: collectionsCursor)
                 }
+
+                service = UnsplashService(endPoint: .collections(keyword, unsplashSearchPagedRequest))
                 
                 break
             case .users:
-                
-                service = UnsplashService(endPoint: .users)
                 
                 if usersCursor == nil {
                     usersCursor = Cursor(query: keyword, page: 1, perPage: 10, parameters: [:])
                     unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: usersCursor)
                 }
-                
+
+                service = UnsplashService(endPoint: .users(keyword, unsplashSearchPagedRequest))
+
                 break
         
         }
         
-        service.search(keyword: unsplashSearchPagedRequest.cursor.query ?? "", pageRequest: unsplashSearchPagedRequest) { (result) in
+        service.search(pageRequest: unsplashSearchPagedRequest) { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):
@@ -119,7 +119,7 @@ extension SearchViewModel {
         
         isLoading.value = true
         
-        service.search(keyword: query, pageRequest: unsplashSearchPagedRequest) { [weak self] (result) in
+        service.search(pageRequest: unsplashSearchPagedRequest) { [weak self] (result) in
             self?.isLoading.value = false
             
             switch result {

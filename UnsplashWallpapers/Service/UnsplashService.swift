@@ -22,9 +22,9 @@ extension UnsplashService {
         }, completion: completion)
     }
     
-    func search(keyword: String, pageRequest: UnsplashSearchPagedRequest, completion: @escaping (APIResult<SearchRespone, ServerError>) -> Void) {
+    func search(pageRequest: UnsplashSearchPagedRequest, completion: @escaping (APIResult<SearchRespone, ServerError>) -> Void) {
         
-        self.query(query: keyword, pageRequest: pageRequest, method: .get, decode: { json -> SearchRespone? in
+        self.query(pageRequest: pageRequest, method: .get, decode: { json -> SearchRespone? in
             guard let feedResult = json as? SearchRespone else { return  nil }
             return feedResult
         }, completion: completion)
@@ -46,9 +46,9 @@ extension UnsplashService {
         }, completion: completion)
     }
     
-    func listUserPhotos(username: String, pageRequest: UnsplashUserListRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
+    func listUserPhotos(pageRequest: UnsplashUserListRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
         
-        self.listUserData(username: username, endPoint:"photos", pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
+        self.listUserData(pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
             guard let feedResult = json as? [CollectionResponse] else { return  nil }
             return feedResult
         }, completion: completion)
@@ -57,7 +57,7 @@ extension UnsplashService {
     
     func listUserLikePhotos(username: String, pageRequest: UnsplashUserListRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
         
-        self.listUserData(username: username, endPoint:"likes", pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
+        self.listUserData(pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
             guard let feedResult = json as? [CollectionResponse] else { return  nil }
             return feedResult
         }, completion: completion)
@@ -66,16 +66,16 @@ extension UnsplashService {
     
     func listUserCollections(username: String, pageRequest: UnsplashUserListRequest, completion: @escaping (APIResult<[UserCollectionRespone], ServerError>) -> Void) {
         
-        self.listUserData(username: username, endPoint:"collections" , pageRequest: pageRequest, method: .get, decode: { json -> [UserCollectionRespone]? in
+        self.listUserData(pageRequest: pageRequest, method: .get, decode: { json -> [UserCollectionRespone]? in
             guard let feedResult = json as? [UserCollectionRespone] else { return  nil }
             return feedResult
         }, completion: completion)
 
     }
     
-    func collection(id: String, pageRequest: UnsplashCollectionRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
+    func collection(pageRequest: UnsplashCollectionRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
         
-        self.get_Collection(id: id, pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
+        self.get_Collection(pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
             guard let feedResult = json as? [CollectionResponse] else { return  nil }
             return feedResult
         }, completion: completion)

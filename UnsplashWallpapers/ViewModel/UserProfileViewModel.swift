@@ -38,7 +38,6 @@ class UserProfileViewModel {
 
 extension UserProfileViewModel {
     func fetchUserPhotos(username: String) {
-        service = UnsplashService(endPoint: .user_photo)
         query = username
         isLoading.value = true
         
@@ -47,7 +46,9 @@ extension UserProfileViewModel {
             unsplashUserPhotosdRequest = UnsplashUserListRequest(with: userPhotosCursor)
         }
         
-        service.listUserPhotos(username: username, pageRequest: unsplashUserPhotosdRequest) { [weak self] (result) in
+        service = UnsplashService(endPoint: .user_photo(username, "photos", unsplashUserPhotosdRequest))
+        
+        service.listUserPhotos(pageRequest: unsplashUserPhotosdRequest) { [weak self] (result) in
             self?.isLoading.value = false
             switch result {
                 case .success(let respone):
@@ -67,7 +68,7 @@ extension UserProfileViewModel {
     }
     
     func fetchUserLikePhotos(username: String) {
-        service = UnsplashService(endPoint: .user_photo)
+        
         query = username
         isLoading.value = true
         
@@ -75,6 +76,8 @@ extension UserProfileViewModel {
             userLikePhotosCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
             unsplashUserLikePhotosdRequest = UnsplashUserListRequest(with: userLikePhotosCursor)
         }
+        
+        service = UnsplashService(endPoint: .user_photo(username, "likes", unsplashUserLikePhotosdRequest))
         
         service.listUserLikePhotos(username: username, pageRequest: unsplashUserLikePhotosdRequest) { [weak self] (result) in
             self?.isLoading.value = false
@@ -96,7 +99,6 @@ extension UserProfileViewModel {
     }
     
     func fetchUserCollectons(username: String) {
-        service = UnsplashService(endPoint: .user_photo)
         query = username
         isLoading.value = true
         
@@ -104,6 +106,8 @@ extension UserProfileViewModel {
             userCollectionsPhotosCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
             unsplashUserCollectionsPhotosdRequest = UnsplashUserListRequest(with: userCollectionsPhotosCursor)
         }
+        
+        service = UnsplashService(endPoint: .user_photo(username, "collections", unsplashUserLikePhotosdRequest))
         
         service.listUserCollections(username: username, pageRequest: unsplashUserCollectionsPhotosdRequest) { [weak self] (result) in
             self?.isLoading.value = false
@@ -140,7 +144,7 @@ extension UserProfileViewModel {
             case .photos:
                 unsplashUserPhotosdRequest = UnsplashUserListRequest(with: userPhotosCursor)
                 
-                service.listUserPhotos(username: query, pageRequest: unsplashUserPhotosdRequest) { [weak self] (result) in
+                service.listUserPhotos(pageRequest: unsplashUserPhotosdRequest) { [weak self] (result) in
                     self?.isLoading.value = false
                     switch result {
                         case .success(let respone):

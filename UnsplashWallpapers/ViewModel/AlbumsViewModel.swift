@@ -33,7 +33,7 @@ class AlbumsViewModel {
 extension AlbumsViewModel {
     
     func getAllAlbums(completionHandler: @escaping (Bool) -> Void) {
-        service = UnsplashService(endPoint: .collections)
+        service = UnsplashService(endPoint: .collections("cat", unsplashFeaturePagedRequest))
         
         if allCursor == nil {
             allCursor = Cursor(query: "cat", page: 1, perPage: 10, parameters: [:])
@@ -42,7 +42,7 @@ extension AlbumsViewModel {
         
         isLoading.value = true
         
-        service.search(keyword: unsplashAllPagedRequest.cursor.query ?? "", pageRequest: unsplashAllPagedRequest) { (result) in
+        service.search(pageRequest: unsplashAllPagedRequest) { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):
@@ -106,16 +106,18 @@ extension AlbumsViewModel {
     }
     
     func getFeaturedAlbums(completionHandler: @escaping (Bool) -> Void) {
-        service = UnsplashService(endPoint: .collections)
+        
         
         if featureCursor == nil {
             featureCursor = Cursor(query: "nature", page: 1, perPage: 10, parameters: [:])
             unsplashFeaturePagedRequest = UnsplashSearchPagedRequest(with: featureCursor)
         }
         
+        service = UnsplashService(endPoint: .collections("nature", unsplashFeaturePagedRequest))
+        
         isLoading.value = true
         
-        service.search(keyword: unsplashFeaturePagedRequest.cursor.query ?? "", pageRequest: unsplashFeaturePagedRequest) { (result) in
+        service.search(pageRequest: unsplashFeaturePagedRequest) { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):
@@ -178,7 +180,7 @@ extension AlbumsViewModel {
     }
     
     func getSharedAlbums(completionHandler: @escaping (Bool) -> Void) {
-        service = UnsplashService(endPoint: .collections)
+        service = UnsplashService(endPoint: .collections("wallpapers", unsplashFeaturePagedRequest))
         
         if shareCursor == nil {
             shareCursor = Cursor(query: "wallpapers", page: 1, perPage: 10, parameters: [:])
@@ -187,7 +189,7 @@ extension AlbumsViewModel {
         
         isLoading.value = true
         
-        service.search(keyword: unsplashSharePagedRequest.cursor.query ?? "", pageRequest: unsplashSharePagedRequest) { (result) in
+        service.search(pageRequest: unsplashSharePagedRequest) { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):

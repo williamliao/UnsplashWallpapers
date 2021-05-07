@@ -174,8 +174,8 @@
             filePath = "UnsplashWallpapers/ViewModel/UserProfileViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "51"
-            endingLineNumber = "51"
+            startingLineNumber = "52"
+            endingLineNumber = "52"
             landmarkName = "fetchUserPhotos(username:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -222,8 +222,8 @@
             filePath = "UnsplashWallpapers/ViewModel/UserProfileViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "113"
-            endingLineNumber = "113"
+            startingLineNumber = "117"
+            endingLineNumber = "117"
             landmarkName = "fetchUserCollectons(username:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -366,8 +366,8 @@
             filePath = "UnsplashWallpapers/Service/NetworkManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "378"
-            endingLineNumber = "378"
+            startingLineNumber = "405"
+            endingLineNumber = "405"
             landmarkName = "topic(id:pageRequest:method:decode:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -574,24 +574,8 @@
             filePath = "UnsplashWallpapers/Service/NetworkManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "715"
-            endingLineNumber = "715"
-            landmarkName = "decodingTask(with:decodingType:completionHandler:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "F17F1D62-1C44-452A-9C8F-0337B4B4D304"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "UnsplashWallpapers/Service/NetworkManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "709"
-            endingLineNumber = "709"
+            startingLineNumber = "720"
+            endingLineNumber = "720"
             landmarkName = "decodingTask(with:decodingType:completionHandler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -638,8 +622,8 @@
             filePath = "UnsplashWallpapers/Service/NetworkManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "675"
-            endingLineNumber = "675"
+            startingLineNumber = "680"
+            endingLineNumber = "680"
             landmarkName = "decodingTask(with:decodingType:completionHandler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -654,9 +638,9 @@
             filePath = "UnsplashWallpapers/Service/NetworkManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "338"
-            endingLineNumber = "338"
-            landmarkName = "query(query:pageRequest:method:decode:completion:)"
+            startingLineNumber = "365"
+            endingLineNumber = "365"
+            landmarkName = "query(pageRequest:method:decode:completion:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -670,8 +654,8 @@
             filePath = "UnsplashWallpapers/Service/NetworkManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "610"
-            endingLineNumber = "610"
+            startingLineNumber = "615"
+            endingLineNumber = "615"
             landmarkName = "mock(pageRequest:method:completion:)"
             landmarkType = "7">
          </BreakpointContent>
