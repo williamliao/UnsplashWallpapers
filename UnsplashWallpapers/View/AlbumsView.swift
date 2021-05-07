@@ -31,9 +31,16 @@ class AlbumsView: UIView {
     }
 
     var albumsCollectionView: UICollectionView! = nil
+    let waringLabel = UILabel()
+    
+    var networkConnectivityManager: NetworkConnectivityManager!
     
     @available(iOS 13.0, *)
     lazy var dataSource  = makeDataSource()
+    
+    deinit {
+        networkConnectivityManager.close()
+    }
 }
 
 extension AlbumsView {
@@ -61,6 +68,10 @@ extension AlbumsView {
         albumsCollectionView = collectionView
         dataSource = makeDataSource()
         collectionView.dataSource = dataSource
+        
+        createWaringLabel()
+        
+        startMonitor()
     }
     
     func configureDataSource() {
@@ -291,4 +302,57 @@ extension AlbumsView: UICollectionViewDelegate {
     guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
     coordinator?.goToAlbumDetailView(albumDetailItems: item.imageItems)
   }
+}
+
+extension AlbumsView {
+    func startMonitor() {
+        networkConnectivityManager = NetworkConnectivityManager()
+        networkConnectivityManager.start()
+        
+        networkConnectivityManager.monitorHandler { [weak self] (isOffline) in
+            if (isOffline) {
+                self?.switchToOfflineView()
+            } else {
+                self?.switchOfflineModeOff()
+            }
+        }
+    }
+    
+    func createWaringLabel() {
+        waringLabel.text = "You Are OffLine Check Out Your Internet Connection"
+        waringLabel.font = UIFont.systemFont(ofSize: 32)
+        waringLabel.numberOfLines = 0
+        waringLabel.lineBreakMode = .byTruncatingTail
+        waringLabel.textColor = .label
+        waringLabel.textAlignment = .center
+        waringLabel.translatesAutoresizingMaskIntoConstraints = false
+        waringLabel.isHidden = true
+        self.addSubview(waringLabel)
+        
+        NSLayoutConstraint.activate([
+            waringLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            waringLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            waringLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            waringLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            waringLabel.heightAnchor.constraint(equalToConstant: 100),
+        ])
+    }
+    
+    @objc func switchToOfflineView() {
+        DispatchQueue.main.async {
+            self.hideCollectionView(hide: true)
+            self.waringLabel.isHidden = false
+        }
+    }
+    
+    @objc func switchOfflineModeOff() {
+        DispatchQueue.main.async {
+            self.hideCollectionView(hide: false)
+            self.waringLabel.isHidden = true
+        }
+    }
+    
+    func hideCollectionView(hide: Bool) {
+        self.albumsCollectionView.isHidden = hide
+    }
 }
