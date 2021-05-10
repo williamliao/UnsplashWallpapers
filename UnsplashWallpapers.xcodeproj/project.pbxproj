@@ -54,6 +54,7 @@
 		C89C8F522649143C00BA8E10 /* upRandom.json in Resources */ = {isa = PBXBuildFile; fileRef = C89C8F512649143C00BA8E10 /* upRandom.json */; };
 		C89C8F5A2649198300BA8E10 /* PhotoExifViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89C8F592649198300BA8E10 /* PhotoExifViewTest.swift */; };
 		C89C8F5F26491A0B00BA8E10 /* ShareMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89C8F5E26491A0B00BA8E10 /* ShareMethods.swift */; };
+		C89C8F642649253500BA8E10 /* FavoriteViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89C8F632649253500BA8E10 /* FavoriteViewTests.swift */; };
 		C89D68EB263F95C100CA8617 /* AlbumsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89D68EA263F95C100CA8617 /* AlbumsViewController.swift */; };
 		C89D68F0263F95CE00CA8617 /* AlbumsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89D68EF263F95CE00CA8617 /* AlbumsView.swift */; };
 		C89D68F5263F95DB00CA8617 /* AlbumsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89D68F4263F95DB00CA8617 /* AlbumsViewModel.swift */; };
@@ -189,6 +190,7 @@
 		C89C8F512649143C00BA8E10 /* upRandom.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = upRandom.json; sourceTree = "<group>"; };
 		C89C8F592649198300BA8E10 /* PhotoExifViewTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoExifViewTest.swift; sourceTree = "<group>"; };
 		C89C8F5E26491A0B00BA8E10 /* ShareMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareMethods.swift; sourceTree = "<group>"; };
+		C89C8F632649253500BA8E10 /* FavoriteViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteViewTests.swift; sourceTree = "<group>"; };
 		C89D68EA263F95C100CA8617 /* AlbumsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsViewController.swift; sourceTree = "<group>"; };
 		C89D68EF263F95CE00CA8617 /* AlbumsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsView.swift; sourceTree = "<group>"; };
 		C89D68F4263F95DB00CA8617 /* AlbumsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsViewModel.swift; sourceTree = "<group>"; };
@@ -327,6 +329,7 @@
 				C89A720F260347F6003E188F /* Info.plist */,
 				C89C8F592649198300BA8E10 /* PhotoExifViewTest.swift */,
 				C89C8F5E26491A0B00BA8E10 /* ShareMethods.swift */,
+				C89C8F632649253500BA8E10 /* FavoriteViewTests.swift */,
 			);
 			path = UnsplashWallpapersTests;
 			sourceTree = "<group>";
@@ -734,6 +737,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C89C8F642649253500BA8E10 /* FavoriteViewTests.swift in Sources */,
 				C89C8F5F26491A0B00BA8E10 /* ShareMethods.swift in Sources */,
 				C89A720E260347F6003E188F /* UnsplashWallpapersTests.swift in Sources */,
 				C89C8F5A2649198300BA8E10 /* PhotoExifViewTest.swift in Sources */,
