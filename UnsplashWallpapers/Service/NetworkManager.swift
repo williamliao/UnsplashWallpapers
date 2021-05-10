@@ -64,6 +64,8 @@ public enum ServerError: Error {
 
 class NetworkManager {
     
+    static let sharedInstance = NetworkManager()
+    
     enum RequestType: String {
         case get = "GET", post = "POST", put = "PUT", delete = "DELETE"
     }

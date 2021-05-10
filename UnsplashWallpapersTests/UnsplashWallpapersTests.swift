@@ -91,7 +91,7 @@ extension UnsplashWallpapersTests {
     
     func testNetworkClient_successResult() {
         
-        let exception = XCTestExpectation()
+        let expectation = XCTestExpectation()
         sut = UnsplashService(endPoint: .random)
         
         sut.fetchDataWithNetworkManager() { (result) in
@@ -101,6 +101,7 @@ extension UnsplashWallpapersTests {
                    
                     XCTAssertNotNil(respone)
                     XCTAssertTrue(respone.count == 30)
+                    expectation.fulfill()
                     
                 case .failure(let error):
                     XCTAssertNotNil(error)
@@ -108,12 +109,12 @@ extension UnsplashWallpapersTests {
         }
         
         let wait = XCTWaiter()
-        _ = wait.wait(for: [exception], timeout: 1)
+        _ = wait.wait(for: [expectation], timeout: 1)
     }
     
     func testSuccessfulResponse() {
         
-        let exception = XCTestExpectation()
+        let expectation = XCTestExpectation()
         
         let fakeData = Data([0, 1, 0, 1])
     
@@ -128,13 +129,14 @@ extension UnsplashWallpapersTests {
             switch result {
                 case .success(let data):
                     XCTAssertEqual(fakeData, data)
+                    expectation.fulfill()
                 case .failure(_):
                     break
             }
         }
             
         let wait = XCTWaiter()
-        _ = wait.wait(for: [exception], timeout: 1)
+        _ = wait.wait(for: [expectation], timeout: 1)
     }
     
     func testNetworkClient_404Result() {
@@ -143,7 +145,7 @@ extension UnsplashWallpapersTests {
         
         sut = UnsplashService(endPoint: .random, withSession: mockSession)
         
-        let exception = XCTestExpectation()
+        let expectation = XCTestExpectation()
         
         sut.fetchDataWithNetworkManager() { (result) in
 
@@ -158,6 +160,7 @@ extension UnsplashWallpapersTests {
                             let err = error as NSError
                             XCTAssertEqual(404, err.code)
                             XCTAssertNotNil(error)
+                            expectation.fulfill()
                             
                         default:
                             break
@@ -166,7 +169,7 @@ extension UnsplashWallpapersTests {
         }
        
         let wait = XCTWaiter()
-        _ = wait.wait(for: [exception], timeout: 1)
+        _ = wait.wait(for: [expectation], timeout: 1)
     }
     
     func testNetworkClient_NoData() {
@@ -175,7 +178,7 @@ extension UnsplashWallpapersTests {
        
         sut = UnsplashService(endPoint: .random, withSession: mockSession)
         
-        let exception = XCTestExpectation()
+        let expectation = XCTestExpectation()
 
         sut.fetchDataWithNetworkManager() { (result) in
 
@@ -188,6 +191,7 @@ extension UnsplashWallpapersTests {
                         case .badData:
                             XCTAssertNotNil(error)
                             XCTAssertTrue(error.localizedDescription == "badData")
+                            expectation.fulfill()
                         default:
                             break
                     }
@@ -195,7 +199,7 @@ extension UnsplashWallpapersTests {
         }
        
         let wait = XCTWaiter()
-        _ = wait.wait(for: [exception], timeout: 1)
+        _ = wait.wait(for: [expectation], timeout: 1)
     }
     
     func testNetworkClient_UnExpectStatusCode() {
@@ -204,7 +208,7 @@ extension UnsplashWallpapersTests {
         
         sut = UnsplashService(endPoint: .random, withSession: mockSession)
         
-        let exception = XCTestExpectation()
+        let expectation = XCTestExpectation()
         
         sut.fetchDataWithNetworkManager() { (result) in
 
@@ -220,6 +224,8 @@ extension UnsplashWallpapersTests {
                             XCTAssertNotNil(error)
                             XCTAssertEqual(500, err.code)
                             
+                            expectation.fulfill()
+                            
                         default:
                             break
                     }
@@ -228,44 +234,209 @@ extension UnsplashWallpapersTests {
         }
        
         let wait = XCTWaiter()
-        _ = wait.wait(for: [exception], timeout: 1)
+        _ = wait.wait(for: [expectation], timeout: 1)
+    }
+    
+    func testWithURLProtocolMock() {
+        
+        let expectation = XCTestExpectation()
+        
+        var components = URLComponents()
+        components.scheme = UnsplashAPI.scheme
+        components.host = UnsplashAPI.host
+        components.path = "/photos/random"
+        
+        components.queryItems = [
+            URLQueryItem(name: "count", value: "30"),
+            URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey),
+        ]
+        
+        guard let url = components.url  else {
+            return
+        }
+        
+        let data = getFakeData()
+        let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
+        URLProtocolMock.mockURLs = [url: (nil, data, response)]
+
+        let sessionConfiguration = URLSessionConfiguration.ephemeral
+        sessionConfiguration.protocolClasses = [URLProtocolMock.self]
+        let mockURLSession = URLSession(configuration: sessionConfiguration)
+     
+        sut = UnsplashService(endPoint: .random, withSession: mockURLSession)
+        
+        sut.fetchDataWithNetworkManager() { (result) in
+
+            switch result {
+                case .success(let respone):
+                    
+                    XCTAssertNotNil(respone)
+                    XCTAssertTrue(respone.count == 1)
+                    expectation.fulfill()
+                    
+                case .failure(let error):
+                    print("error \(error)")
+                    XCTAssertNotNil(error)
+            }
+        }
+        
+        let wait = XCTWaiter()
+        _ = wait.wait(for: [expectation], timeout: 1.0)
+    }
+    
+    func testSuccessfulResponse2() {
+        
+        let expectation = XCTestExpectation()
+        
+        var components = URLComponents()
+        components.scheme = UnsplashAPI.scheme
+        components.host = UnsplashAPI.host
+        components.path = "/photos/random"
+        
+        components.queryItems = [
+            URLQueryItem(name: "count", value: "30"),
+            URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey),
+        ]
+        
+        guard let componentsURL = components.url  else {
+            return
+        }
+        
+        let configuration = URLSessionConfiguration.default
+        configuration.protocolClasses = [MockURLProtocol.self]
+        let urlSession = URLSession.init(configuration: configuration)
+        
+        let data = getFakeData()
+        
+        MockURLProtocol.requestHandler = { request in
+            guard let url = request.url, url == componentsURL else {
+                throw ServerError.badRequest
+            }
+            let response = HTTPURLResponse(url: componentsURL, statusCode: 200, httpVersion: nil, headerFields: nil)!
+                  return (response, data)
+        }
+        
+        // Call API.
+        self.sut = UnsplashService(endPoint: .random, withSession: urlSession)
+        
+        self.sut.fetchDataWithNetworkManager() { (result) in
+
+            switch result {
+                case .success(let respone):
+                    
+                    XCTAssertNotNil(respone)
+                    XCTAssertTrue(respone.count == 1)
+                    expectation.fulfill()
+                    
+                case .failure(let error):
+                    print("error \(error)")
+                    XCTAssertNotNil(error)
+            }
+        }
+
+        let wait = XCTWaiter()
+        _ = wait.wait(for: [expectation], timeout: 1.0)
+    }
+    
+    func testParsingFailure() {
+        
+        let expectation = XCTestExpectation()
+        
+        var components = URLComponents()
+        components.scheme = UnsplashAPI.scheme
+        components.host = UnsplashAPI.host
+        components.path = "/photos/random"
+        
+        components.queryItems = [
+            URLQueryItem(name: "count", value: "30"),
+            URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey),
+        ]
+        
+        guard let componentsURL = components.url  else {
+            return
+        }
+        
+        let configuration = URLSessionConfiguration.default
+        configuration.protocolClasses = [MockURLProtocol.self]
+        let urlSession = URLSession.init(configuration: configuration)
+        
+        // Prepare response
+        let data = Data()
+        MockURLProtocol.requestHandler = { request in
+            let response = HTTPURLResponse(url: componentsURL, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, data)
+        }
+
+        // Call API.
+        self.sut = UnsplashService(endPoint: .random, withSession: urlSession)
+        
+        var expectError: ServerError?
+        self.sut.fetchDataWithNetworkManager() { (result) in
+
+            switch result {
+                case .success(_):
+                   break
+                case .failure(let error):
+                    expectError = error
+                    expectation.fulfill()
+            }
+        }
+        
+        let wait = XCTWaiter()
+        _ = wait.wait(for: [expectation], timeout: 1.0)
+        
+        XCTAssertEqual(expectError?.localizedDescription, "The data couldn’t be read because it isn’t in the correct format.")
     }
     
     func testWithPageNumber() {
-        //let fetchCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
-        //let unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
+        //fetch First page
+        var fetchCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
+        var unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
+        
+        XCTAssertTrue(unsplashPagedRequest.cursor.page == 1)
+        
+        
+        //fetch next page
+        fetchCursor = unsplashPagedRequest.nextCursor()
+        
+        unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
+        
+        XCTAssertTrue(unsplashPagedRequest.cursor.page == 2)
+        
+        //fetch three page
+        fetchCursor = unsplashPagedRequest.nextCursor()
+        
+        unsplashPagedRequest = UnsplashPagedRequest(with: fetchCursor)
+        
+        XCTAssertTrue(unsplashPagedRequest.cursor.page == 3)
     }
-}
-
-extension UnsplashWallpapersTests {
     
-    private func loadJsonData(file: String) -> Data? {
-        //1
-        if let jsonFilePath = Bundle(for: type(of:  self)).path(forResource: file, ofType: "json") {
-            let jsonFileURL = URL(fileURLWithPath: jsonFilePath)
-            //2
-            if let jsonData = try? Data(contentsOf: jsonFileURL) {
-                return jsonData
-            }
+    func testDecoding() throws {
+        /// When the Data initializer is throwing an error, the test will fail.
+        let jsonData = loadJsonData(file: "upRandom")
+        
+        guard let json = jsonData else {
+            return
         }
-        //3
-        return nil
-    }
-   
-    private func createMockSession(data: Data,
-                            andStatusCode code: Int,
-                            andError error: Error?) -> MockURLSession? {
 
-        let response = HTTPURLResponse(url: URL(string: "TestUrl")!, statusCode: code, httpVersion: nil, headerFields: nil)
-        return MockURLSession(completionHandler: (data, response, error))
+        /// The `XCTAssertNoThrow` can be used to get extra context about the throw
+        XCTAssertNoThrow(try JSONDecoder().decode([Response].self, from: json))
     }
     
-    private func createMockSessionFromFile(fromJsonFile file: String,
-                            andStatusCode code: Int,
-                            andError error: Error?) -> MockURLSession? {
-
-        let data = loadJsonData(file: file)
-        let response = HTTPURLResponse(url: URL(string: "TestUrl")!, statusCode: code, httpVersion: nil, headerFields: nil)
-        return MockURLSession(completionHandler: (data, response, error))
+    func testUserNameNotEmpty() throws {
+        let readFromFileData = loadJsonData(file: "upRandom")
+ 
+        do {
+            let jsonData = try XCTUnwrap(readFromFileData)
+            let result = try JSONDecoder().decode([Response].self, from: jsonData)
+            //Alexandra Tran
+        
+            let name =  try XCTUnwrap(result[0].user?.name)
+            XCTAssertFalse(name.isEmpty)
+            
+        } catch  {
+            print(error)
+            XCTFail("Deocde error")
+        }
     }
 }

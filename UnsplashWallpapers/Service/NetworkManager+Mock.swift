@@ -45,9 +45,7 @@ class MockURLSession: URLSessionProtocol {
         
         nextData = self.completionHandler.0
         nextError = self.completionHandler.2
-        
         completion(self.completionHandler.0, self.completionHandler.1, self.completionHandler.2)
-        
         //completion(nextData, nil, nextError)
         return dataTask
     }
@@ -87,4 +85,37 @@ class URLSessionMock: URLSession {
             completionHandler(data, nil, error)
         }
     }
+}
+
+class SeededURLSession: URLSession {
+    override func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
+        return SeededDataTask(url: url, completion: completionHandler)
+    }
+}
+
+class SeededDataTask: URLSessionDataTask {
+    private let url: URL
+    private let completion: DataTaskResult
+
+    init(url: URL, completion: @escaping DataTaskResult) {
+        self.url = url
+        self.completion = completion
+    }
+
+    override func resume() {
+        if let json = ProcessInfo.processInfo.environment[url.absoluteString] {
+            let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
+            let data = json.data(using: .utf8)
+            completion(data, response, nil)
+        }
+    }
+}
+
+struct UITestingConfig {
+    static let urlSession: URLSession = UITesting() ?
+        SeededURLSession() : URLSession.shared
+}
+
+private func UITesting() -> Bool {
+  ProcessInfo.processInfo.arguments.contains("UI-TESTING")
 }
