@@ -130,8 +130,15 @@ extension DetailView {
         guard let url = URL(string: photo.url.regular) else {
             return
         }
-        
-        viewModel.configureImage(with: url)
+       
+        viewModel.isLoading.value = true
+        viewModel.downloader.downloadWithErrorHandler(url: url) { [weak self] (image, error) in
+            self?.viewModel.isLoading.value = false
+            guard error == nil else {
+                return
+            }
+            self?.showImage(image: image)
+        }
     }
     
     func observerBindData() {
@@ -152,13 +159,6 @@ extension DetailView {
             }
             self?.configureView(photo: photoInfo)
         }
-        
-        viewModel.restultImage.bind { (image) in
-            
-            self.showImage(image: image)
-            
-        }
-        
     }
     
     private func showImage(image: UIImage?) {

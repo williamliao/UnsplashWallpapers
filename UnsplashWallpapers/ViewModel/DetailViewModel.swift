@@ -14,7 +14,6 @@ class DetailViewModel {
     var photoRespone: Observable<UnsplashPhotoInfo?> = Observable(nil)
     var isLoading: Observable<Bool> = Observable(false)
     var error: Observable<Error?> = Observable(nil)
-    var restultImage: Observable<UIImage?> = Observable(nil)
     var photoInfo: Observable<PhotoInfo?> = Observable(nil)
     
     // MARK: - component
@@ -29,7 +28,8 @@ class DetailViewModel {
     
     var userPhotosCursor: Cursor!
     var unsplashUserPhotosdRequest: UnsplashUserPhotoRequest!
-
+    
+    let downloader = ImageCombineDownloader()
 }
 
 // MARK: - Public
@@ -66,24 +66,6 @@ extension DetailViewModel {
                     }
             }
         }
-    }
-    
-    
-     func configureImage(with url: URL) {
-        isLoading.value = true
-        restultImage.value = nil
-        cancellable = self.loadImage(for: url).sink { [unowned self] image in
-            isLoading.value = false
-            restultImage.value = image
-         }
-     }
-    
-    private func loadImage(for url: URL) -> AnyPublisher<UIImage?, Never> {
-        return Just(url)
-        .flatMap({ poster -> AnyPublisher<UIImage?, Never> in
-            return ImageLoader.shared.loadImage(from: url)
-        })
-        .eraseToAnyPublisher()
     }
 }
 
