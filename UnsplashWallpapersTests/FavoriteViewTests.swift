@@ -21,6 +21,7 @@ class FavoriteViewTests: XCTestCase {
     override func tearDownWithError() throws {
         sut = nil
         mockSession = nil
+        UserDefaults.standard.removeObject(forKey: "favorites")
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
