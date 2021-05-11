@@ -52,7 +52,7 @@ extension PhotoListCollectionViewCell {
         thumbnailImageView.contentMode = .scaleAspectFill
         thumbnailImageView.clipsToBounds = true
         
-        act.color = traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
+        act.color = traitCollection.userInterfaceStyle == .light ? UIColor.white : UIColor.black
     
         contentView.addSubview(thumbnailImageView)
         contentView.addSubview(act)
@@ -89,10 +89,25 @@ extension PhotoListCollectionViewCell {
         isLoading(isLoading: true)
         
         DispatchQueue.global().async { [weak self] in
-            self?.downloader.download(url: url) { [weak self] (image) in
+            self?.downloader.downloadWithErrorHandler(url: url, completionHandler: { [weak self] (image, error) in
+                
+                DispatchQueue.main.async {
+                    self?.isLoading(isLoading: false)
+                }
+                
+                guard error == nil else {
+                    
+                    print(error?.localizedDescription ?? "")
+                    return
+                }
+                
+                guard let image = image else {
+                    
+                    return
+                }
                 self?.showImage(image: image)
-                self?.isLoading(isLoading: false)
-            }
+                
+            })
         }
     }
     

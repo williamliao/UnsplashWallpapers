@@ -12,6 +12,7 @@ import Combine
 public final class ImageLoader {
     public static let shared = ImageLoader()
 
+    private let urlSession: URLSession
     private let cache: ImageCacheType
     private lazy var backgroundQueue: OperationQueue = {
         let queue = OperationQueue()
@@ -19,10 +20,10 @@ public final class ImageLoader {
         return queue
     }()
     
-    var imageCache: ImageCache = ImageCache()
-
-    public init() {
-        self.cache = imageCache
+    init(urlSession: URLSession = .shared,
+         cache: ImageCacheType = ImageCache()) {
+        self.urlSession = urlSession
+        self.cache = cache
     }
 
     public func loadImage(from url: URL) -> AnyPublisher<UIImage?, Never> {
@@ -40,5 +41,46 @@ public final class ImageLoader {
             .subscribe(on: backgroundQueue)
             .receive(on: RunLoop.main)
             .eraseToAnyPublisher()
+    }
+    
+    func publisher(for url: URL) -> AnyPublisher<UIImage, Error> {
+        
+        guard url.scheme == "https" else {
+            return Fail(error: URLError(.badURL, userInfo: [
+                NSLocalizedFailureReasonErrorKey: """
+                Image loading may only be performed over HTTPS
+                """,
+                NSURLErrorFailingURLErrorKey: url
+            ]))
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+        }
+        
+        if let image = cache[url] {
+            return Just(image)
+                    .setFailureType(to: Error.self)
+                    .receive(on: DispatchQueue.main)
+                    .eraseToAnyPublisher()
+        } else {
+            return urlSession.dataTaskPublisher(for: url)
+                .map(\.data)
+                .tryMap { data in
+                    guard let image = UIImage(data: data) else {
+                        throw URLError(.badServerResponse, userInfo: [
+                            NSURLErrorFailingURLErrorKey: url
+                        ])
+                    }
+                    return image
+                }
+                .handleEvents(receiveOutput: {[weak self] image in
+                    self?.cache[url] = image
+                })
+                .receive(on: DispatchQueue.main)
+                .eraseToAnyPublisher()
+        }
+    }
+    
+    func getCacheImage(url: URL) -> UIImage? {
+        return cache[url]
     }
 }

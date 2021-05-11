@@ -87,7 +87,7 @@ extension SharedAlbumItemCell {
     ownerAvatar.clipsToBounds = true
     contentContainer.addSubview(ownerAvatar)
     
-    act.color = traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
+    act.color = traitCollection.userInterfaceStyle == .light ? UIColor.white : UIColor.black
     act.translatesAutoresizingMaskIntoConstraints = false
     contentView.addSubview(act)
 

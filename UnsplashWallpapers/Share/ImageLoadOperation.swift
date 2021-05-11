@@ -27,7 +27,7 @@ class ImageLoadOperation: Operation {
             return
         }
 
-        downloader.download(url: self.imgUrl) { [weak self] (downloadImage) in
+        downloader.downloadWithErrorHandler(url: self.imgUrl) { [weak self] (downloadImage, error) in
             guard let strongSelf = self else { return }
             strongSelf.image = downloadImage
             strongSelf.completionHandler?(downloadImage)

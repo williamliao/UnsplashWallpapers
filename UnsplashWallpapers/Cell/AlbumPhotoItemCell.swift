@@ -51,6 +51,10 @@ extension AlbumPhotoItemCell {
 
         imageView.translatesAutoresizingMaskIntoConstraints = false
         contentContainer.addSubview(imageView)
+        
+        act.color = traitCollection.userInterfaceStyle == .light ? UIColor.white : UIColor.black
+        act.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(act)
 
         NSLayoutConstraint.activate([
             contentContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -61,7 +65,10 @@ extension AlbumPhotoItemCell {
             imageView.leadingAnchor.constraint(equalTo: contentContainer.leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: contentContainer.trailingAnchor),
             imageView.bottomAnchor.constraint(equalTo: contentContainer.bottomAnchor),
-            imageView.topAnchor.constraint(equalTo: contentContainer.topAnchor)
+            imageView.topAnchor.constraint(equalTo: contentContainer.topAnchor),
+            
+            act.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            act.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
         ])
     }
 }

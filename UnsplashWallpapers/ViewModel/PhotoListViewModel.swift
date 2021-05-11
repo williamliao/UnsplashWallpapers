@@ -13,8 +13,14 @@ enum SegmentedIndex: Int, CaseIterable {
     case wallpapers
 }
 
+protocol FetchMoreDataDelegate:class {
+    func realodSection(newData: [Response])
+}
+
 class PhotoListViewModel  {
     var coordinator: MainCoordinator?
+    
+    weak var fetchMoreDataDelegate: FetchMoreDataDelegate?
     
     var respone: Observable<[Response]?> = Observable([])
     var searchRespone: Observable<SearchRespone?> = Observable(nil)
@@ -178,6 +184,14 @@ extension PhotoListViewModel {
                             }
 
                             self?.respone.value = new
+                            
+//                            let startIndex = new.count - respone.count
+//                            let endIndex = startIndex + respone.count - 1
+//                            let newIndexPaths = (startIndex ... endIndex).map { i in
+//                                return IndexPath(row: i, section: 0)
+//                            }
+                            
+                            //self?.fetchMoreDataDelegate?.realodSection(newData: new)
                            
                             guard let count = self?.respone.value?.count else {
                                 return

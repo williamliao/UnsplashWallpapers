@@ -92,7 +92,7 @@ extension FeaturedAlbumItemCell {
     imageCountLabel.textColor = .placeholderText
     contentContainer.addSubview(imageCountLabel)
     
-    act.color = traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
+    act.color = traitCollection.userInterfaceStyle == .light ? UIColor.white : UIColor.black
     act.translatesAutoresizingMaskIntoConstraints = false
     contentView.addSubview(act)
 

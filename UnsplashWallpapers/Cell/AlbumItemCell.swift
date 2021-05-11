@@ -69,7 +69,7 @@ extension AlbumItemCell {
     titleLabel.layer.masksToBounds = false
     contentContainer.addSubview(titleLabel)
     
-    act.color = traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
+    act.color = traitCollection.userInterfaceStyle == .light ? UIColor.white : UIColor.black
     act.translatesAutoresizingMaskIntoConstraints = false
     contentView.addSubview(act)
 

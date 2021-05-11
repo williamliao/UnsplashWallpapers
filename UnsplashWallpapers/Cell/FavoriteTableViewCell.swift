@@ -61,7 +61,7 @@ extension FavoriteTableViewCell {
         avatarImageView.layer.borderColor = traitCollection.userInterfaceStyle == .light ? UIColor.black.cgColor : UIColor.white.cgColor
         avatarImageView.clipsToBounds = true
         
-        act.color = .systemBackground
+        act.color = traitCollection.userInterfaceStyle == .light ? UIColor.white : UIColor.black
     
         contentView.addSubview(thumbnailImageView)
         contentView.addSubview(act)
