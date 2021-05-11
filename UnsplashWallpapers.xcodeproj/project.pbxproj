@@ -118,6 +118,7 @@
 		C8D868802637F55F00FF672D /* UsersListCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D8687F2637F55F00FF672D /* UsersListCollectionViewCell.swift */; };
 		C8EBAD78264A141A0070C1E9 /* MockURLResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EBAD77264A141A0070C1E9 /* MockURLResponder.swift */; };
 		C8EBAD7D264A15BE0070C1E9 /* ImageCombineDownloaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EBAD7C264A15BE0070C1E9 /* ImageCombineDownloaderTests.swift */; };
+		C8EBAD8B264A7CF40070C1E9 /* SearchResultsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EBAD8A264A7CF40070C1E9 /* SearchResultsViewTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -255,6 +256,7 @@
 		C8D8687F2637F55F00FF672D /* UsersListCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersListCollectionViewCell.swift; sourceTree = "<group>"; };
 		C8EBAD77264A141A0070C1E9 /* MockURLResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLResponder.swift; sourceTree = "<group>"; };
 		C8EBAD7C264A15BE0070C1E9 /* ImageCombineDownloaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCombineDownloaderTests.swift; sourceTree = "<group>"; };
+		C8EBAD8A264A7CF40070C1E9 /* SearchResultsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsViewTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -334,6 +336,7 @@
 				C89C8F632649253500BA8E10 /* FavoriteViewTests.swift */,
 				C8EBAD77264A141A0070C1E9 /* MockURLResponder.swift */,
 				C8EBAD7C264A15BE0070C1E9 /* ImageCombineDownloaderTests.swift */,
+				C8EBAD8A264A7CF40070C1E9 /* SearchResultsViewTests.swift */,
 			);
 			path = UnsplashWallpapersTests;
 			sourceTree = "<group>";
@@ -740,6 +743,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C89C8F642649253500BA8E10 /* FavoriteViewTests.swift in Sources */,
+				C8EBAD8B264A7CF40070C1E9 /* SearchResultsViewTests.swift in Sources */,
 				C8EBAD78264A141A0070C1E9 /* MockURLResponder.swift in Sources */,
 				C89C8F5F26491A0B00BA8E10 /* ShareMethods.swift in Sources */,
 				C89A720E260347F6003E188F /* UnsplashWallpapersTests.swift in Sources */,
