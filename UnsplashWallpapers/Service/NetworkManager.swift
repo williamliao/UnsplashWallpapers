@@ -432,7 +432,7 @@ class NetworkManager {
         createRequestWithURL(url: url, decode: decode, completion: completion)
     }
     
-    func getPhotoInfo<T: Decodable>(id: String, pageRequest: UnsplashUserPhotoRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+    func getPhotoInfo<T: Decodable>(pageRequest: UnsplashUserPhotoRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
         
         let components = prepareURLComponents()
         

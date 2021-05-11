@@ -82,9 +82,9 @@ extension UnsplashService {
 
     }
     
-    func getPhotoInfo(id: String, pageRequest: UnsplashUserPhotoRequest, completion: @escaping (APIResult<UnsplashPhotoInfo, ServerError>) -> Void) {
+    func getPhotoInfo(pageRequest: UnsplashUserPhotoRequest, completion: @escaping (APIResult<UnsplashPhotoInfo, ServerError>) -> Void) {
         
-        self.getPhotoInfo(id: id, pageRequest: pageRequest, method: .get, decode: { json -> UnsplashPhotoInfo? in
+        self.getPhotoInfo(pageRequest: pageRequest, method: .get, decode: { json -> UnsplashPhotoInfo? in
             guard let feedResult = json as? UnsplashPhotoInfo else { return  nil }
             return feedResult
         }, completion: completion)

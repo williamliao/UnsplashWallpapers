@@ -9,9 +9,6 @@ import XCTest
 @testable import UnsplashWallpapers
 
 class SearchResultsViewTests: XCTestCase {
-    var sut : UnsplashService!
-    var mockSession: MockURLSession!
-    
     static let searchKey = "searchHistory"
     
     override func setUpWithError() throws {
@@ -20,8 +17,6 @@ class SearchResultsViewTests: XCTestCase {
     }
 
     override func tearDownWithError() throws {
-        sut = nil
-        mockSession = nil
         UserDefaults.standard.removeObject(forKey: SearchResultsViewTests.searchKey)
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }

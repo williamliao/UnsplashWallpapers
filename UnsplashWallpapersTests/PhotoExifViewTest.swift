@@ -199,7 +199,7 @@ extension PhotoExifViewTest {
         var photoInfo: UnsplashPhotoInfo?
        //photoDetail
         sut = UnsplashService(endPoint: .photoDetail(id))
-        sut.getPhotoInfo(id: id ,pageRequest: unsplashUserPhotosdRequest) { (result) in
+        sut.getPhotoInfo(pageRequest: unsplashUserPhotosdRequest) { (result) in
             
             switch result {
                 case .success(let respone):

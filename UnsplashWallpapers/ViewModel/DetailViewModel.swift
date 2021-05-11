@@ -36,7 +36,7 @@ class DetailViewModel {
 extension DetailViewModel {
     
     func getPhotoInfo() {
-        service = UnsplashService(endPoint: .random)
+        
         
         if userPhotosCursor == nil {
             userPhotosCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
@@ -49,7 +49,9 @@ extension DetailViewModel {
             return
         }
         
-        service.getPhotoInfo(id: photoInfo.id, pageRequest: unsplashUserPhotosdRequest) { (result) in
+        service = UnsplashService(endPoint: .photoDetail(photoInfo.id))
+        
+        service.getPhotoInfo(pageRequest: unsplashUserPhotosdRequest) { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):
