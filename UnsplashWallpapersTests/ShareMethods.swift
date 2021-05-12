@@ -135,4 +135,27 @@ extension XCTestCase {
         let response = HTTPURLResponse(url: URL(string: "TestUrl")!, statusCode: code, httpVersion: nil, headerFields: nil)
         return MockURLSession(completionHandler: (data, response, error))
     }
+    
+        
+    func baseApiTest(endPoint: NetworkManager.NetworkEndpoint, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) {
+        let expectation = XCTestExpectation()
+   
+        var sut : UnsplashService!
+    
+        sut = UnsplashService(endPoint: endPoint)
+        
+        sut.get() { (data, response, error) -> Void in
+            guard error == nil else {
+                print("baseApiTest \(endPoint), URLResponse \(response as URLResponse?), error \(error as Error?)")
+                completionHandler(nil, response, error)
+                return
+            }
+            
+            completionHandler(data, nil, nil)
+            
+        }
+            
+        let wait = XCTWaiter()
+        _ = wait.wait(for: [expectation], timeout: 1)
+    }
 }

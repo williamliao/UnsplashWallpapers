@@ -21,6 +21,7 @@ class MockURLSession: URLSessionProtocol {
     private (set) var lastURL: URL?
     
     var nextData: Data?
+    var nextResponse: URLResponse?
     var nextError: Error?
     
     var dataTask = MockURLSessionDataTask()
@@ -44,9 +45,9 @@ class MockURLSession: URLSessionProtocol {
         lastURL = url
         
         nextData = self.completionHandler.0
+        nextResponse = self.completionHandler.1
         nextError = self.completionHandler.2
         completion(self.completionHandler.0, self.completionHandler.1, self.completionHandler.2)
-        //completion(nextData, nil, nextError)
         return dataTask
     }
 }

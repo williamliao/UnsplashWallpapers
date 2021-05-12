@@ -76,7 +76,7 @@ extension UnsplashWallpapersTests {
     
     func test_GET_WithANetworkError_ReturnsANetworkError() {
         
-        mockSession = createMockSessionFromFile(fromJsonFile: "A", andStatusCode: 200, andError: nil)
+        mockSession = createMockSessionFromFile(fromJsonFile: "A", andStatusCode: 200, andError: NSError(domain: "error", code: 0, userInfo: nil))
         
         mockSession.nextError = NSError(domain: "error", code: 0, userInfo: nil)
 

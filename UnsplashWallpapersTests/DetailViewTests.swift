@@ -17,9 +17,13 @@ class DetailViewTests: XCTestCase {
     
     override func setUpWithError() throws {
         
+        let nav = UINavigationController()
+        
         let fakeData = getFakeData()
         info = try JSONDecoder().decode([Response].self, from: fakeData)
         viewModel = DetailViewModel()
+        viewModel.navItem = nav.navigationItem
+        viewModel.createBarItem()
         detailView = DetailView(viewModel: viewModel, coordinator: viewModel.coordinator)
         
         let id = info[0].id
@@ -50,8 +54,6 @@ extension DetailViewTests {
     func testImageViewHaveImage() throws {
         let expectation = XCTestExpectation()
         
-        let viewModel = DetailViewModel()
-        let detailView = DetailView(viewModel: viewModel, coordinator: viewModel.coordinator)
         detailView.createView()
         detailView.observerBindData()
         
@@ -74,5 +76,31 @@ extension DetailViewTests {
         let unsplashPhotoInfo = viewModel.photoRespone.value
         
         XCTAssertNotNil(unsplashPhotoInfo)
+    }
+    
+    func testfavoriteButtonPress() {
+        
+        let expectation = XCTestExpectation()
+        viewModel.favoriteAction()
+        
+        let wait = XCTWaiter()
+        _ = wait.wait(for: [expectation], timeout: 1.0)
+        
+        let favorites = FavoriteManager.sharedInstance.favorites.value
+        
+        XCTAssertNotNil(favorites)
+    }
+    
+    func testLoadfavorite() {
+        
+        let expectation = XCTestExpectation()
+        viewModel.loadFavorite()
+        
+        let wait = XCTWaiter()
+        _ = wait.wait(for: [expectation], timeout: 1.0)
+        
+        let favorites = FavoriteManager.sharedInstance.favorites.value
+        
+        XCTAssertNotNil(favorites)
     }
 }

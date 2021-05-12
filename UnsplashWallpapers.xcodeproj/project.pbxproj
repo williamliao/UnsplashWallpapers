@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C8284D7D264B69420032B7D3 /* UnsplashApiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8284D7C264B69420032B7D3 /* UnsplashApiTests.swift */; };
 		C852BDCF26142054002059F5 /* UnsplashSearchPagedRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C852BDCE26142054002059F5 /* UnsplashSearchPagedRequest.swift */; };
 		C89A71F7260347F2003E188F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89A71F6260347F2003E188F /* AppDelegate.swift */; };
 		C89A71F9260347F2003E188F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89A71F8260347F2003E188F /* SceneDelegate.swift */; };
@@ -140,6 +141,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C8284D7C264B69420032B7D3 /* UnsplashApiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsplashApiTests.swift; sourceTree = "<group>"; };
 		C852BDCE26142054002059F5 /* UnsplashSearchPagedRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsplashSearchPagedRequest.swift; sourceTree = "<group>"; };
 		C89A71F3260347F2003E188F /* UnsplashWallpapers.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnsplashWallpapers.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C89A71F6260347F2003E188F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -340,6 +342,7 @@
 				C8EBAD7C264A15BE0070C1E9 /* ImageCombineDownloaderTests.swift */,
 				C8EBAD8A264A7CF40070C1E9 /* SearchResultsViewTests.swift */,
 				C8EBAD8F264A83860070C1E9 /* DetailViewTests.swift */,
+				C8284D7C264B69420032B7D3 /* UnsplashApiTests.swift */,
 			);
 			path = UnsplashWallpapersTests;
 			sourceTree = "<group>";
@@ -748,6 +751,7 @@
 				C89C8F642649253500BA8E10 /* FavoriteViewTests.swift in Sources */,
 				C8EBAD90264A83860070C1E9 /* DetailViewTests.swift in Sources */,
 				C8EBAD8B264A7CF40070C1E9 /* SearchResultsViewTests.swift in Sources */,
+				C8284D7D264B69420032B7D3 /* UnsplashApiTests.swift in Sources */,
 				C8EBAD78264A141A0070C1E9 /* MockURLResponder.swift in Sources */,
 				C89C8F5F26491A0B00BA8E10 /* ShareMethods.swift in Sources */,
 				C89A720E260347F6003E188F /* UnsplashWallpapersTests.swift in Sources */,
