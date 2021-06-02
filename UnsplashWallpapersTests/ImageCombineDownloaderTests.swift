@@ -7,21 +7,27 @@
 
 import XCTest
 import Combine
+import Network
+import NetworkExtension
+
+
 @testable import UnsplashWallpapers
 
 class ImageCombineDownloaderTests: XCTestCase {
     var sut : UnsplashService!
     var mockSession: MockURLSession!
     var downloader: ImageLoader!
+    let networkMonitor = NetworkConnectivityManager()
 
     override func setUpWithError() throws {
-        
+        networkMonitor.start()
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
 
     override func tearDownWithError() throws {
         sut = nil
         mockSession = nil
+        networkMonitor.close()
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
@@ -94,7 +100,12 @@ extension ImageCombineDownloaderTests {
         XCTAssertThrowsError(try awaitCompletion(of: publisher))
     }
     
-    func testCacheImage() {
+    func testCacheImage() throws {
+        
+        try XCTSkipUnless(
+            networkMonitor.isConnected(),
+          "Network connectivity needed for this test.")
+        
         let data = getFakeData()
         
         var components = URLComponents()

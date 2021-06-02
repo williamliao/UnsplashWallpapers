@@ -214,8 +214,9 @@ extension PhotoListViewModel {
                 
             case .nature:
                 unsplashNaturePagedRequest = UnsplashSearchPagedRequest(with: fetchNatureCursor)
-                
+                service = UnsplashService(endPoint: .search("nature", unsplashNaturePagedRequest))
                 service.search(pageRequest: unsplashNaturePagedRequest) { [weak self] (result) in
+                    
                     self?.isLoading.value = false
                     self?.isFetchingNextPage = false
                     
@@ -232,6 +233,7 @@ extension PhotoListViewModel {
          
                             new.total = respone.total
                             new.total_pages = respone.total_pages
+                            //new.results = respone.results
                           
                             for index in 0...respone.results.count - 1 {
                                 
@@ -241,7 +243,7 @@ extension PhotoListViewModel {
                             }
                             
                             self?.searchRespone.value = new
-                           
+                            
                             guard let cursor = self?.fetchNatureCursor else {
                                 return
                             }
@@ -265,6 +267,9 @@ extension PhotoListViewModel {
                 
             case .wallpapers:
                 unsplashWallpaperPagedRequest = UnsplashSearchPagedRequest(with: fetchWallpapersCursor)
+                service = UnsplashService(endPoint: .search("wallpapers", unsplashWallpaperPagedRequest))
+                
+                print("fetchWallpapersCursor \(unsplashWallpaperPagedRequest.cursor)")
                 
                 service.search(pageRequest: unsplashWallpaperPagedRequest) { [weak self] (result) in
                     self?.isLoading.value = false
@@ -283,6 +288,7 @@ extension PhotoListViewModel {
                             
                             new.total = respone.total
                             new.total_pages = respone.total_pages
+                            
                             for index in 0...respone.results.count - 1 {
                                 
                                 if !new.results.contains(respone.results[index]) {

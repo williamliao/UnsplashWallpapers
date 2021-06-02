@@ -19,8 +19,7 @@ class PhotoListViewController: UIViewController {
         super.viewDidLoad()
 
         photoListView = PhotoListView(viewModel: viewModel, coordinator: viewModel.coordinator)
-        photoListView.configureCollectionView()
-        photoListView.createSegmentView()
+       
         photoListView.translatesAutoresizingMaskIntoConstraints = false
         photoListView.registerOffLineNotification()
         self.view.addSubview(photoListView)
@@ -31,6 +30,9 @@ class PhotoListViewController: UIViewController {
             photoListView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
             photoListView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
         ])
+        
+        photoListView.configureCollectionView()
+        photoListView.createSegmentView()
 
         if isCollectionMode {
             photoListView.section = .collections

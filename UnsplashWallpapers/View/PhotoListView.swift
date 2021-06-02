@@ -53,6 +53,7 @@ class PhotoListView: UIView {
     var currentIndex = 0
     var offsetY = 0
     var endRect = CGRect.zero
+    var isLoadingNewData = false
     
     let items = ["Random", "Nature", "Wallpapers"]
     lazy var segmentedControl = UISegmentedControl(items: items)
@@ -86,6 +87,7 @@ extension PhotoListView {
         
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.itemSize = CGSize(width: UIScreen.main.bounds.size.width, height: 300)
+        //flowLayout.estimatedItemSize
 
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         
@@ -150,6 +152,9 @@ extension PhotoListView {
     }
     
     @objc func segmentAction(_ segmentedControl: UISegmentedControl) {
+        
+        imageLoadOperations = [IndexPath: ImageLoadOperation]()
+        
             switch (segmentedControl.selectedSegmentIndex) {
             case 0:
                 //print("Random")
@@ -378,7 +383,7 @@ extension PhotoListView {
                 
                 //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
                 DispatchQueue.main.async {
-                    self.collectionView.setNeedsLayout()
+                    //self.collectionView.setNeedsLayout()
                     self.dataSource.apply(snapshot, animatingDifferences: false)
                     self.reloadCollectionData()
                 }
@@ -501,7 +506,7 @@ extension PhotoListView: UICollectionViewDataSourcePrefetching {
                 }
 
             case .nature, .wallpapers:
-                
+               
                 guard let res = viewModel.searchRespone.value else {
                     return
                 }
@@ -520,7 +525,7 @@ extension PhotoListView: UICollectionViewDataSourcePrefetching {
                         imageLoadQueue?.addOperation(imageLoadOperation)
                         imageLoadOperations?[indexPath] = imageLoadOperation
                     }
-                }
+                 }
                 
             case .collections:
                 break
@@ -641,15 +646,10 @@ extension PhotoListView: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
- 
+        
         let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
         if !viewModel.isLoading.value && indexPath.row == lastElement {
-         
-            let spinner = UIActivityIndicatorView(style: .medium)
-            spinner.startAnimating()
-            spinner.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: collectionView.bounds.width, height: CGFloat(44))
-            spinner.color = traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
-            
+           
             currentIndex = lastElement
             
             let lastIndexPath = IndexPath(row: indexPath.row, section: indexPath.section)
@@ -669,12 +669,17 @@ extension PhotoListView: UICollectionViewDelegate {
     }
     
     private func reloadCollectionData() {
-       
-        self.collectionView.layoutIfNeeded()
-       
-        UIView.animate(withDuration: 0.25) {
+        
+        UIView.performWithoutAnimation {
+            let context = UICollectionViewFlowLayoutInvalidationContext()
+            context.invalidateFlowLayoutAttributes = false
+            self.collectionView.collectionViewLayout.invalidateLayout(with: context)
+            self.collectionView.layoutIfNeeded()
+        };
+        
+       /* UIView.animate(withDuration: 0.25) {
             self.collectionView.scrollRectToVisible(self.endRect, animated: false)
-        }
+        } */
     }
 }
 
@@ -748,6 +753,7 @@ extension PhotoListView {
             
             cell?.titleLabel.text = "Wallpapers"
         }
+      
         
         if let loader = imageLoadOperations?[indexPath] {
             cell?.isLoading(isLoading: true)

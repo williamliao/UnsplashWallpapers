@@ -217,13 +217,24 @@ extension SearchView {
         //Force the update on the main thread to silence a warning about tableview not being in the hierarchy!
         DispatchQueue.main.async {
             dataSource.apply(snapshot, animatingDifferences: false)
-
+            self.reloadCollectionData()
+            
             if let count = self.viewModel.searchRespone.value?.results.count {
                 if count > 0 {
                     self.searchResultsView.isHidden = true
                 }
             }
         }
+    }
+    
+    private func reloadCollectionData() {
+        
+        UIView.performWithoutAnimation {
+            let context = UICollectionViewFlowLayoutInvalidationContext()
+            context.invalidateFlowLayoutAttributes = false
+            self.collectionView.collectionViewLayout.invalidateLayout(with: context)
+            self.collectionView.layoutIfNeeded()
+        };
     }
     
     func configureSearchCell(collectionView: UICollectionView, respone: Results, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
@@ -267,7 +278,26 @@ extension SearchView: UICollectionViewDelegateFlowLayout {
         if viewModel.category == .users {
             return CGSize(width: collectionView.bounds.size.width, height: 50)
         } else {
-            return CGSize(width: collectionView.bounds.size.width, height: 300)
+            
+            let res = viewModel.searchRespone.value
+            let height = res?.results[indexPath.row].height
+            let width = res?.results[indexPath.row].width
+            
+            if let safeHeight = height, let safeWidth = width {
+                
+                if safeHeight > safeWidth {
+                    let resizeH = CGFloat(safeHeight) / 8
+                    
+                    let resizeHeight: CGFloat = CGFloat(resizeH)
+                    
+                    return CGSize(width: collectionView.bounds.size.width, height: resizeHeight)
+                } else {
+                    return CGSize(width: collectionView.bounds.size.width, height: 300)
+                }
+                
+            } else {
+                return CGSize(width: collectionView.bounds.size.width, height: 300)
+            }
         }
     }
     

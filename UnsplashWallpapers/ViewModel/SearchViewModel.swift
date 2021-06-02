@@ -80,6 +80,8 @@ extension SearchViewModel {
                 case .success(let respone):
                    
                     self.searchRespone.value = respone
+                    
+                    self.searchCursor = self.unsplashSearchPagedRequest.nextCursor()
         
                 case .failure(let error):
                     
@@ -105,12 +107,17 @@ extension SearchViewModel {
         switch category {
             case .photos:
                 unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: searchCursor)
+                service = UnsplashService(endPoint: .search(searchCursor.query ?? "", unsplashSearchPagedRequest))
                 break
             case .collections:
                 unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: collectionsCursor)
+                service = UnsplashService(endPoint: .search(collectionsCursor.query ?? "", unsplashSearchPagedRequest))
                 break
             case .users:
                 unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: usersCursor)
+                
+                service = UnsplashService(endPoint: .users(usersCursor.query ?? "", unsplashSearchPagedRequest))
+                
                 break
             case .none:
                 break
@@ -129,10 +136,10 @@ extension SearchViewModel {
                         return
                     }
                     
-                    if new.results.count == respone.results.count {
-                       self?.canFetchMore = false
-                        return
-                    }
+//                    if new.results.count == respone.results.count {
+//                       self?.canFetchMore = false
+//                        return
+//                    }
                     
                     new.total = respone.total
                     new.total_pages = respone.total_pages

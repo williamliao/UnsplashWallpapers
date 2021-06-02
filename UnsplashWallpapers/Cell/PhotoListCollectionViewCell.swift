@@ -89,6 +89,7 @@ extension PhotoListCollectionViewCell {
         isLoading(isLoading: true)
         
         DispatchQueue.global().async { [weak self] in
+          
             self?.downloader.downloadWithErrorHandler(url: url, completionHandler: { [weak self] (image, error) in
                 
                 DispatchQueue.main.async {

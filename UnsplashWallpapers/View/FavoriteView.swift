@@ -167,23 +167,13 @@ extension FavoriteView: UITableViewDelegate {
         }
         
 
-        //2 Update title
+        //Update title
         var updatePhotoInfo = photoInfo
         updatePhotoInfo.title = updatePhotoInfo.title.appending(" ★")
-        
-        // 3
-        // Create a new copy of data source snapshot for modification
-        var newSnapshot = dataSource.snapshot()
-        
-        // 4
-        /* only work for class type
-        // Reload photoInfo in newSnapshot
-        newSnapshot.reloadItems([updatePhotoInfo])*/
-        
+       
         let favoriteManager = FavoriteManager.sharedInstance
         
         // Replacing photoInfo with updatePhotoInfo
-        
         UIView.setAnimationsEnabled(false)
         CATransaction.begin()
 
@@ -191,8 +181,8 @@ extension FavoriteView: UITableViewDelegate {
             UIView.setAnimationsEnabled(true)
         }
 
-        newSnapshot.insertItems([updatePhotoInfo], beforeItem: photoInfo)
-        newSnapshot.deleteItems([photoInfo])
+        //self.reloadItems(newItems:updatePhotoInfo, deleteItems: photoInfo)
+        self.handleNewItems([updatePhotoInfo])
         
         if favoriteManager.favorites.value.contains(photoInfo) {
             favoriteManager.favorites.value.remove(photoInfo)
@@ -200,29 +190,26 @@ extension FavoriteView: UITableViewDelegate {
         
         favoriteManager.handleSaveAction(photo: updatePhotoInfo, isFavorite: true)
         favoriteManager.saveToFavorite()
-        
-        // 5
-        // Apply snapshot changes to data source
-        dataSource.apply(newSnapshot)
-
+    
         CATransaction.commit()
-        
-       /* UIView.performWithoutAnimation {
-            newSnapshot.insertItems([updatePhotoInfo], beforeItem: photoInfo)
-            newSnapshot.deleteItems([photoInfo])
-            
-            if favoriteManager.favorites.value.contains(photoInfo) {
-                favoriteManager.favorites.value.remove(photoInfo)
-            }
-            
-            favoriteManager.handleSaveAction(photo: updatePhotoInfo, isFavorite: true)
-            favoriteManager.saveToFavorite()
-            
-            // 5
-            // Apply snapshot changes to data source
-            dataSource.apply(newSnapshot)
-        }*/
-        
-        
+    }
+    
+    func reloadItems( newItems: PhotoInfo, deleteItems: PhotoInfo) {
+        var snapshot = dataSource.snapshot()
+        snapshot.appendItems([newItems], toSection: FavoriteSection.main)
+        snapshot.deleteItems([deleteItems])
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    func handleNewItems(_ newItems: [PhotoInfo]) {
+        var snapShot = dataSource.snapshot()
+        let diff = newItems.difference(from: snapShot.itemIdentifiers)
+        let currentIdentifiers = snapShot.itemIdentifiers
+        guard let newIdentifiers = currentIdentifiers.applying(diff) else {
+            return
+        }
+        snapShot.deleteItems(currentIdentifiers)
+        snapShot.appendItems(newIdentifiers)
+        dataSource.apply(snapShot, animatingDifferences: true)
     }
 }
