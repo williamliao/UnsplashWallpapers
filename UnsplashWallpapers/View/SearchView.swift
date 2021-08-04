@@ -77,8 +77,8 @@ extension SearchView {
     func configureCollectionView() {
        
         let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        flowLayout.estimatedItemSize = .zero
+        //flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        //flowLayout.estimatedItemSize = .zero
 
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         

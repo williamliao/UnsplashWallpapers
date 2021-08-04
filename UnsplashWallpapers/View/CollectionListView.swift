@@ -39,8 +39,8 @@ extension CollectionListView {
         self.backgroundColor = .systemBackground
         
         let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        flowLayout.estimatedItemSize = .zero
+        //flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        //flowLayout.estimatedItemSize = .zero
 
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         
