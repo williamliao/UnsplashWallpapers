@@ -115,9 +115,12 @@ extension SearchResultsTableView {
             snapshot.appendItems([history], toSection: .recent)
         }
         
-        //Force the update on the main thread to silence a warning about tableview not being in the hierarchy!
-        DispatchQueue.main.async {
-            dataSource.apply(snapshot, animatingDifferences: false)
+        UIView.performWithoutAnimation {
+            //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
+            DispatchQueue.main.async {
+                self.dataSource.apply(snapshot, animatingDifferences: false)
+                self.tableView.layoutIfNeeded()
+            }
         }
     }
     

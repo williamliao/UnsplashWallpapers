@@ -338,16 +338,20 @@ extension UserProfileView {
     }
     
     func reloadDataSource(dataSource: UICollectionViewDiffableDataSource<Section, CollectionResponse>, snapshot: NSDiffableDataSourceSnapshot<Section, CollectionResponse>) {
-        //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
-        DispatchQueue.main.async {
-            dataSource.apply(snapshot, animatingDifferences: false)
-            
-            if (self.currentIndex > 0) {
-                UIView.animate(withDuration: 0.25) {
-                    self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: Section.main.rawValue), at: .bottom, animated: false)
+        
+        
+        UIView.performWithoutAnimation {
+            //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
+            DispatchQueue.main.async {
+                dataSource.apply(snapshot, animatingDifferences: false)
+                self.collectionView.layoutIfNeeded()
+                
+                if (self.currentIndex > 0) {
+                    UIView.animate(withDuration: 0.25) {
+                        self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: Section.main.rawValue), at: .bottom, animated: false)
+                    }
                 }
             }
-            
         }
     }
 }

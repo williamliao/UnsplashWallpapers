@@ -60,7 +60,7 @@ class PhotoListView: UIView {
     
     var imageLoadQueue: OperationQueue?
     var imageLoadOperations: [IndexPath: ImageLoadOperation]?
-    
+
     init(viewModel: PhotoListViewModel, coordinator: MainCoordinator?) {
         self.viewModel = viewModel
         self.coordinator = viewModel.coordinator
@@ -86,8 +86,8 @@ extension PhotoListView {
         self.backgroundColor = .systemBackground
         
         let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.itemSize = CGSize(width: UIScreen.main.bounds.size.width, height: 300)
-        //flowLayout.estimatedItemSize
+        //flowLayout.itemSize = CGSize(width: UIScreen.main.bounds.size.width, height: 300)
+        //flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
 
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         
@@ -264,6 +264,7 @@ extension PhotoListView: UICollectionViewDelegateFlowLayout {
                 return CGSize(width: collectionView.bounds.size.width, height: 300)
             }
         } else {
+            
             let res = viewModel.respone.value
             let height = res?[indexPath.row].height
             let width = res?[indexPath.row].width
@@ -376,18 +377,21 @@ extension PhotoListView {
                 Section.allCases.forEach { snapshot.appendSections([$0]) }
                 
                 //Append annotations to their corresponding sections
-                
+              
                 viewModel.respone.value?.forEach { (respone) in
                     snapshot.appendItems([respone], toSection: .main)
                 }
                 
-                //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
-                DispatchQueue.main.async {
-                    //self.collectionView.setNeedsLayout()
-                    self.dataSource.apply(snapshot, animatingDifferences: false)
-                    self.reloadCollectionData()
+                UIView.performWithoutAnimation {
+                    //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
+                    DispatchQueue.main.async {
+                        //self.collectionView.setNeedsLayout()
+                        self.dataSource.apply(snapshot, animatingDifferences: false)
+                        self.collectionView.layoutIfNeeded()
+                        self.reloadCollectionData()
+                    }
                 }
-                
+             
             case .nature:
                 var snapshot = NSDiffableDataSourceSnapshot<Section, Results>()
                 natureDataSource.apply(snapshot, animatingDifferences: false)
@@ -410,11 +414,14 @@ extension PhotoListView {
                     snapshot.appendItems([result], toSection: .main)
                 }
                 
-                //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
-                DispatchQueue.main.async {
-                    self.collectionView.setNeedsLayout()
-                    self.natureDataSource.apply(snapshot, animatingDifferences: false)
-                    self.reloadCollectionData()
+                UIView.performWithoutAnimation {
+                    //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
+                    DispatchQueue.main.async {
+                        //self.collectionView.setNeedsLayout()
+                        self.natureDataSource.apply(snapshot, animatingDifferences: false)
+                        self.collectionView.layoutIfNeeded()
+                        self.reloadCollectionData()
+                    }
                 }
                 
             case .wallpapers:
@@ -439,13 +446,16 @@ extension PhotoListView {
                     snapshot.appendItems([result], toSection: .main)
                 }
                 
-                //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
-                DispatchQueue.main.async {
-                    self.collectionView.setNeedsLayout()
-                    self.wallpapersDataSource.apply(snapshot, animatingDifferences: false)
-                    self.reloadCollectionData()
-                    
+                UIView.performWithoutAnimation {
+                    //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
+                    DispatchQueue.main.async {
+                        //self.collectionView.setNeedsLayout()
+                        self.wallpapersDataSource.apply(snapshot, animatingDifferences: false)
+                        self.collectionView.layoutIfNeeded()
+                        self.reloadCollectionData()
+                    }
                 }
+                
             case .collections:
                 var snapshot = NSDiffableDataSourceSnapshot<Section, CollectionResponse>()
                 if (!firstLoad) {
@@ -467,11 +477,14 @@ extension PhotoListView {
                     snapshot.appendItems([collection], toSection: .main)
                 }
                 
-                //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
-                DispatchQueue.main.async {
-                    self.collectionDataSource.apply(snapshot, animatingDifferences: false)
-                    self.reloadCollectionData()
-                    
+                UIView.performWithoutAnimation {
+                    //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
+                    DispatchQueue.main.async {
+                        //self.collectionView.setNeedsLayout()
+                        self.collectionDataSource.apply(snapshot, animatingDifferences: false)
+                        self.collectionView.layoutIfNeeded()
+                        self.reloadCollectionData()
+                    }
                 }
                 
         }
@@ -669,17 +682,15 @@ extension PhotoListView: UICollectionViewDelegate {
     }
     
     private func reloadCollectionData() {
-        
-        UIView.performWithoutAnimation {
-            let context = UICollectionViewFlowLayoutInvalidationContext()
-            context.invalidateFlowLayoutAttributes = false
-            self.collectionView.collectionViewLayout.invalidateLayout(with: context)
-            self.collectionView.layoutIfNeeded()
-        };
-        
-       /* UIView.animate(withDuration: 0.25) {
+//            self.collectionView.setNeedsLayout()
+//            let context = UICollectionViewFlowLayoutInvalidationContext()
+//            context.invalidateFlowLayoutAttributes = false
+//            self.collectionView.collectionViewLayout.invalidateLayout(with: context)
+//            self.collectionView.layoutIfNeeded()
+      
+        UIView.animate(withDuration: 0.25) {
             self.collectionView.scrollRectToVisible(self.endRect, animated: false)
-        } */
+        }
     }
 }
 

@@ -214,14 +214,16 @@ extension SearchView {
             snapshot.appendItems([result], toSection: .main)
         }
         
-        //Force the update on the main thread to silence a warning about tableview not being in the hierarchy!
-        DispatchQueue.main.async {
-            dataSource.apply(snapshot, animatingDifferences: false)
-            self.reloadCollectionData()
-            
-            if let count = self.viewModel.searchRespone.value?.results.count {
-                if count > 0 {
-                    self.searchResultsView.isHidden = true
+        UIView.performWithoutAnimation {
+            //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
+            DispatchQueue.main.async {
+                dataSource.apply(snapshot, animatingDifferences: false)
+                self.reloadCollectionData()
+                
+                if let count = self.viewModel.searchRespone.value?.results.count {
+                    if count > 0 {
+                        self.searchResultsView.isHidden = true
+                    }
                 }
             }
         }
