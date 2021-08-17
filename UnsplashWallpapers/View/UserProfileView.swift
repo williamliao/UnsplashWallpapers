@@ -35,6 +35,7 @@ class UserProfileView: UIView {
     //var section: UserProfileCurrentSource = .photos
     
     var currentIndex = 0;
+    var endRect = CGRect.zero
     
     init(viewModel: UserProfileViewModel, coordinator: MainCoordinator?) {
         self.viewModel = viewModel
@@ -276,11 +277,7 @@ extension UserProfileView {
         switch viewModel.section {
             case .photos:
                 
-                if (!firstLoad) {
-                    dataSource = makeUserListPhotosDataSource()
-                } else {
-                    dataSource = getUserListPhotosDatasource()
-                }
+                dataSource = getUserListPhotosDatasource()
                 
                 //Append annotations to their corresponding sections
                 viewModel.userPhotosResponse.value?.forEach { (respone) in
@@ -291,11 +288,7 @@ extension UserProfileView {
                 
             case .likes:
                 
-                if (!firstLoad) {
-                    likeDataSource = makeUserLikesPhotosDataSource()
-                } else {
-                    likeDataSource = getUserLikesPhotosDatasource()
-                }
+                likeDataSource = getUserLikesPhotosDatasource()
                 
                 //Append annotations to their corresponding sections
                 viewModel.userLikesResponse.value?.forEach { (respone) in
@@ -311,11 +304,7 @@ extension UserProfileView {
                 //Append available sections
                 Section.allCases.forEach { snapshot.appendSections([$0]) }
                 
-                if (!firstLoad) {
-                    collectionsDataSource = makeUserCollectionsDataSource()
-                } else {
-                    collectionsDataSource = getUserCollectionsDatasource()
-                }
+                collectionsDataSource = getUserCollectionsDatasource()
                 
                 //Append annotations to their corresponding sections
                 viewModel.userCollectionsResponse.value?.forEach { (respone) in
@@ -345,6 +334,7 @@ extension UserProfileView {
             DispatchQueue.main.async {
                 dataSource.apply(snapshot, animatingDifferences: false)
                 self.collectionView.layoutIfNeeded()
+                self.collectionView.scrollRectToVisible(self.endRect, animated: false)
                 
                 if (self.currentIndex > 0) {
                     UIView.animate(withDuration: 0.25) {
@@ -408,12 +398,15 @@ extension UserProfileView: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
 
-        let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
+        let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 3
         if !viewModel.isLoading.value && indexPath.row == lastElement {
     
             let spinner = UIActivityIndicatorView(style: .medium)
             spinner.startAnimating()
             spinner.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: collectionView.bounds.width, height: CGFloat(44))
+            
+            let theAttributes = collectionView.layoutAttributesForItem(at: indexPath)
+            endRect = theAttributes?.frame ?? CGRect.zero
 
             currentIndex = lastElement
             viewModel.fetchNextPage()

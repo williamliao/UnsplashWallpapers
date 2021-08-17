@@ -20,7 +20,9 @@ class CollectionListView: UIView {
     
     // MARK:- property
     var firstLoad = true
-    var currentIndex = 0;
+    var currentIndex = 0
+    var endRect = CGRect.zero
+    var imageHeightDictionary: [IndexPath: String]?
     
     init(viewModel: CollectionListViewModel, coordinator: MainCoordinator?) {
         self.viewModel = viewModel
@@ -116,11 +118,7 @@ extension CollectionListView {
     func applyInitialSnapshots() {
         
         var snapshot = NSDiffableDataSourceSnapshot<Section, CollectionResponse>()
-        if (!firstLoad) {
-            dataSource = makeUserListPhotosDataSource()
-        } else {
-            dataSource = getUserListPhotosDatasource()
-        }
+        dataSource = getUserListPhotosDatasource()
         
         //Append available sections
         Section.allCases.forEach { snapshot.appendSections([$0]) }
@@ -140,6 +138,7 @@ extension CollectionListView {
             DispatchQueue.main.async {
                 self.dataSource.apply(snapshot, animatingDifferences: false)
                 self.collectionView.layoutIfNeeded()
+                self.collectionView.scrollRectToVisible(self.endRect, animated: false)
                 
                 if (self.currentIndex > 0) {
                     UIView.animate(withDuration: 0.25) {
@@ -179,12 +178,15 @@ extension CollectionListView: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
 
-        let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
+        let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 3
         if !viewModel.isLoading.value && indexPath.row == lastElement {
     
             let spinner = UIActivityIndicatorView(style: .medium)
             spinner.startAnimating()
             spinner.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: collectionView.bounds.width, height: CGFloat(44))
+            
+            let theAttributes = collectionView.layoutAttributesForItem(at: indexPath)
+            endRect = theAttributes?.frame ?? CGRect.zero
 
             currentIndex = lastElement
             viewModel.fetchNextPage()

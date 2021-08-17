@@ -28,6 +28,7 @@ public final class ImageLoader {
 
     public func loadImage(from url: URL) -> AnyPublisher<UIImage?, Never> {
         if let image = cache[url] {
+            print("load form cache")
             return Just(image).eraseToAnyPublisher()
         }
         return URLSession.shared.dataTaskPublisher(for: url)

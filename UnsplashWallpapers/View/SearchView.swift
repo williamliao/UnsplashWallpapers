@@ -26,6 +26,9 @@ class SearchView: UIView {
     
     var currentSource: SearchViewCurrentSource = .photos
     
+    var imageHeightDictionary: [IndexPath: String]?
+    var endRect = CGRect.zero
+    
     init(viewModel: SearchViewModel,coordinator: MainCoordinator? ) {
         self.viewModel = viewModel
         self.coordinator = viewModel.coordinator
@@ -232,11 +235,12 @@ extension SearchView {
     private func reloadCollectionData() {
         
         UIView.performWithoutAnimation {
-            let context = UICollectionViewFlowLayoutInvalidationContext()
-            context.invalidateFlowLayoutAttributes = false
-            self.collectionView.collectionViewLayout.invalidateLayout(with: context)
-            self.collectionView.layoutIfNeeded()
-        };
+//            let context = UICollectionViewFlowLayoutInvalidationContext()
+//            context.invalidateFlowLayoutAttributes = false
+//            self.collectionView.collectionViewLayout.invalidateLayout(with: context)
+//            self.collectionView.layoutIfNeeded()
+            collectionView.scrollRectToVisible(endRect, animated: false)
+        }
     }
     
     func configureSearchCell(collectionView: UICollectionView, respone: Results, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
@@ -285,20 +289,24 @@ extension SearchView: UICollectionViewDelegateFlowLayout {
             let height = res?.results[indexPath.row].height
             let width = res?.results[indexPath.row].width
             
-            if let safeHeight = height, let safeWidth = width {
-                
-                if safeHeight > safeWidth {
-                    let resizeH = CGFloat(safeHeight) / 8
+            if imageHeightDictionary?[indexPath] == "v" {
+                return CGSize(width: collectionView.bounds.size.width, height: 600)
+            } else if imageHeightDictionary?[indexPath] == "h" {
+                return CGSize(width: collectionView.bounds.size.width, height: 300)
+            } else {
+                if let safeHeight = height, let safeWidth = width {
+                    if safeHeight > safeWidth {
+                        imageHeightDictionary?[indexPath] = "v"
+                        return CGSize(width: collectionView.bounds.size.width, height: 600)
+                    } else {
+                        imageHeightDictionary?[indexPath] = "h"
+                        return CGSize(width: collectionView.bounds.size.width, height: 300)
+                    }
                     
-                    let resizeHeight: CGFloat = CGFloat(resizeH)
-                    
-                    return CGSize(width: collectionView.bounds.size.width, height: resizeHeight)
                 } else {
+                    imageHeightDictionary?[indexPath] = "h"
                     return CGSize(width: collectionView.bounds.size.width, height: 300)
                 }
-                
-            } else {
-                return CGSize(width: collectionView.bounds.size.width, height: 300)
             }
         }
     }
@@ -327,6 +335,8 @@ extension SearchView: UICollectionViewDelegateFlowLayout {
 extension SearchView: UISearchBarDelegate {
    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        imageHeightDictionary = [IndexPath: String]()
         
         if searchBar.text.isEmptyOrWhitespace() {
             return
@@ -383,6 +393,8 @@ extension SearchView: UISearchBarDelegate {
     }
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        
+        imageHeightDictionary = [IndexPath: String]()
         
         switch selectedScope {
             case 0:
@@ -474,20 +486,21 @@ extension SearchView: UICollectionViewDelegate {
                 break
             
             }
-            
-            
         }
         
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
 
-        let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
+        let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 3
         if !viewModel.isLoading.value && indexPath.row == lastElement {
             
             let spinner = UIActivityIndicatorView(style: .medium)
             spinner.startAnimating()
             spinner.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: collectionView.bounds.width, height: CGFloat(44))
+            
+            let theAttributes = collectionView.layoutAttributesForItem(at: indexPath)
+            endRect = theAttributes?.frame ?? CGRect.zero
 
             currentIndex = lastElement
             viewModel.fetchNextPage()
@@ -500,6 +513,8 @@ extension SearchView: UICollectionViewDelegate {
 
 extension SearchView: SearchResultsDidSelectedDelegate {
     func searchResultsDidSelected(query: String, category: SearchResults.Category) {
+        
+        imageHeightDictionary = [IndexPath: String]()
         
         switch category {
             case .photos:

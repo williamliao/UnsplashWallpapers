@@ -50,8 +50,6 @@ class PhotoListView: UIView {
     var firstLoad = true
     var section: CurrentSource = .random
     
-    var currentIndex = 0
-    var offsetY = 0
     var endRect = CGRect.zero
     var isLoadingNewData = false
     
@@ -60,6 +58,7 @@ class PhotoListView: UIView {
     
     var imageLoadQueue: OperationQueue?
     var imageLoadOperations: [IndexPath: ImageLoadOperation]?
+    var imageHeightDictionary: [IndexPath: String]?
 
     init(viewModel: PhotoListViewModel, coordinator: MainCoordinator?) {
         self.viewModel = viewModel
@@ -154,6 +153,7 @@ extension PhotoListView {
     @objc func segmentAction(_ segmentedControl: UISegmentedControl) {
         
         imageLoadOperations = [IndexPath: ImageLoadOperation]()
+        imageHeightDictionary = [IndexPath: String]()
         
             switch (segmentedControl.selectedSegmentIndex) {
             case 0:
@@ -248,41 +248,50 @@ extension PhotoListView: UICollectionViewDelegateFlowLayout {
             let height = res?.results[indexPath.row].height
             let width = res?.results[indexPath.row].width
             
-            if let safeHeight = height, let safeWidth = width {
-                
-                if safeHeight > safeWidth {
-                    let resizeH = CGFloat(safeHeight) / 8
+            if imageHeightDictionary?[indexPath] == "v" {
+                return CGSize(width: collectionView.bounds.size.width, height: 600)
+            } else if imageHeightDictionary?[indexPath] == "h" {
+                return CGSize(width: collectionView.bounds.size.width, height: 300)
+            } else {
+                if let safeHeight = height, let safeWidth = width {
                     
-                    let resizeHeight: CGFloat = CGFloat(resizeH)
+                    if safeHeight > safeWidth {
+                        imageHeightDictionary?[indexPath] = "v"
+                        return CGSize(width: collectionView.bounds.size.width, height: 600)
+                    } else {
+                        imageHeightDictionary?[indexPath] = "h"
+                        return CGSize(width: collectionView.bounds.size.width, height: 300)
+                    }
                     
-                    return CGSize(width: collectionView.bounds.size.width, height: resizeHeight)
                 } else {
+                    imageHeightDictionary?[indexPath] = "h"
                     return CGSize(width: collectionView.bounds.size.width, height: 300)
                 }
-                
-            } else {
-                return CGSize(width: collectionView.bounds.size.width, height: 300)
             }
+            
         } else {
             
             let res = viewModel.respone.value
             let height = res?[indexPath.row].height
             let width = res?[indexPath.row].width
             
-            if let safeHeight = height, let safeWidth = width {
-                
-                if safeHeight > safeWidth {
-                    let resizeH = CGFloat(safeHeight) / 8
-                    
-                    let resizeHeight: CGFloat = CGFloat(resizeH)
-                    
-                    return CGSize(width: collectionView.bounds.size.width, height: resizeHeight)
+            if imageHeightDictionary?[indexPath] == "v" {
+                return CGSize(width: collectionView.bounds.size.width, height: 600)
+            } else if imageHeightDictionary?[indexPath] == "h" {
+                return CGSize(width: collectionView.bounds.size.width, height: 300)
+            } else {
+                if let safeHeight = height, let safeWidth = width {
+                    if safeHeight > safeWidth {
+                        imageHeightDictionary?[indexPath] = "v"
+                        return CGSize(width: collectionView.bounds.size.width, height: 600)
+                    } else {
+                        imageHeightDictionary?[indexPath] = "h"
+                        return CGSize(width: collectionView.bounds.size.width, height: 300)
+                    }
                 } else {
+                    imageHeightDictionary?[indexPath] = "h"
                     return CGSize(width: collectionView.bounds.size.width, height: 300)
                 }
-                
-            } else {
-                return CGSize(width: collectionView.bounds.size.width, height: 300)
             }
         }
     }
@@ -367,11 +376,7 @@ extension PhotoListView {
         switch section {
             case .random:
                 var snapshot = NSDiffableDataSourceSnapshot<Section, Response>()
-                if (!firstLoad) {
-                    dataSource = makeDataSource()
-                } else {
-                    dataSource = getDatasource()
-                }
+                dataSource = getDatasource()
                 
                 //Append available sections
                 Section.allCases.forEach { snapshot.appendSections([$0]) }
@@ -395,11 +400,7 @@ extension PhotoListView {
             case .nature:
                 var snapshot = NSDiffableDataSourceSnapshot<Section, Results>()
                 natureDataSource.apply(snapshot, animatingDifferences: false)
-                if (!firstLoad) {
-                    natureDataSource = makeNatureDataSource()
-                } else {
-                    natureDataSource = getNatureDatasource()
-                }
+                natureDataSource = getNatureDatasource()
                 
                 //Append available sections
                 Section.allCases.forEach { snapshot.appendSections([$0]) }
@@ -427,12 +428,8 @@ extension PhotoListView {
             case .wallpapers:
                 var snapshot = NSDiffableDataSourceSnapshot<Section, Results>()
                 wallpapersDataSource.apply(snapshot, animatingDifferences: false)
-                if (!firstLoad) {
-                    wallpapersDataSource = makeWallpapersDataSource()
-                } else {
-                    wallpapersDataSource = getWallpapersDatasource()
-                }
-                                //Append available sections
+                wallpapersDataSource = getWallpapersDatasource()
+                //Append available sections
                 Section.allCases.forEach { snapshot.appendSections([$0]) }
                 
                 //Append annotations to their corresponding sections
@@ -458,11 +455,7 @@ extension PhotoListView {
                 
             case .collections:
                 var snapshot = NSDiffableDataSourceSnapshot<Section, CollectionResponse>()
-                if (!firstLoad) {
-                    collectionDataSource = makeCollectionDataSource()
-                } else {
-                    collectionDataSource = getCollectionDatasource()
-                }
+                collectionDataSource = getCollectionDatasource()
                 
                 //Append available sections
                 Section.allCases.forEach { snapshot.appendSections([$0]) }
@@ -661,15 +654,15 @@ extension PhotoListView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
         let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
-        if !viewModel.isLoading.value && indexPath.row == lastElement {
-           
-            currentIndex = lastElement
-            
-            let lastIndexPath = IndexPath(row: indexPath.row, section: indexPath.section)
-            let theAttributes = collectionView.layoutAttributesForItem(at: lastIndexPath)
-            
-            endRect = theAttributes?.frame ?? CGRect.zero
+        let preloadElement = collectionView.numberOfItems(inSection: indexPath.section) - 3
+        
+        if !viewModel.isLoading.value && indexPath.row == preloadElement {
             viewModel.fetchNextPage()
+        }
+        
+        if !viewModel.isLoading.value && indexPath.row == lastElement {
+            let theAttributes = collectionView.layoutAttributesForItem(at: indexPath)
+            endRect = theAttributes?.frame ?? CGRect.zero
         }
     }
     
@@ -687,10 +680,9 @@ extension PhotoListView: UICollectionViewDelegate {
 //            context.invalidateFlowLayoutAttributes = false
 //            self.collectionView.collectionViewLayout.invalidateLayout(with: context)
 //            self.collectionView.layoutIfNeeded()
-      
-        UIView.animate(withDuration: 0.25) {
-            self.collectionView.scrollRectToVisible(self.endRect, animated: false)
-        }
+
+        collectionView.scrollRectToVisible(endRect, animated: false)
+
     }
 }
 
