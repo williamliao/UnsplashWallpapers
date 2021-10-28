@@ -657,7 +657,11 @@ extension PhotoListView: UICollectionViewDelegate {
         let preloadElement = collectionView.numberOfItems(inSection: indexPath.section) - 3
         
         if !viewModel.isLoading.value && indexPath.row == preloadElement {
-            viewModel.fetchNextPage()
+            if #available(iOS 15.0.0, *) {
+                viewModel.fetchNextPage()
+            } else {
+                // Fallback on earlier versions
+            }
         }
         
         if !viewModel.isLoading.value && indexPath.row == lastElement {

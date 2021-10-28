@@ -31,6 +31,74 @@ class SearchViewModel {
 }
 
 extension SearchViewModel {
+    
+    @available(iOS 15.0.0, *)
+    func searchWithConcurrency(keyword: String, category: SearchResults.Category) {
+        
+        isSearching.value = true
+        query = keyword
+        //self.searchHistory.value.append(keyword)
+        isLoading.value = true
+        self.category = category
+        
+        switch category {
+            case .photos:
+                
+                if searchCursor == nil {
+                    searchCursor = Cursor(query: keyword, page: 1, perPage: 10, parameters: [:])
+                    unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: searchCursor)
+                }
+                
+                service = UnsplashService(endPoint: .search(keyword, unsplashSearchPagedRequest))
+                
+                break
+            case .collections:
+                
+                if collectionsCursor == nil {
+                    collectionsCursor = Cursor(query: keyword, page: 1, perPage: 10, parameters: [:])
+                    unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: collectionsCursor)
+                }
+
+                service = UnsplashService(endPoint: .collections(keyword, unsplashSearchPagedRequest))
+                
+                break
+            case .users:
+                
+                if usersCursor == nil {
+                    usersCursor = Cursor(query: keyword, page: 1, perPage: 10, parameters: [:])
+                    unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: usersCursor)
+                }
+
+                service = UnsplashService(endPoint: .users(keyword, unsplashSearchPagedRequest))
+
+                break
+        
+        }
+        
+        Task {
+            try? await service.searchWithConcurrency(pageRequest: unsplashSearchPagedRequest) { (result) in
+                self.isLoading.value = false
+                switch result {
+                    case .success(let respone):
+                       
+                        self.searchRespone.value = respone
+                        
+                        self.searchCursor = self.unsplashSearchPagedRequest.nextCursor()
+            
+                    case .failure(let error):
+                        
+                        switch error {
+                            case .statusCodeError(let code):
+                                print(code)
+                            default:
+                                self.error.value = error
+                        }
+                }
+            }
+        }
+        
+        
+    }
    
     func search(keyword: String, category: SearchResults.Category) {
         
@@ -95,6 +163,7 @@ extension SearchViewModel {
         }
     }
     
+    @available(iOS 15.0.0, *)
     func fetchNextPage() {
         if isLoading.value {
             return
@@ -126,51 +195,55 @@ extension SearchViewModel {
         
         isLoading.value = true
         
-        service.search(pageRequest: unsplashSearchPagedRequest) { [weak self] (result) in
-            self?.isLoading.value = false
-            
-            switch result {
-                case .success(let respone):
-                   
-                    guard var new = self?.searchRespone.value  else {
-                        return
-                    }
-                    
-//                    if new.results.count == respone.results.count {
-//                       self?.canFetchMore = false
-//                        return
-//                    }
-                    
-                    new.total = respone.total
-                    new.total_pages = respone.total_pages
-                    for index in 0...respone.results.count - 1 {
-                        if !new.results.contains(respone.results[index]) {
-                            new.results.append(respone.results[index])
+        Task {
+            try? await service.searchWithConcurrency(pageRequest: unsplashSearchPagedRequest) { [weak self] (result) in
+                self?.isLoading.value = false
+                
+                switch result {
+                    case .success(let respone):
+                       
+                        guard var new = self?.searchRespone.value  else {
+                            return
                         }
-                    }
-                    
-                    self?.searchRespone.value = new
-                    
-                    guard let cursor = self?.searchCursor else {
-                        return
-                    }
-                    
-                    if new.results.count < cursor.perPage {
-                        self?.canFetchMore = false
-                    } else {
-                        self?.searchCursor = self?.unsplashSearchPagedRequest.nextCursor()
-                    }
-                    
-                case .failure(let error):
-                    
-                    switch error {
-                        case .statusCodeError(let code):
-                            print(code)
-                        default:
-                            self?.error.value = error
-                    }
+                        
+    //                    if new.results.count == respone.results.count {
+    //                       self?.canFetchMore = false
+    //                        return
+    //                    }
+                        
+                        new.total = respone.total
+                        new.total_pages = respone.total_pages
+                        for index in 0...respone.results.count - 1 {
+                            if !new.results.contains(respone.results[index]) {
+                                new.results.append(respone.results[index])
+                            }
+                        }
+                        
+                        self?.searchRespone.value = new
+                        
+                        guard let cursor = self?.searchCursor else {
+                            return
+                        }
+                        
+                        if new.results.count < cursor.perPage {
+                            self?.canFetchMore = false
+                        } else {
+                            self?.searchCursor = self?.unsplashSearchPagedRequest.nextCursor()
+                        }
+                        
+                    case .failure(let error):
+                        
+                        switch error {
+                            case .statusCodeError(let code):
+                                print(code)
+                            default:
+                                self?.error.value = error
+                        }
+                }
             }
         }
+        
+        
     }
     
     func reset() {

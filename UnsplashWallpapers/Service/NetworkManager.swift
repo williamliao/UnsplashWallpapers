@@ -517,7 +517,7 @@ class NetworkManager {
         }
         task?.resume()
     }
-   
+    
     func createURLRequest(params: Dictionary<String, AnyObject>? = nil) throws -> URLRequest {
         
         guard let url = prepareURLComponents()?.url else {
@@ -704,6 +704,22 @@ extension NetworkManager {
         })
     }
     
+    @available(iOS 15.0.0, *)
+    func queryWithConcurrency<T: Decodable>(pageRequest: UnsplashSearchPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
+        
+        let components = prepareURLComponents()
+        
+        try Task.checkCancellation()
+        return try await withCheckedThrowingContinuation({
+            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+            
+            if let url = components?.url {
+                createRequestWithURL(url: url, decode: decode) { result in
+                    continuation.resume(returning: result)
+                }
+            }
+        })
+    }
     
 }
 

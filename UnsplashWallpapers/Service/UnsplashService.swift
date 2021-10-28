@@ -35,6 +35,19 @@ extension UnsplashService {
         }, completion: completion)
     }
     
+    @available(iOS 15.0.0, *)
+    func searchWithConcurrency(pageRequest: UnsplashSearchPagedRequest, completion: @escaping (APIResult<SearchRespone, ServerError>) -> Void) async throws {
+        
+        let result = try? await queryWithConcurrency(pageRequest: pageRequest, method: .get, decode: { json -> SearchRespone? in
+            guard let feedResult = json as? SearchRespone else { return  nil }
+            return feedResult
+        })
+
+        if let returnResult = result {
+            completion(returnResult)
+        }
+    }
+    
     func search(pageRequest: UnsplashSearchPagedRequest, completion: @escaping (APIResult<SearchRespone, ServerError>) -> Void) {
         
         self.query(pageRequest: pageRequest, method: .get, decode: { json -> SearchRespone? in

@@ -503,7 +503,11 @@ extension SearchView: UICollectionViewDelegate {
             endRect = theAttributes?.frame ?? CGRect.zero
 
             currentIndex = lastElement
-            viewModel.fetchNextPage()
+            if #available(iOS 15.0.0, *) {
+                viewModel.fetchNextPage()
+            } else {
+                // Fallback on earlier versions
+            }
             
         }
     }
