@@ -48,8 +48,9 @@ class MainCoordinator: Coordinator {
         let photos = createPhotoListView()
         let fav = createFavoriteView()
         let search = createSearchView()
+        let setting = createSettingView()
 
-        self.rootViewController.setViewControllers([albums, photos, search, fav], animated: false)
+        self.rootViewController.setViewControllers([albums, photos, search, fav, setting], animated: false)
         
         if #available(iOS 13.0, *) {
             
@@ -66,6 +67,10 @@ class MainCoordinator: Coordinator {
      
             self.rootViewController.tabBar.items?[3].image = UIImage(systemName: "heart")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
             self.rootViewController.tabBar.items?[3].selectedImage = UIImage(systemName: "heart.fill")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            
+            self.rootViewController.tabBar.items?[4].image = UIImage(systemName: "square.grid.3x3")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            self.rootViewController.tabBar.items?[4].selectedImage = UIImage(systemName: "square.grid.3x3.fill")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            
         } else {
             // Fallback on earlier versions
         }
@@ -115,6 +120,13 @@ class MainCoordinator: Coordinator {
         favorite.viewModel = favoriteViewModel
         favorite.title = "Favorite"
         let nav = UINavigationController(rootViewController: favorite)
+        return nav
+    }
+    
+    func createSettingView() -> UINavigationController {
+        let setting = SettingViewController()
+        setting.title = "Setting"
+        let nav = UINavigationController(rootViewController: setting)
         return nav
     }
 }

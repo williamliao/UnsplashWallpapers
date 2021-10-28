@@ -206,8 +206,8 @@
             filePath = "UnsplashWallpapers/Coordinator/MainCoordinator.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "163"
-            endingLineNumber = "163"
+            startingLineNumber = "175"
+            endingLineNumber = "175"
             landmarkName = "presentExifView(vc:)"
             landmarkType = "7">
          </BreakpointContent>
