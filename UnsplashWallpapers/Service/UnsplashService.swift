@@ -14,6 +14,19 @@ class UnsplashService: NetworkManager {
 
 extension UnsplashService {
     
+    @available(iOS 15.0.0, *)
+    func fetchWithConcurrency(completion: @escaping (APIResult<[Response], ServerError>) -> Void) async throws {
+
+        let result = try? await fetchDataWithConcurrency(method: .get, decode: { json -> [Response]? in
+            guard let feedResult = json as? [Response] else { return  nil }
+            return feedResult
+        })
+
+        if let returnResult = result {
+            completion(returnResult)
+        }
+    }
+    
     func fetchDataWithNetworkManager(completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
         
         self.fetch(method: .get, decode: { json -> [Response]? in

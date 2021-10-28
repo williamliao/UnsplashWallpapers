@@ -14,6 +14,8 @@ class PhotoListCollectionViewCell: UICollectionViewCell {
     
     var titleLabel: UILabel!
     var thumbnailImageView: UIImageView!
+    let effect = UIBlurEffect(style: .dark)
+    var blurEffectView : UIVisualEffectView!
     
     private let downloader = ImageCombineDownloader()
     private var animator: UIViewPropertyAnimator?
@@ -38,8 +40,8 @@ extension PhotoListCollectionViewCell {
     
     func configureView() {
         
-        self.layer.shouldRasterize = true;
-        self.layer.rasterizationScale = UIScreen.main.scale;
+        self.layer.shouldRasterize = true
+        self.layer.rasterizationScale = UIScreen.main.scale
         
         titleLabel = UILabel()
         titleLabel.font = UIFont.systemFont(ofSize: 16)
@@ -47,14 +49,19 @@ extension PhotoListCollectionViewCell {
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byTruncatingTail
         titleLabel.textAlignment = .center
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        blurEffectView = UIVisualEffectView(effect: effect)
+        blurEffectView.translatesAutoresizingMaskIntoConstraints = false
      
         thumbnailImageView = UIImageView()
         thumbnailImageView.contentMode = .scaleAspectFill
         thumbnailImageView.clipsToBounds = true
         
-        act.color = traitCollection.userInterfaceStyle == .light ? UIColor.white : UIColor.black
-    
+        act.color = traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
+
         contentView.addSubview(thumbnailImageView)
+        thumbnailImageView.addSubview(blurEffectView)
         contentView.addSubview(act)
         thumbnailImageView.addSubview(titleLabel)
     }
@@ -63,13 +70,17 @@ extension PhotoListCollectionViewCell {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         thumbnailImageView.translatesAutoresizingMaskIntoConstraints = false
         act.translatesAutoresizingMaskIntoConstraints = false
-
+        
         NSLayoutConstraint.activate([
             
             thumbnailImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             thumbnailImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             thumbnailImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             thumbnailImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            
+            blurEffectView.leadingAnchor.constraint(equalTo: thumbnailImageView.leadingAnchor, constant: 5),
+            blurEffectView.bottomAnchor.constraint(equalTo: thumbnailImageView.bottomAnchor, constant: -5),
+            blurEffectView.heightAnchor.constraint(equalToConstant: 16),
 
             titleLabel.leadingAnchor.constraint(equalTo: thumbnailImageView.leadingAnchor, constant: 5),
             titleLabel.bottomAnchor.constraint(equalTo: thumbnailImageView.bottomAnchor, constant: -5),
@@ -119,7 +130,7 @@ extension PhotoListCollectionViewCell {
             guard let image = image else {
                 return
             }
-
+            
             //let resizeImage = self.resizedImage(at: image, for: CGSize(width: UIScreen.main.bounds.size.width, height: image.size.height))
             self.thumbnailImageView.image = image
             

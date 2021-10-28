@@ -35,7 +35,21 @@ class AlbumsViewController: UIViewController {
          
         ])
        
-        //multipleAsyncOperations()
+        //startDownload()
+    }
+    
+    func startDownload() {
+        if #available(iOS 15.0.0, *) {
+            Task {
+                try await downloadWithMultipleSource(images: 0)
+                try await downloadWithMultipleSource(images: 1)
+                try await downloadWithMultipleSource(images: 2)
+            }
+            
+        } else {
+            // Fallback on earlier versions
+            multipleAsyncOperations()
+        }
     }
     
     func multipleAsyncOperations() {
@@ -84,5 +98,55 @@ class AlbumsViewController: UIViewController {
                 self?.albumsView.configureDataSource()
             }
         }
+    }
+    
+    @available(iOS 15.0.0, *)
+    func downloadAll(imageNumber: Int) async throws -> Bool {
+        
+        if imageNumber == 0 {
+            async let _ = self.viewModel.getFeaturedAlbums { [weak self] (success) in
+                self?.viewModel.featuredAlbumsRespone.bind { [weak self] (_) in
+
+                    self?.albumsView.configureDataSource()
+                }
+            }
+            
+        } else if imageNumber == 1 {
+            async let _ = self.viewModel.getSharedAlbums { [weak self] (success) in
+                self?.viewModel.allAlbumsRespone.bind { [weak self] (_) in
+
+                    self?.albumsView.configureDataSource()
+                }
+            }
+
+        } else {
+           
+            async let _ = self.viewModel.getAllAlbums { [weak self] (success) in
+                self?.viewModel.sharedAlbumsRespone.bind { [weak self] (_) in
+                    
+                    self?.albumsView.configureDataSource()
+                }
+            }
+
+        }
+       
+        return true
+ 
+    }
+    
+    @available(iOS 15.0.0, *)
+    func downloadWithMultipleSource(images: Int...) async throws {
+        var imagesMetadata: [Bool] = []
+        try await withThrowingTaskGroup(of: Bool.self, body: { group in
+            for image in images {
+                group.addTask {
+                    async let image = self.downloadAll(imageNumber: image)
+                    return try await image
+                }
+            }
+            for try await image in group {
+                imagesMetadata += [image]
+            }
+        })
     }
 }

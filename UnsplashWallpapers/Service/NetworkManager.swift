@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 public enum APIResult<T, U> where U: Error  {
     case success(T)
@@ -60,6 +61,10 @@ public enum ServerError: Error {
             return NSLocalizedString("noHTTPResponse", comment: "")
         }
     }
+}
+
+private extension Int {
+    var megabytes: Int { return self * 1024 * 1024 }
 }
 
 class NetworkManager {
@@ -128,7 +133,7 @@ class NetworkManager {
     }
 
     typealias JSONTaskCompletionHandler = (Decodable?, ServerError?) -> Void
-
+   
     private var session: URLSessionProtocol
     private var endPoint: NetworkEndpoint
     
@@ -136,6 +141,8 @@ class NetworkManager {
         self.session = session
         self.endPoint = endPoint
     }
+    
+    // MARK: - Base
     
     public static var urlSessionConfiguration: URLSessionConfiguration = {
         let sessionConfiguration = URLSessionConfiguration.default
@@ -329,6 +336,8 @@ class NetworkManager {
         headers["Authorization"] = "Client-ID \(UnsplashAPI.accessKey)"
         return headers
     }
+    
+    // MARK: - Help Method
     
     func fetch<T: Decodable>(method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
         
@@ -551,6 +560,8 @@ class NetworkManager {
     }
 }
 
+// MARK: - Base URLSession
+
 extension NetworkManager {
     private func decodingTask<T: Decodable>(with request: URLRequest, decodingType: T.Type, completionHandler completion: @escaping JSONTaskCompletionHandler) -> URLSessionDataTaskProtocol? {
         
@@ -641,9 +652,62 @@ extension NetworkManager {
     }
 }
 
-private extension Int {
-    var megabytes: Int { return self * 1024 * 1024 }
+// MARK: - Concurrency
+
+extension NetworkManager {
+    
+    @available(iOS 15.0.0, *)
+    func fetchWithConcurrency<T: Decodable>(method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+        
+        guard var request = try? createURLRequest() else {
+            completion(APIResult.failure(ServerError.invalidURL))
+            return
+        }
+        //request.setValue("v1", forKey: "Accept-Version")
+        request.httpMethod = method.rawValue
+
+        request.allHTTPHeaderFields = prepareHeaders()
+        
+        if UserDefaults.standard.object(forKey: "ETag") != nil {
+            let tag = UserDefaults.standard.string(forKey: "ETag")
+            if let etag = tag {
+                request.addValue(etag, forHTTPHeaderField: "If-None-Match")
+            }
+        }
+        
+        let task = decodingTask(with: request, decodingType: T.self) { (json , error) in
+            
+            DispatchQueue.main.async {
+                guard let json = json else {
+                    if let error = error {
+                        completion(APIResult.failure(error))
+                    }
+                    return
+                }
+
+                if let value = decode(json) {
+                    completion(.success(value))
+                }
+            }
+        }
+        task?.resume()
+    }
+    
+    @available(iOS 15.0.0, *)
+    func fetchDataWithConcurrency<T: Decodable>(method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
+        try Task.checkCancellation()
+        return try await withCheckedThrowingContinuation({
+            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+            fetchWithConcurrency(method: method, decode: decode) { result in
+                continuation.resume(returning: result)
+            }
+        })
+    }
+    
+    
 }
+
+// MARK: - URLSessionTaskDelegate
 
 class NetworkingHandler: NSObject, URLSessionTaskDelegate {
     

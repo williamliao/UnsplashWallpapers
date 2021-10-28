@@ -17,6 +17,8 @@ class PhotoListViewController: UIViewController {
    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.view.backgroundColor = .systemBackground
 
         photoListView = PhotoListView(viewModel: viewModel, coordinator: viewModel.coordinator)
        
@@ -89,7 +91,13 @@ class PhotoListViewController: UIViewController {
             }
         }
 
-        viewModel.fetchData()
+        if #available(iOS 15.0.0, *) {
+
+            viewModel.fetchDataWithConcurrency()
+            
+        } else {
+            // Fallback on earlier versions
+            viewModel.fetchData()
+        }
     }
-    
 }

@@ -51,6 +51,30 @@ class PhotoListViewModel  {
 
 extension PhotoListViewModel {
     
+    @available(iOS 15.0.0, *)
+    func fetchDataWithConcurrency() {
+        service = UnsplashService(endPoint: .random)
+        
+        isLoading.value = true
+        
+        Task {
+            try? await service.fetchWithConcurrency { [weak self] (result) in
+                
+                self?.isLoading.value = false
+                
+                switch result {
+                    case .success(let respone):
+                       
+                        self?.respone.value = respone
+            
+                    case .failure(let error):
+                        
+                        self?.error.value = error
+                }
+            }
+        }
+    }
+    
     func fetchData() {
         
         service = UnsplashService(endPoint: .random)
