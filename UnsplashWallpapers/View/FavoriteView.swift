@@ -174,6 +174,8 @@ extension FavoriteView: UITableViewDelegate {
         //Update title
         var updatePhotoInfo = photoInfo
         updatePhotoInfo.title = updatePhotoInfo.title.appending(" ★")
+        
+        viewModel.photoInfo.value?[indexPath.row] = updatePhotoInfo
        
         let favoriteManager = FavoriteManager.sharedInstance
         
@@ -184,9 +186,26 @@ extension FavoriteView: UITableViewDelegate {
         CATransaction.setCompletionBlock { () -> Void in
             UIView.setAnimationsEnabled(true)
         }
+        
+        var newSnapshot = dataSource.snapshot()
 
         //self.reloadItems(newItems:updatePhotoInfo, deleteItems: photoInfo)
-        self.handleNewItems([updatePhotoInfo])
+        if #available(iOS 15, *) {
+            // iOS 15
+            newSnapshot.reconfigureItems([photoInfo])
+        } else {
+            // iOS 14
+            newSnapshot.reloadItems([photoInfo])
+            //self.handleNewItems([updatePhotoInfo])
+        }
+        
+        // Apply `newSnapshot` to data source so that the changes will be reflected in the collection view.
+        if #available(iOS 15.0, *) {
+            dataSource.applySnapshotUsingReloadData(newSnapshot)
+        } else {
+            // Fallback on earlier versions
+            dataSource.apply(newSnapshot)
+        }
         
         if favoriteManager.favorites.value.contains(photoInfo) {
             favoriteManager.favorites.value.remove(photoInfo)
