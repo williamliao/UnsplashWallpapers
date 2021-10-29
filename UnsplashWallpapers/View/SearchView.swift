@@ -221,6 +221,7 @@ extension SearchView {
             //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
             DispatchQueue.main.async {
                 dataSource.apply(snapshot, animatingDifferences: false)
+                self.collectionView.layoutIfNeeded()
                 self.reloadCollectionData()
                 
                 if let count = self.viewModel.searchRespone.value?.results.count {
@@ -234,13 +235,13 @@ extension SearchView {
     
     private func reloadCollectionData() {
         
-        UIView.performWithoutAnimation {
+       // UIView.performWithoutAnimation {
 //            let context = UICollectionViewFlowLayoutInvalidationContext()
 //            context.invalidateFlowLayoutAttributes = false
 //            self.collectionView.collectionViewLayout.invalidateLayout(with: context)
 //            self.collectionView.layoutIfNeeded()
             collectionView.scrollRectToVisible(endRect, animated: false)
-        }
+      //  }
     }
     
     func configureSearchCell(collectionView: UICollectionView, respone: Results, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
@@ -499,14 +500,19 @@ extension SearchView: UICollectionViewDelegate {
             spinner.startAnimating()
             spinner.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: collectionView.bounds.width, height: CGFloat(44))
             
-            let theAttributes = collectionView.layoutAttributesForItem(at: indexPath)
-            endRect = theAttributes?.frame ?? CGRect.zero
+//            let theAttributes = collectionView.layoutAttributesForItem(at: indexPath)
+//            endRect = theAttributes?.frame ?? CGRect.zero
 
             currentIndex = lastElement
             if #available(iOS 15.0.0, *) {
                 viewModel.fetchNextPage()
             } else {
                 // Fallback on earlier versions
+            }
+            
+            if !viewModel.isLoading.value && indexPath.row == lastElement {
+                let theAttributes = collectionView.layoutAttributesForItem(at: indexPath)
+                endRect = theAttributes?.frame ?? CGRect.zero
             }
             
         }

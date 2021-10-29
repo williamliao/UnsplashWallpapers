@@ -329,20 +329,14 @@ extension UserProfileView {
     func reloadDataSource(dataSource: UICollectionViewDiffableDataSource<Section, CollectionResponse>, snapshot: NSDiffableDataSourceSnapshot<Section, CollectionResponse>) {
         
         
-        UIView.performWithoutAnimation {
+        //UIView.performWithoutAnimation {
             //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
             DispatchQueue.main.async {
                 dataSource.apply(snapshot, animatingDifferences: false)
                 self.collectionView.layoutIfNeeded()
                 self.collectionView.scrollRectToVisible(self.endRect, animated: false)
-                
-                if (self.currentIndex > 0) {
-                    UIView.animate(withDuration: 0.25) {
-                        self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: Section.main.rawValue), at: .bottom, animated: false)
-                    }
-                }
             }
-        }
+       // }
     }
 }
 
@@ -405,11 +399,13 @@ extension UserProfileView: UICollectionViewDelegate {
             spinner.startAnimating()
             spinner.frame = CGRect(x: CGFloat(0), y: CGFloat(0), width: collectionView.bounds.width, height: CGFloat(44))
             
-            let theAttributes = collectionView.layoutAttributesForItem(at: indexPath)
-            endRect = theAttributes?.frame ?? CGRect.zero
-
             currentIndex = lastElement
             viewModel.fetchNextPage()
+            
+            if !viewModel.isLoading.value && indexPath.row == lastElement {
+                let theAttributes = collectionView.layoutAttributesForItem(at: indexPath)
+                endRect = theAttributes?.frame ?? CGRect.zero
+            }
             
         }
     }
