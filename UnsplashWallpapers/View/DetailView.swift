@@ -8,6 +8,11 @@
 import UIKit
 
 class DetailView: UIView {
+    
+    enum ImageDownloadError: Error {
+        case badImage
+    }
+    
     let viewModel: DetailViewModel
     
     let photoExifViewModel = PhotoExifViewModel()
@@ -220,7 +225,14 @@ extension DetailView {
             return
         }
         
-        downloadImage(from: url)
+        if #available(iOS 15.0.0, *) {
+            Task {
+                try await downloadImageWithConcurrency(from: url)
+            }
+        } else {
+            // Fallback on earlier versions
+            downloadImage(from: url)
+        }
     }
     
     func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
@@ -241,6 +253,47 @@ extension DetailView {
                 }
             }
         }
+    }
+    
+    @available(iOS 15.0.0, *)
+    func getDataWithConcurrency(from imageUrl: URL, completion: @escaping (UIImage?, URLResponse?, Error?) -> ()) async throws {
+        let imageRequest = URLRequest(url: imageUrl)
+        
+        let (imageData, imageResponse) = try await URLSession.shared.data(for: imageRequest)
+        guard let imageData = UIImage(data: imageData) else {
+            throw ImageDownloadError.badImage
+        }
+        
+        completion(imageData, imageResponse, nil)
+    }
+    
+    @available(iOS 15.0.0, *)
+    func downloadImageWithConcurrency(from url: URL) async throws {
+        print("Download Started")
+        try await getDataWithConcurrency(from: url) { image, response, error in
+            guard let image = image, error == nil else { return }
+            print(response?.suggestedFilename ?? url.lastPathComponent)
+            
+            Task.detached(priority: .background) {
+                print("storeImageInDisk")
+                await self.storeImageInDisk(image: image)
+            }
+            
+            // always update the UI from the main thread
+            DispatchQueue.main.async() { [weak self] in
+                print("Download Finished")
+                self?.writeToPhotoAlbum(image: image)
+            }
+        }
+    }
+    
+    @available(iOS 15.0.0, *)
+    func storeImageInDisk(image: UIImage) async {
+        guard
+            let imageData = image.pngData(),
+            let cachesUrl = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first else { return }
+        let imageUrl = cachesUrl.appendingPathComponent(UUID().uuidString)
+        try? imageData.write(to: imageUrl)
     }
     
     func writeToPhotoAlbum(image: UIImage) {

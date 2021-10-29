@@ -350,8 +350,8 @@
             filePath = "UnsplashWallpapers/View/DetailView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "193"
-            endingLineNumber = "193"
+            startingLineNumber = "198"
+            endingLineNumber = "198"
             landmarkName = "getPhotoInfo()"
             landmarkType = "7">
          </BreakpointContent>
