@@ -17,6 +17,7 @@ class SettingViewController: UIViewController {
         settingListView = SettingView()
         settingListView.configureHierarchy()
         settingListView.configureDataSource()
+        settingListView.applyInitialSnapshots()
         settingListView.translatesAutoresizingMaskIntoConstraints = false
         
         self.view.backgroundColor = .systemBackground
