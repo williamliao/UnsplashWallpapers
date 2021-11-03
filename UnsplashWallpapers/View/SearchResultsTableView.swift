@@ -39,10 +39,10 @@ class SearchResultsTableView: UIView {
 
 extension SearchResultsTableView {
     func createView() {
-        self.backgroundColor = .systemBackground
+        //self.backgroundColor = .systemBackground
         
         tableView = UITableView()
-        tableView.backgroundColor = .systemBackground
+        //tableView.backgroundColor = .systemBackground
         
         tableView.delegate = self
         //tableView.contentInsetAdjustmentBehavior = .always

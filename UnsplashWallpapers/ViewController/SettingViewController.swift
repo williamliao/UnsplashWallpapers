@@ -20,7 +20,7 @@ class SettingViewController: UIViewController {
         settingListView.applyInitialSnapshots()
         settingListView.translatesAutoresizingMaskIntoConstraints = false
         
-        self.view.backgroundColor = .systemBackground
+        //self.view.backgroundColor = .systemBackground
         
         self.view.addSubview(settingListView)
         

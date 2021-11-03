@@ -82,7 +82,7 @@ extension PhotoListView {
     
     func configureCollectionView() {
        
-        self.backgroundColor = .systemBackground
+        //self.backgroundColor = .systemBackground
         
         let flowLayout = UICollectionViewFlowLayout()
         //flowLayout.itemSize = CGSize(width: UIScreen.main.bounds.size.width, height: 300)

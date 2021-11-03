@@ -19,7 +19,7 @@ class AlbumDetailViewController: UIViewController {
         albumDetailView.translatesAutoresizingMaskIntoConstraints = false
         albumDetailView.configureCollectionView()
         
-        view.backgroundColor = .systemBackground
+        //view.backgroundColor = .systemBackground
         
         view.addSubview(albumDetailView)
         

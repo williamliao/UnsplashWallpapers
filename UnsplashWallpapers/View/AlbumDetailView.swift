@@ -40,7 +40,7 @@ extension AlbumDetailView {
     func configureCollectionView() {
         let collectionView = UICollectionView(frame: self.bounds, collectionViewLayout: generateLayout())
         self.addSubview(collectionView)
-        collectionView.backgroundColor = .systemBackground
+        //collectionView.backgroundColor = .systemBackground
         collectionView.delegate = self
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         

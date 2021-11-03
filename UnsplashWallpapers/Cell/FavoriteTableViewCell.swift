@@ -40,7 +40,7 @@ class FavoriteTableViewCell: UITableViewCell {
 extension FavoriteTableViewCell {
     func configureView() {
         
-        self.backgroundColor = .systemBackground
+        //self.backgroundColor = .systemBackground
         
         titleLabel = UILabel()
         titleLabel.font = UIFont.systemFont(ofSize: 16)

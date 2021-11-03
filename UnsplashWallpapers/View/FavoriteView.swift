@@ -101,11 +101,11 @@ extension FavoriteView {
 extension FavoriteView {
     
     func configureTableView(Add to: UIView) {
-        to.backgroundColor = .systemBackground
+        //to.backgroundColor = .systemBackground
         
         tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.backgroundColor = .systemBackground
+        //tableView.backgroundColor = .systemBackground
         
         tableView.register(FavoriteTableViewCell.self, forCellReuseIdentifier: FavoriteTableViewCell.reuseIdentifier)
         

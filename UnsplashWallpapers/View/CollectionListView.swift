@@ -38,7 +38,7 @@ class CollectionListView: UIView {
 extension CollectionListView {
     func configureCollectionView() {
        
-        self.backgroundColor = .systemBackground
+        //self.backgroundColor = .systemBackground
         
         let flowLayout = UICollectionViewFlowLayout()
         //flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize

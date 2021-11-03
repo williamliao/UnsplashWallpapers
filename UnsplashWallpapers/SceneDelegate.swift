@@ -20,7 +20,33 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let coordinator = MainCoordinator(rootViewController: tabController)
         coordinator.start()
         mainCoordinator = coordinator
+        
+        var themeValue = ThemeManager.Theme.init(rawValue: 1)
+        
+        switch UITraitCollection.current.userInterfaceStyle {
+            case .dark:
+                themeValue = ThemeManager.Theme.init(rawValue: 0)
+            case .light:
+                themeValue = ThemeManager.Theme.init(rawValue: 1)
+            case .unspecified:
+                themeValue = ThemeManager.Theme.init(rawValue: 2)
+            @unknown default:
+                themeValue = ThemeManager.Theme.init(rawValue: 2)
+        }
 
+        //UserDefaults.standard.setValue(themeValue?.rawValue, forKey: SelectedThemeKey)
+        //UserDefaults.standard.synchronize()
+        ThemeManager.applyTheme(theme: themeValue!)
+        
+        if ((UserDefaults.standard.object(forKey: SelectedThemeKey) == nil)) {
+            
+            
+        } else {
+            let storeTheme = UserDefaults.standard.object(forKey: SelectedThemeKey) as! Int
+            let theme = ThemeManager.Theme.init(rawValue: storeTheme)
+            ThemeManager.applyTheme(theme: theme ?? .light)
+        }
+        
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
         window?.rootViewController = tabController

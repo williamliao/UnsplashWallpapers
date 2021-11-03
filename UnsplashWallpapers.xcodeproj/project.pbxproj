@@ -11,6 +11,8 @@
 		C8325C4326D5ED60008A16D7 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8325C4226D5ED60008A16D7 /* SettingViewController.swift */; };
 		C8325C4826D5ED77008A16D7 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8325C4726D5ED77008A16D7 /* SettingView.swift */; };
 		C852BDCF26142054002059F5 /* UnsplashSearchPagedRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C852BDCE26142054002059F5 /* UnsplashSearchPagedRequest.swift */; };
+		C890C7772732160D00945A19 /* SettingMainItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C890C7762732160D00945A19 /* SettingMainItemCell.swift */; };
+		C890C77927321CAA00945A19 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C890C77827321CAA00945A19 /* ThemeManager.swift */; };
 		C89A71F7260347F2003E188F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89A71F6260347F2003E188F /* AppDelegate.swift */; };
 		C89A71F9260347F2003E188F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89A71F8260347F2003E188F /* SceneDelegate.swift */; };
 		C89A71FB260347F2003E188F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89A71FA260347F2003E188F /* ViewController.swift */; };
@@ -148,6 +150,8 @@
 		C8325C4226D5ED60008A16D7 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		C8325C4726D5ED77008A16D7 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		C852BDCE26142054002059F5 /* UnsplashSearchPagedRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsplashSearchPagedRequest.swift; sourceTree = "<group>"; };
+		C890C7762732160D00945A19 /* SettingMainItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingMainItemCell.swift; sourceTree = "<group>"; };
+		C890C77827321CAA00945A19 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		C89A71F3260347F2003E188F /* UnsplashWallpapers.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnsplashWallpapers.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C89A71F6260347F2003E188F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C89A71F8260347F2003E188F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -478,6 +482,7 @@
 				C8D14B3B26423385000755BE /* ImageLoadOperation.swift */,
 				C8CA07BD26450A4E000FEB03 /* NetworkConnectivityManager.swift */,
 				C8D36F68272A836E006F2614 /* imageText.swift */,
+				C890C77827321CAA00945A19 /* ThemeManager.swift */,
 			);
 			path = Share;
 			sourceTree = "<group>";
@@ -515,6 +520,7 @@
 				C89D6908263F979A00CA8617 /* SharedAlbumItemCell.swift */,
 				C89D6912263FACD100CA8617 /* AlbumHeaderCollectionReusableView.swift */,
 				C89D6931263FE7E500CA8617 /* AlbumPhotoItemCell.swift */,
+				C890C7762732160D00945A19 /* SettingMainItemCell.swift */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -674,6 +680,7 @@
 				C89A72BB26034DF3003E188F /* User.swift in Sources */,
 				C89A725626034972003E188F /* PhotoListView.swift in Sources */,
 				C8BF2ABB2636994500BE7C51 /* Current_user_contributions.swift in Sources */,
+				C890C77927321CAA00945A19 /* ThemeManager.swift in Sources */,
 				C8A8FD412631695A00C38FAF /* Favorite.swift in Sources */,
 				C89D68FA263F967000CA8617 /* AlbumItem.swift in Sources */,
 				C8BF2AB1263696FF00BE7C51 /* Topic.swift in Sources */,
@@ -728,6 +735,7 @@
 				C8BF2ADD2636B6E700BE7C51 /* SearchView.swift in Sources */,
 				C8D6891C2637BC2B008F8B4D /* SearchResultsTableViewCell.swift in Sources */,
 				C89A729826034D52003E188F /* Response.swift in Sources */,
+				C890C7772732160D00945A19 /* SettingMainItemCell.swift in Sources */,
 				C8C91EC426088536001EAA59 /* UnsplashPageRequest.swift in Sources */,
 				C8D6893B2637E2E8008F8B4D /* SearchResults.swift in Sources */,
 				C8AC4705263A63BC00178411 /* UnsplashUserPhotoRequest.swift in Sources */,

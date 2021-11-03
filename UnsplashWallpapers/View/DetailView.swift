@@ -43,7 +43,7 @@ class DetailView: UIView {
 
 extension DetailView {
     func createView() {
-        self.backgroundColor = .systemBackground
+        //self.backgroundColor = .systemBackground
         
         act.color = traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
         

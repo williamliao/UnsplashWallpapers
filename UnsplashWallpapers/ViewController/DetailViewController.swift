@@ -18,7 +18,7 @@ class DetailViewController: UIViewController {
         detailView.createView()
         detailView.observerBindData()
         
-        view.backgroundColor = .systemBackground
+        //view.backgroundColor = .systemBackground
         
         view.addSubview(detailView)
         

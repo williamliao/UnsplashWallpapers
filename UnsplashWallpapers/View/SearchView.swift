@@ -52,7 +52,7 @@ class SearchView: UIView {
 // MARK: - View
 extension SearchView {
     func createView() {
-        self.backgroundColor = .systemBackground
+        //self.backgroundColor = .systemBackground
         
         searchViewController = UISearchController(searchResultsController: nil)
         searchViewController.searchBar.delegate = self
@@ -135,7 +135,7 @@ extension SearchView {
         searchResultsView.createView()
         searchResultsView.translatesAutoresizingMaskIntoConstraints = false
         searchResultsView.searchResultsDidSelectedDelegate = self
-        searchResultsView.backgroundColor = .systemBackground
+        //searchResultsView.backgroundColor = .systemBackground
         
         self.addSubview(searchResultsView)
         

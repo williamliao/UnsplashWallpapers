@@ -20,7 +20,7 @@ class AlbumsViewController: UIViewController {
         albumsView.configureCollectionView()
         albumsView.configureDataSource()
         
-        view.backgroundColor = .systemBackground
+        //view.backgroundColor = .systemBackground
         
         view.addSubview(albumsView)
         

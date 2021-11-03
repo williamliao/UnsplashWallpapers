@@ -27,8 +27,9 @@ class AlbumHeaderCollectionReusableView: UICollectionReusableView {
 
 extension AlbumHeaderCollectionReusableView {
   func configure() {
-    backgroundColor = .systemBackground
-
+    let theme = ThemeManager.currentTheme()
+    
+    label.textColor = theme.titleTextColor
     addSubview(label)
     label.translatesAutoresizingMaskIntoConstraints = false
     label.adjustsFontForContentSizeCategory = true

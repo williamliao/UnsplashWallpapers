@@ -29,7 +29,7 @@ class SearchResultsTableViewCell: UITableViewCell {
 extension SearchResultsTableViewCell {
     func configureView() {
         
-        self.backgroundColor = .systemBackground
+        //self.backgroundColor = .systemBackground
         
         titleLabel = UILabel()
         titleLabel.font = UIFont.systemFont(ofSize: 20)

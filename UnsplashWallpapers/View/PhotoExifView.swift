@@ -49,6 +49,8 @@ class PhotoExifView: UIView {
 // MARK:- View
 extension PhotoExifView {
     func configureView() {
+        let theme = ThemeManager.currentTheme()
+        self.backgroundColor = theme.backgroundColor
        
         titleLabel.font = UIFont.systemFont(ofSize: 18)
         titleLabel.textColor = .label

@@ -16,7 +16,7 @@ class PhotoExifViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = .systemBackground
+        //self.view.backgroundColor = .systemBackground
         
         photoExifView = PhotoExifView()
         photoExifView.photoExifViewDelegate = self
