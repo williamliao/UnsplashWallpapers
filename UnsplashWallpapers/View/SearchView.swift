@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import NetworkExtension
 
 enum SearchViewCurrentSource: Int, CaseIterable {
     case photos
@@ -492,8 +493,19 @@ extension SearchView: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
+        let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
+        if viewModel.category == .users {
+            
+            guard let total = viewModel.searchRespone.value?.total else {
+                return
+            }
+            
+            if lastElement <= total {
+                return
+            }
+        }
 
-        let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 3
         if !viewModel.isLoading.value && indexPath.row == lastElement {
             
             let spinner = UIActivityIndicatorView(style: .medium)

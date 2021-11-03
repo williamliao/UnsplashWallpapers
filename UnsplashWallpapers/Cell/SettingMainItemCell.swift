@@ -31,7 +31,7 @@ extension SettingMainItemCell {
         
         label = UILabel()
 
-        let cancel = UIAction(title: "Cancel", attributes: .destructive) { _ in print("cancel") }
+       /* let cancel = UIAction(title: "Cancel", attributes: .destructive) { _ in print("cancel") }
 
         let dark = UIAction(title: "dark", image: UIImage(systemName: "light.max")) { [weak self] _ in
             UserDefaults.standard.setValue(ThemeManager.Theme.dark.rawValue, forKey: SelectedThemeKey)
@@ -61,11 +61,11 @@ extension SettingMainItemCell {
             ThemeManager.applyTheme(theme: theme ?? .auto)
 
             self?.button.setTitle("auto", for: .normal)
-        }
+        }*/
         
         button = UIButton(type: .custom)
-        button.menu = UIMenu(title: "", children: [dark, light, auto, cancel])
-        button.showsMenuAsPrimaryAction = true
+        //button.menu = UIMenu(title: "", children: [dark, light, auto, cancel])
+        //button.showsMenuAsPrimaryAction = true
 
         label.translatesAutoresizingMaskIntoConstraints = false
         button.translatesAutoresizingMaskIntoConstraints = false
