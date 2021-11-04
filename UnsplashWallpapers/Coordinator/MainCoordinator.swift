@@ -172,8 +172,25 @@ extension MainCoordinator {
     
     func presentExifView(vc: UIViewController) {
         if let currentNavController = self.rootViewController.selectedViewController as? UINavigationController {
-            currentNavController.present(vc, animated: true, completion: nil)
+            //
             //currentNavController.pushViewController(vc, animated: true)
+            if #available(iOS 15.0, *) {
+                vc.modalPresentationStyle = .popover
+                if let pop = vc.popoverPresentationController {
+                    let sheet = pop.adaptiveSheetPresentationController
+                    sheet.detents = [.medium(), .large()]
+                    sheet.prefersGrabberVisible = true
+                    sheet.preferredCornerRadius = 30.0
+                    sheet.largestUndimmedDetentIdentifier = .medium
+                    sheet.prefersEdgeAttachedInCompactHeight = true
+                    sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
+                }
+
+                currentNavController.present(vc, animated: true)
+            } else {
+                // Fallback on earlier versions
+                currentNavController.present(vc, animated: true, completion: nil)
+            }
         }
     }
     
