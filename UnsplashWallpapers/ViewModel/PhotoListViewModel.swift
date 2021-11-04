@@ -13,7 +13,7 @@ enum SegmentedIndex: Int, CaseIterable {
     case wallpapers
 }
 
-protocol FetchMoreDataDelegate:class {
+protocol FetchMoreDataDelegate: AnyObject {
     func realodSection(newData: [Response])
 }
 
@@ -321,9 +321,9 @@ extension PhotoListViewModel {
                                 
                                 new.total = respone.total
                                 new.total_pages = respone.total_pages
-                                
+                            
                                 for index in 0...respone.results.count - 1 {
-                                    
+
                                     if !new.results.contains(respone.results[index]) {
                                         new.results.append(respone.results[index])
                                     }

@@ -12,7 +12,7 @@ enum SearchResultsSection: Int, CaseIterable {
     case trending
 }
 
-protocol SearchResultsDidSelectedDelegate: class {
+protocol SearchResultsDidSelectedDelegate: AnyObject {
     func searchResultsDidSelected(query:String, category: SearchResults.Category)
 }
 

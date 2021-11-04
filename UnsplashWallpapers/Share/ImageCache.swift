@@ -9,7 +9,7 @@
 import UIKit
 
 // Declares in-memory image cache
-protocol ImageCacheType: class {
+protocol ImageCacheType: AnyObject {
     // Returns the image associated with a given url
     func image(for url: URL) -> UIImage?
     // Inserts the image of the specified url in the cache

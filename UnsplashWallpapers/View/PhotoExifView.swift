@@ -8,7 +8,7 @@
 import UIKit
 import MapKit
 
-protocol PhotoExifViewDelegate: class {
+protocol PhotoExifViewDelegate: AnyObject {
     func userDidTouchCloseButton()
 }
 
