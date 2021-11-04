@@ -16,7 +16,7 @@ class UsersListCollectionViewCell: UICollectionViewCell {
     
     var titleLabel: UILabel!
     var avatarImageView: UIImageView!
-    
+
     private let downloader = ImageCombineDownloader()
     private var animator: UIViewPropertyAnimator?
     private var isHeightCalculated: Bool = false
@@ -86,9 +86,27 @@ extension UsersListCollectionViewCell {
     func configureImage(with url: URL) {
         isLoading(isLoading: true)
         
-        downloader.download(url: url) { [weak self] (image) in
-            self?.showImage(image: image)
-            self?.isLoading(isLoading: false)
+        DispatchQueue.global().async { [weak self] in
+          
+            self?.downloader.downloadWithErrorHandler(url: url, completionHandler: { [weak self] (image, error) in
+                
+                DispatchQueue.main.async {
+                    self?.isLoading(isLoading: false)
+                }
+                
+                guard error == nil else {
+                    
+                    print(error?.localizedDescription ?? "")
+                    return
+                }
+                
+                guard let image = image else {
+                    
+                    return
+                }
+                self?.showImage(image: image)
+                
+            })
         }
     }
     
@@ -126,4 +144,18 @@ extension UsersListCollectionViewCell {
         downloader.cancel()
     }
     
+    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        //Exhibit A - We need to cache our calculation to prevent a crash.
+        if !isHeightCalculated {
+            setNeedsLayout()
+            layoutIfNeeded()
+            let size = contentView.systemLayoutSizeFitting(layoutAttributes.size)
+            var newFrame = layoutAttributes.frame
+            newFrame.size.width = CGFloat(ceilf(Float(size.width)))
+            newFrame.size.height = CGFloat(ceilf(Float(size.height)))
+            layoutAttributes.frame = newFrame
+            isHeightCalculated = true
+        }
+        return layoutAttributes
+    }
 }

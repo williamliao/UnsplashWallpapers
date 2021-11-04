@@ -142,10 +142,16 @@ extension PhotoListCollectionViewCell {
     }
     
     func resizedImage(at image: UIImage, for size: CGSize) -> UIImage? {
-       
-        let renderer = UIGraphicsImageRenderer(size: size)
-        return renderer.image { (context) in
-            image.draw(in: CGRect(origin: .zero, size: size))
+        
+        if #available(iOS 15.0, *) {
+            let thumbnailImg = image
+            return thumbnailImg.preparingThumbnail(of: size)
+        } else {
+            // Fallback on earlier versions
+            let renderer = UIGraphicsImageRenderer(size: size)
+            return renderer.image { (context) in
+                image.draw(in: CGRect(origin: .zero, size: size))
+            }
         }
     }
 
