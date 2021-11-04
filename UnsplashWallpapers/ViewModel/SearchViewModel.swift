@@ -184,7 +184,7 @@ extension SearchViewModel {
                 break
             case .users:
                 unsplashSearchPagedRequest = UnsplashSearchPagedRequest(with: usersCursor)
-                
+            
                 service = UnsplashService(endPoint: .users(usersCursor.query ?? "", unsplashSearchPagedRequest))
                 
                 break
@@ -228,7 +228,18 @@ extension SearchViewModel {
                         if new.results.count < cursor.perPage {
                             self?.canFetchMore = false
                         } else {
-                            self?.searchCursor = self?.unsplashSearchPagedRequest.nextCursor()
+                            
+                            switch self?.category {
+                                case .photos:
+                                    self?.searchCursor = self?.unsplashSearchPagedRequest.nextCursor()
+                                case .collections:
+                                    self?.collectionsCursor = self?.unsplashSearchPagedRequest.nextCursor()
+                                    break
+                                case .users:
+                                    self?.usersCursor = self?.unsplashSearchPagedRequest.nextCursor()
+                                case .none:
+                                    break
+                            }
                         }
                         
                     case .failure(let error):

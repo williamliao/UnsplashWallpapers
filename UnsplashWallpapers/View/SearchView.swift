@@ -29,6 +29,7 @@ class SearchView: UIView {
     
     var imageHeightDictionary: [IndexPath: String]?
     var endRect = CGRect.zero
+    var firstEnter = true
     
     init(viewModel: SearchViewModel,coordinator: MainCoordinator? ) {
         self.viewModel = viewModel
@@ -284,7 +285,7 @@ extension SearchView: UICollectionViewDelegateFlowLayout {
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         if viewModel.category == .users {
-            return CGSize(width: collectionView.bounds.size.width, height: 50)
+            return CGSize(width: collectionView.bounds.size.width, height: 70)
         } else {
             
             let res = viewModel.searchRespone.value
@@ -497,13 +498,19 @@ extension SearchView: UICollectionViewDelegate {
         let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
         if viewModel.category == .users {
             
-            guard let total = viewModel.searchRespone.value?.total else {
-                return
-            }
+            firstEnter = false
             
-            if lastElement <= total {
-                return
-            }
+//            guard let total = viewModel.searchRespone.value?.total else {
+//                return
+//            }
+//
+//            if lastElement <= total {
+//                return
+//            }
+        }
+        
+        if (firstEnter) {
+            return
         }
 
         if !viewModel.isLoading.value && indexPath.row == lastElement {

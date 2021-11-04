@@ -179,6 +179,7 @@ extension MainCoordinator {
                 if let pop = vc.popoverPresentationController {
                     let sheet = pop.adaptiveSheetPresentationController
                     sheet.detents = [.medium(), .large()]
+                    
                     sheet.prefersGrabberVisible = true
                     sheet.preferredCornerRadius = 30.0
                     sheet.largestUndimmedDetentIdentifier = .medium
