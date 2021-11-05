@@ -398,8 +398,8 @@
             filePath = "UnsplashWallpapers/ViewModel/PhotoListViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "185"
-            endingLineNumber = "185"
+            startingLineNumber = "183"
+            endingLineNumber = "183"
             landmarkName = "fetchNextPage()"
             landmarkType = "7">
          </BreakpointContent>

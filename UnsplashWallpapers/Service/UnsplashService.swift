@@ -15,15 +15,16 @@ class UnsplashService: NetworkManager {
 extension UnsplashService {
     
     @available(iOS 15.0.0, *)
-    func fetchWithConcurrency(completion: @escaping (APIResult<[Response], ServerError>) -> Void) async throws {
+    func fetchWithConcurrency(completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
+        Task {
+            let result = try? await fetchDataWithConcurrency(method: .get, decode: { json -> [Response]? in
+                guard let feedResult = json as? [Response] else { return  nil }
+                return feedResult
+            })
 
-        let result = try? await fetchDataWithConcurrency(method: .get, decode: { json -> [Response]? in
-            guard let feedResult = json as? [Response] else { return  nil }
-            return feedResult
-        })
-
-        if let returnResult = result {
-            completion(returnResult)
+            if let returnResult = result {
+                completion(returnResult)
+            }
         }
     }
     
@@ -36,15 +37,17 @@ extension UnsplashService {
     }
     
     @available(iOS 15.0.0, *)
-    func searchWithConcurrency(pageRequest: UnsplashSearchPagedRequest, completion: @escaping (APIResult<SearchRespone, ServerError>) -> Void) async throws {
+    func searchWithConcurrency(pageRequest: UnsplashSearchPagedRequest, completion: @escaping (APIResult<SearchRespone, ServerError>) -> Void) {
         
-        let result = try? await queryWithConcurrency(pageRequest: pageRequest, method: .get, decode: { json -> SearchRespone? in
-            guard let feedResult = json as? SearchRespone else { return  nil }
-            return feedResult
-        })
+        Task {
+            let result = try? await queryWithConcurrency(pageRequest: pageRequest, method: .get, decode: { json -> SearchRespone? in
+                guard let feedResult = json as? SearchRespone else { return  nil }
+                return feedResult
+            })
 
-        if let returnResult = result {
-            completion(returnResult)
+            if let returnResult = result {
+                completion(returnResult)
+            }
         }
     }
     

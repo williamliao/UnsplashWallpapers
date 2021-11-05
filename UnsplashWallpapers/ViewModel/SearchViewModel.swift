@@ -75,25 +75,23 @@ extension SearchViewModel {
         
         }
         
-        Task {
-            try? await service.searchWithConcurrency(pageRequest: unsplashSearchPagedRequest) { (result) in
-                self.isLoading.value = false
-                switch result {
-                    case .success(let respone):
-                       
-                        self.searchRespone.value = respone
-                        
-                        self.searchCursor = self.unsplashSearchPagedRequest.nextCursor()
-            
-                    case .failure(let error):
-                        
-                        switch error {
-                            case .statusCodeError(let code):
-                                print(code)
-                            default:
-                                self.error.value = error
-                        }
-                }
+        service.searchWithConcurrency(pageRequest: unsplashSearchPagedRequest) { (result) in
+            self.isLoading.value = false
+            switch result {
+                case .success(let respone):
+                   
+                    self.searchRespone.value = respone
+                    
+                    self.searchCursor = self.unsplashSearchPagedRequest.nextCursor()
+        
+                case .failure(let error):
+                    
+                    switch error {
+                        case .statusCodeError(let code):
+                            print(code)
+                        default:
+                            self.error.value = error
+                    }
             }
         }
         
@@ -195,61 +193,59 @@ extension SearchViewModel {
         
         isLoading.value = true
         
-        Task {
-            try? await service.searchWithConcurrency(pageRequest: unsplashSearchPagedRequest) { [weak self] (result) in
-                self?.isLoading.value = false
-                
-                switch result {
-                    case .success(let respone):
-                       
-                        guard var new = self?.searchRespone.value  else {
-                            return
-                        }
-                  
-                        new.total = respone.total
-                        new.total_pages = respone.total_pages
-                        if (respone.results.count > 0) {
-                            for index in 0...respone.results.count - 1 {
-                                if !new.results.contains(respone.results[index]) {
-                                    new.results.append(respone.results[index])
-                                }
-                            }
-                        } else {
-                            self?.canFetchMore = false
-                        }
-                        
-                        self?.searchRespone.value = new
-                        
-                        guard let cursor = self?.searchCursor else {
-                            return
-                        }
-                        
-                        if new.results.count < cursor.perPage {
-                            self?.canFetchMore = false
-                        } else {
-                            
-                            switch self?.category {
-                                case .photos:
-                                    self?.searchCursor = self?.unsplashSearchPagedRequest.nextCursor()
-                                case .collections:
-                                    self?.collectionsCursor = self?.unsplashSearchPagedRequest.nextCursor()
-                                    break
-                                case .users:
-                                    self?.usersCursor = self?.unsplashSearchPagedRequest.nextCursor()
-                                case .none:
-                                    break
+        service.searchWithConcurrency(pageRequest: unsplashSearchPagedRequest) { [weak self] (result) in
+            self?.isLoading.value = false
+            
+            switch result {
+                case .success(let respone):
+                   
+                    guard var new = self?.searchRespone.value  else {
+                        return
+                    }
+              
+                    new.total = respone.total
+                    new.total_pages = respone.total_pages
+                    if (respone.results.count > 0) {
+                        for index in 0...respone.results.count - 1 {
+                            if !new.results.contains(respone.results[index]) {
+                                new.results.append(respone.results[index])
                             }
                         }
+                    } else {
+                        self?.canFetchMore = false
+                    }
+                    
+                    self?.searchRespone.value = new
+                    
+                    guard let cursor = self?.searchCursor else {
+                        return
+                    }
+                    
+                    if new.results.count < cursor.perPage {
+                        self?.canFetchMore = false
+                    } else {
                         
-                    case .failure(let error):
-                        
-                        switch error {
-                            case .statusCodeError(let code):
-                                print(code)
-                            default:
-                                self?.error.value = error
+                        switch self?.category {
+                            case .photos:
+                                self?.searchCursor = self?.unsplashSearchPagedRequest.nextCursor()
+                            case .collections:
+                                self?.collectionsCursor = self?.unsplashSearchPagedRequest.nextCursor()
+                                break
+                            case .users:
+                                self?.usersCursor = self?.unsplashSearchPagedRequest.nextCursor()
+                            case .none:
+                                break
                         }
-                }
+                    }
+                    
+                case .failure(let error):
+                    
+                    switch error {
+                        case .statusCodeError(let code):
+                            print(code)
+                        default:
+                            self?.error.value = error
+                    }
             }
         }
         

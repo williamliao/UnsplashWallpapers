@@ -57,20 +57,18 @@ extension PhotoListViewModel {
         
         isLoading.value = true
         
-        Task {
-            try? await service.fetchWithConcurrency { [weak self] (result) in
-                
-                self?.isLoading.value = false
-                
-                switch result {
-                    case .success(let respone):
-                       
-                        self?.respone.value = respone
+        service.fetchWithConcurrency { [weak self] (result) in
             
-                    case .failure(let error):
-                        
-                        self?.error.value = error
-                }
+            self?.isLoading.value = false
+            
+            switch result {
+                case .success(let respone):
+                   
+                    self?.respone.value = respone
+        
+                case .failure(let error):
+                    
+                    self?.error.value = error
             }
         }
     }
@@ -186,112 +184,108 @@ extension PhotoListViewModel {
         switch segmentedIndex {
             case .random:
             
-                    Task {
-                        try? await service.fetchWithConcurrency() { [weak self] (result) in
-                            self?.isLoading.value = false
-                            self?.isFetchingNextPage = false
-                            
-                            switch result {
-                                case .success(let respone):
-                                    
-                                    if (respone.count == 0) {
-                                        return
-                                    }
-                                   
-                                    guard var new = self?.respone.value  else {
-                                        return
-                                    }
-                                    
-                                    for index in 0...respone.count - 1 {
-                                        
-                                        if !new.contains(respone[index]) {
-                                            new.append(respone[index])
-                                        }
-                                    }
-
-                                    self?.respone.value = new
-                                    
-        //                            let startIndex = new.count - respone.count
-        //                            let endIndex = startIndex + respone.count - 1
-        //                            let newIndexPaths = (startIndex ... endIndex).map { i in
-        //                                return IndexPath(row: i, section: 0)
-        //                            }
-                                    
-                                    //self?.fetchMoreDataDelegate?.realodSection(newData: new)
-                                   
-                                    guard let count = self?.respone.value?.count else {
-                                        return
-                                    }
-
-                                    if count < 10 {
-                                        self?.canFetchMore = false
-                                    }
+            service.fetchWithConcurrency() { [weak self] (result) in
+                self?.isLoading.value = false
+                self?.isFetchingNextPage = false
+                
+                switch result {
+                    case .success(let respone):
                         
-                                case .failure(let error):
-                                    
-                                    switch error {
-                                        case .statusCodeError(let code):
-                                            print(code)
-                                        default:
-                                            self?.error.value = error
-                                    }
+                        if (respone.count == 0) {
+                            return
+                        }
+                       
+                        guard var new = self?.respone.value  else {
+                            return
+                        }
+                        
+                        for index in 0...respone.count - 1 {
+                            
+                            if !new.contains(respone[index]) {
+                                new.append(respone[index])
                             }
                         }
-                    }
+
+                        self?.respone.value = new
+                        
+//                            let startIndex = new.count - respone.count
+//                            let endIndex = startIndex + respone.count - 1
+//                            let newIndexPaths = (startIndex ... endIndex).map { i in
+//                                return IndexPath(row: i, section: 0)
+//                            }
+                        
+                        //self?.fetchMoreDataDelegate?.realodSection(newData: new)
+                       
+                        guard let count = self?.respone.value?.count else {
+                            return
+                        }
+
+                        if count < 10 {
+                            self?.canFetchMore = false
+                        }
+            
+                    case .failure(let error):
+                        
+                        switch error {
+                            case .statusCodeError(let code):
+                                print(code)
+                            default:
+                                self?.error.value = error
+                        }
+                }
+            }
                
             case .nature:
                 unsplashNaturePagedRequest = UnsplashSearchPagedRequest(with: fetchNatureCursor)
                 service = UnsplashService(endPoint: .search("nature", unsplashNaturePagedRequest))
             
-            Task {
-                try? await service.searchWithConcurrency(pageRequest: unsplashNaturePagedRequest) { [weak self] (result) in
-                    
-                    self?.isLoading.value = false
-                    self?.isFetchingNextPage = false
-                    
-                    switch result {
-                        case .success(let respone):
+            service.searchWithConcurrency(pageRequest: unsplashNaturePagedRequest) { [weak self] (result) in
+                
+                self?.isLoading.value = false
+                self?.isFetchingNextPage = false
+                
+                switch result {
+                    case .success(let respone):
+                        
+                        if (respone.results.count == 0) {
+                            return
+                        }
+                        
+                        guard var new = self?.searchRespone.value  else {
+                            return
+                        }
+     
+                        new.total = respone.total
+                        new.total_pages = respone.total_pages
+                        //new.results = respone.results
+                      
+                        for index in 0...respone.results.count - 1 {
                             
-                            if (respone.results.count == 0) {
-                                return
+                            if !new.results.contains(respone.results[index]) {
+                                new.results.append(respone.results[index])
                             }
-                            
-                            guard var new = self?.searchRespone.value  else {
-                                return
-                            }
-         
-                            new.total = respone.total
-                            new.total_pages = respone.total_pages
-                            //new.results = respone.results
-                          
-                            for index in 0...respone.results.count - 1 {
-                                
-                                if !new.results.contains(respone.results[index]) {
-                                    new.results.append(respone.results[index])
-                                }
-                            }
-                            
-                            self?.searchRespone.value = new
-                            
-                            guard let cursor = self?.fetchNatureCursor else {
-                                return
-                            }
-                            
-                            if new.results.count < cursor.perPage {
-                                self?.canFetchMore = false
-                            } else {
-                                self?.fetchNatureCursor = self?.unsplashNaturePagedRequest.nextCursor()
-                            }
-                           
-                        case .failure(let error):
-                            
-                            switch error {
-                                case .statusCodeError(let code):
-                                    print(code)
-                                default:
-                                    self?.error.value = error
-                            }
-                    }
+                        }
+                        
+                        self?.searchRespone.value = new
+                        
+                        guard let cursor = self?.fetchNatureCursor else {
+                            return
+                        }
+                        
+                        if new.results.count < cursor.perPage {
+                            self?.canFetchMore = false
+                        } else {
+                            self?.fetchNatureCursor = self?.unsplashNaturePagedRequest.nextCursor()
+                        }
+                       
+                    case .failure(let error):
+                        
+                        switch error {
+                            case .statusCodeError(let code):
+                                print(code)
+                            default:
+                                self?.error.value = error
+                        }
                 }
             }
             
@@ -303,57 +297,53 @@ extension PhotoListViewModel {
                 
                 //print("fetchWallpapersCursor \(unsplashWallpaperPagedRequest.cursor)")
             
-                Task {
-                    try? await service.searchWithConcurrency(pageRequest: unsplashWallpaperPagedRequest) { [weak self] (result) in
-                        self?.isLoading.value = false
-                        self?.isFetchingNextPage = false
-                        
-                        switch result {
-                            case .success(let respone):
-                               
-                                if (respone.results.count == 0) {
-                                    return
-                                }
-                                
-                                guard var new = self?.searchRespone.value  else {
-                                    return
-                                }
-                                
-                                new.total = respone.total
-                                new.total_pages = respone.total_pages
-                            
-                                for index in 0...respone.results.count - 1 {
-
-                                    if !new.results.contains(respone.results[index]) {
-                                        new.results.append(respone.results[index])
-                                    }
-                                }
-                                
-                                self?.searchRespone.value = new
-                                
-                                guard let cursor = self?.fetchWallpapersCursor else {
-                                    return
-                                }
-                                
-                                if new.results.count < cursor.perPage {
-                                    self?.canFetchMore = false
-                                } else {
-                                    self?.fetchWallpapersCursor = self?.unsplashWallpaperPagedRequest.nextCursor()
-                                }
-                    
-                            case .failure(let error):
-                                
-                                switch error {
-                                    case .statusCodeError(let code):
-                                        print(code)
-                                    default:
-                                        self?.error.value = error
-                                }
+            service.searchWithConcurrency(pageRequest: unsplashWallpaperPagedRequest) { [weak self] (result) in
+                self?.isLoading.value = false
+                self?.isFetchingNextPage = false
+                
+                switch result {
+                    case .success(let respone):
+                       
+                        if (respone.results.count == 0) {
+                            return
                         }
-                    }
+                        
+                        guard var new = self?.searchRespone.value  else {
+                            return
+                        }
+                        
+                        new.total = respone.total
+                        new.total_pages = respone.total_pages
+                    
+                        for index in 0...respone.results.count - 1 {
+
+                            if !new.results.contains(respone.results[index]) {
+                                new.results.append(respone.results[index])
+                            }
+                        }
+                        
+                        self?.searchRespone.value = new
+                        
+                        guard let cursor = self?.fetchWallpapersCursor else {
+                            return
+                        }
+                        
+                        if new.results.count < cursor.perPage {
+                            self?.canFetchMore = false
+                        } else {
+                            self?.fetchWallpapersCursor = self?.unsplashWallpaperPagedRequest.nextCursor()
+                        }
+            
+                    case .failure(let error):
+                        
+                        switch error {
+                            case .statusCodeError(let code):
+                                print(code)
+                            default:
+                                self?.error.value = error
+                        }
                 }
-                
-                
+            }
         }
     }
     

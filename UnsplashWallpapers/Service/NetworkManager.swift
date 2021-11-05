@@ -341,7 +341,7 @@ class NetworkManager {
     
     func fetch<T: Decodable>(method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
         
-        guard var request = try? createURLRequest() else {
+        guard var request = try? createURLRequest(method: method) else {
             completion(APIResult.failure(ServerError.invalidURL))
             return
         }
@@ -518,7 +518,16 @@ class NetworkManager {
         task?.resume()
     }
     
-    func createURLRequest(params: Dictionary<String, AnyObject>? = nil) throws -> URLRequest {
+    func createURLRequest(params: Dictionary<String, AnyObject>? = nil, method: RequestType ) throws -> URLRequest {
+        
+        //        request.allHTTPHeaderFields = prepareHeaders()
+        //
+        //        if UserDefaults.standard.object(forKey: "ETag") != nil {
+        //            let tag = UserDefaults.standard.string(forKey: "ETag")
+        //            if let etag = tag {
+        //                request.addValue(etag, forHTTPHeaderField: "If-None-Match")
+        //            }
+        //        }
         
         guard let url = prepareURLComponents()?.url else {
             throw ServerError.invalidURL
@@ -539,19 +548,26 @@ class NetworkManager {
                             mutableRequest.httpBody = queryParameters(parameters, urlEncoded: true).data(using: .utf8)
                         }
                     }
+                    mutableRequest.httpMethod = method.rawValue
                     return mutableRequest
                 case .urlEncoded:
                     var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
                     components.query = queryParameters(params)
-                    return URLRequest(url: components.url!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeoutInterval)
+                    var mutableRequest = URLRequest(url: components.url!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeoutInterval)
+                    mutableRequest.httpMethod = method.rawValue
+                    
+                    return mutableRequest
                 }
                 
             case .path:
                 guard let components = prepareURLComponents() else {
                     throw ServerError.invalidURL
                 }
+            
+                var mutableRequest = URLRequest(url: components.url!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeoutInterval)
+                mutableRequest.httpMethod = method.rawValue
                 
-                return URLRequest(url: components.url!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: timeoutInterval)
+                return mutableRequest
         }
     }
     
@@ -657,11 +673,113 @@ extension NetworkManager {
 extension NetworkManager {
     
     @available(iOS 15.0.0, *)
+    private func decodingTaskWithConcurrency<T: Decodable>(with request: URLRequest, decodingType: T.Type, completionHandler completion: @escaping JSONTaskCompletionHandler) async throws -> URLSessionDataTaskProtocol? {
+        
+        let decoder = JSONDecoder()
+        
+        task = try await session.dataTask(with: request) { data, response, error in
+            
+            guard error == nil else {
+                if let error = error {
+                    
+                    let errorCode = (error as NSError).code
+                    
+                    switch errorCode {
+                        case NSURLErrorTimedOut:
+                            completion(nil, ServerError.timeOut)
+                        default:
+                            completion(nil, ServerError.encounteredError(error))
+                    }
+                    return
+                }
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(nil, ServerError.noHTTPResponse)
+                return
+            }
+            
+            if self.successCodes.contains(httpResponse.statusCode) {
+                guard let data = data else {
+                    completion(nil, ServerError.badData)
+                    return
+                }
+                
+//                guard let object = try? JSONSerialization.jsonObject(with: data, options: []),
+//                let responeData = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),
+//                let prettyPrintedString = NSString(data: responeData, encoding: String.Encoding.utf8.rawValue) else { return }
+//
+//                print(prettyPrintedString)
+                
+                do {
+                    let genericModel = try decoder.decode(decodingType, from: data)
+                    completion(genericModel, nil)
+                } catch(let error) {
+                    completion(nil, ServerError.encounteredError(error))
+                }
+                
+            } else if self.failureCodes.contains(httpResponse.statusCode) {
+                if let data = data, let responseBody = try? JSONSerialization.jsonObject(with: data, options: []) {
+                    debugPrint(responseBody)
+                }
+                
+                let info = [
+                    NSLocalizedDescriptionKey: "Failure statusCode \(httpResponse.statusCode)",
+                ]
+                let error = NSError(domain: "NetworkService", code: httpResponse.statusCode, userInfo: info)
+                
+                completion(nil, ServerError.statusCodeError(error))
+            } else {
+                // Server returned response with status code different than expected `successCodes`.
+                let info = [
+                    NSLocalizedDescriptionKey: "Request failed with code \(httpResponse.statusCode)",
+                    NSLocalizedFailureReasonErrorKey: "Wrong handling logic, wrong endpoing mapping or backend bug."
+                ]
+                let error = NSError(domain: "NetworkService", code: httpResponse.statusCode, userInfo: info)
+                completion(nil, ServerError.encounteredError(error))
+            }
+        }
+        
+        return task
+    }
+    
+    @available(iOS 15.0.0, *)
+    func fetchWithConcurrency<T: Decodable>(method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+        
+        guard let request = try? createURLRequest(method: method) else {
+            completion(APIResult.failure(ServerError.invalidURL))
+            return
+        }
+     
+        Task {
+            let task = try await decodingTaskWithConcurrency(with: request, decodingType: T.self) { (json , error) in
+                
+                DispatchQueue.main.async {
+                    guard let json = json else {
+                        if let error = error {
+                            completion(APIResult.failure(error))
+                        }
+                        return
+                    }
+
+                    if let value = decode(json) {
+                        completion(.success(value))
+                    }
+                }
+            }
+            task?.resume()
+        }
+        
+        
+    }
+    
+    @available(iOS 15.0.0, *)
     func fetchDataWithConcurrency<T: Decodable>(method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         try Task.checkCancellation()
         return try await withCheckedThrowingContinuation({
             (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-            fetch(method: method, decode: decode) { result in
+            fetchWithConcurrency(method: method, decode: decode) { result in
                 continuation.resume(returning: result)
             }
         })
