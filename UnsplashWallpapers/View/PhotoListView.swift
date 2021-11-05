@@ -87,6 +87,8 @@ extension PhotoListView {
         let flowLayout = UICollectionViewFlowLayout()
         //flowLayout.itemSize = CGSize(width: UIScreen.main.bounds.size.width, height: 300)
         //flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        //let config = UICollectionLayoutListConfiguration(appearance: .plain)
+        //let flowLayout = UICollectionViewCompositionalLayout.list(using: config)
 
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         
@@ -104,10 +106,20 @@ extension PhotoListView {
             imageLoadOperations = [IndexPath: ImageLoadOperation]()
         }
         
-        collectionView.register(PhotoListCollectionViewCell.self
-                                , forCellWithReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier)
+        
+        if #available(iOS 13.0, *) {
+            collectionView.register(PhotoListCollectionViewCell.self
+                                    , forCellWithReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier)
+        }
         
         self.addSubview(collectionView)
+        
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Response>()
+        Section.allCases.forEach { snapshot.appendSections([$0]) }
+        viewModel.respone.value?.forEach { (respone) in
+            snapshot.appendItems([respone], toSection: .main)
+        }
+        dataSource.apply(snapshot, animatingDifferences: true)
         
         NSLayoutConstraint.activate([
             collectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
@@ -120,15 +132,13 @@ extension PhotoListView {
     func makeDateSourceForCollectionView() {
         if #available(iOS 13.0, *) {
            
-            if (!firstLoad) {
-                dataSource = makeDataSource()
-                collectionView.dataSource = dataSource
-                return
-            }
-            
+//            if (!firstLoad) {
+//                dataSource = makeDataSource()
+//                collectionView.dataSource = dataSource
+//                return
+//            }
             collectionView.dataSource = dataSource
-            firstLoad = false
-            
+
         } else {
             collectionView.dataSource = self
         }
@@ -340,33 +350,73 @@ extension PhotoListView {
     
     func makeDataSource() -> UICollectionViewDiffableDataSource<Section, Response> {
         
-        return UICollectionViewDiffableDataSource<Section, Response>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
-            let cell = self.configureCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
-            return cell
+        if #available(iOS 14.0, *) {
+            let cellRegistration = UICollectionView.CellRegistration<PhotoListCollectionViewCell, Response> { cell, indexPath, item in
+                self.configureCell(cell: cell, respone: item, indexPath: indexPath)
+            }
+            
+            dataSource = UICollectionViewDiffableDataSource<Section, Response>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+                if #available(iOS 14.0, *) {
+                    return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: respone)
+                }
+            }
+            
+
+        } else {
+            dataSource = UICollectionViewDiffableDataSource<Section, Response>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+                let cell = self.configureCellOld(collectionView: collectionView, respone: respone, indexPath: indexPath)
+                return cell
+            }
         }
+        
+        return dataSource
     }
     
     func makeNatureDataSource() -> UICollectionViewDiffableDataSource<Section, Results> {
         
-        return UICollectionViewDiffableDataSource<Section, Results>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
-            let cell = self.configureTopicCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
-            return cell
+        if #available(iOS 14.0, *) {
+            let cellRegistration = UICollectionView.CellRegistration<PhotoListCollectionViewCell, Results> { (cell, indexPath, respone) in
+                self.configureTopicCell(cell: cell, respone: respone, indexPath: indexPath)
+            }
+            
+            return UICollectionViewDiffableDataSource<Section, Results>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+                return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: respone)
+            }
+        } else {
+            natureDataSource = UICollectionViewDiffableDataSource<Section, Results>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+                let cell = self.configureTopicCellOld(collectionView: collectionView, respone: respone, indexPath: indexPath)
+                return cell
+            }
         }
+        
     }
     
     func makeWallpapersDataSource() -> UICollectionViewDiffableDataSource<Section, Results> {
-
-        return UICollectionViewDiffableDataSource<Section, Results>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
-            let cell = self.configureTopicCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
-            return cell
+        
+        if #available(iOS 14.0, *) {
+            let cellRegistration = UICollectionView.CellRegistration<PhotoListCollectionViewCell, Results> { (cell, indexPath, respone) in
+                self.configureTopicCell(cell: cell, respone: respone, indexPath: indexPath)
+            }
+            
+            return UICollectionViewDiffableDataSource<Section, Results>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+                return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: respone)
+            }
+        } else {
+            wallpapersDataSource = UICollectionViewDiffableDataSource<Section, Results>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+                let cell = self.configureTopicCellOld(collectionView: collectionView, respone: respone, indexPath: indexPath)
+                return cell
+            }
         }
     }
     
     func makeCollectionDataSource() -> UICollectionViewDiffableDataSource<Section, CollectionResponse> {
         
+        let cellRegistration = UICollectionView.CellRegistration<PhotoListCollectionViewCell, CollectionResponse> { (cell, indexPath, respone) in
+            let _ = self.configureCollectionCell(collectionView: self.collectionView, respone: respone, indexPath: indexPath)
+        }
+        
         return UICollectionViewDiffableDataSource<Section, CollectionResponse>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
-            let cell = self.configureCollectionCell(collectionView: collectionView, respone: respone, indexPath: indexPath)
-            return cell
+            return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: respone)
         }
     }
     
@@ -376,25 +426,20 @@ extension PhotoListView {
         switch section {
             case .random:
                 var snapshot = NSDiffableDataSourceSnapshot<Section, Response>()
-                dataSource = getDatasource()
-                
                 //Append available sections
                 Section.allCases.forEach { snapshot.appendSections([$0]) }
+                dataSource.apply(snapshot, animatingDifferences: false)
+                //dataSource = getDatasource()
                 
                 //Append annotations to their corresponding sections
-              
                 viewModel.respone.value?.forEach { (respone) in
                     snapshot.appendItems([respone], toSection: .main)
                 }
-                
-                UIView.performWithoutAnimation {
-                    //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
-                    DispatchQueue.main.async {
-                        //self.collectionView.setNeedsLayout()
-                        self.dataSource.apply(snapshot, animatingDifferences: false)
-                        self.collectionView.layoutIfNeeded()
-                        self.reloadCollectionData()
-                    }
+
+                UIView.animate(withDuration: 0.2, delay: 0, options: UIView.AnimationOptions.curveLinear) {
+                    self.dataSource.reloadData(snapshot: snapshot)
+                } completion: { success in
+                    self.reloadCollectionData()
                 }
              
             case .nature:
@@ -415,16 +460,12 @@ extension PhotoListView {
                     snapshot.appendItems([result], toSection: .main)
                 }
                 
-                UIView.performWithoutAnimation {
-                    //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
-                    DispatchQueue.main.async {
-                        //self.collectionView.setNeedsLayout()
-                        self.natureDataSource.apply(snapshot, animatingDifferences: false)
-                        self.collectionView.layoutIfNeeded()
-                        self.reloadCollectionData()
-                    }
+                UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
+                    self.natureDataSource.reloadData(snapshot: snapshot)
+                } completion: { success in
+                    self.reloadCollectionData()
                 }
-                
+
             case .wallpapers:
                 var snapshot = NSDiffableDataSourceSnapshot<Section, Results>()
                 wallpapersDataSource.apply(snapshot, animatingDifferences: false)
@@ -443,14 +484,10 @@ extension PhotoListView {
                     snapshot.appendItems([result], toSection: .main)
                 }
                 
-                UIView.performWithoutAnimation {
-                    //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
-                    DispatchQueue.main.async {
-                        //self.collectionView.setNeedsLayout()
-                        self.wallpapersDataSource.apply(snapshot, animatingDifferences: false)
-                        self.collectionView.layoutIfNeeded()
-                        self.reloadCollectionData()
-                    }
+                UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
+                    self.wallpapersDataSource.reloadData(snapshot: snapshot)
+                } completion: { success in
+                    self.reloadCollectionData()
                 }
                 
             case .collections:
@@ -509,6 +546,40 @@ extension PhotoListView: UICollectionViewDataSourcePrefetching {
                         imageLoadQueue?.addOperation(imageLoadOperation)
                         imageLoadOperations?[indexPath] = imageLoadOperation
                     }
+                    
+                   /* if section == .random {
+                        let res = viewModel.respone.value
+                        let height = res?[indexPath.row].height
+                        let width = res?[indexPath.row].width
+                        
+                        if let safeHeight = height, let safeWidth = width {
+                            
+                            if safeHeight > safeWidth {
+                                imageHeightDictionary?[indexPath] = "v"
+                            } else {
+                                imageHeightDictionary?[indexPath] = "h"
+                            }
+                            
+                        } else {
+                            imageHeightDictionary?[indexPath] = "h"
+                        }
+                    } else {
+                        let res = viewModel.searchRespone.value
+                        let height = res?.results[indexPath.row].height
+                        let width = res?.results[indexPath.row].width
+                        
+                        if let safeHeight = height, let safeWidth = width {
+                            
+                            if safeHeight > safeWidth {
+                                imageHeightDictionary?[indexPath] = "v"
+                            } else {
+                                imageHeightDictionary?[indexPath] = "h"
+                            }
+                            
+                        } else {
+                            imageHeightDictionary?[indexPath] = "h"
+                        }
+                    }*/
                 }
 
             case .nature, .wallpapers:
@@ -566,8 +637,8 @@ extension PhotoListView: UICollectionViewDataSource {
         guard let res = viewModel.respone.value else {
           return UICollectionViewCell()
         }
-        
-        guard let cell = self.configureCell(collectionView: collectionView, respone: res[indexPath.row], indexPath: indexPath) else {
+
+        guard let cell = self.configureCellOld(collectionView: collectionView, respone: res[indexPath.row], indexPath: indexPath) else {
             return UICollectionViewCell()
         }
         return cell
@@ -653,7 +724,7 @@ extension PhotoListView: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
-        let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
+        //let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
         let preloadElement = collectionView.numberOfItems(inSection: indexPath.section) - 3
         
         if !viewModel.isLoading.value && indexPath.row == preloadElement {
@@ -664,7 +735,7 @@ extension PhotoListView: UICollectionViewDelegate {
             }
         }
         
-        if !viewModel.isLoading.value && indexPath.row == lastElement {
+        if !viewModel.isLoading.value && indexPath.row == preloadElement {
             let theAttributes = collectionView.layoutAttributesForItem(at: indexPath)
             endRect = theAttributes?.frame ?? CGRect.zero
         }
@@ -685,7 +756,10 @@ extension PhotoListView: UICollectionViewDelegate {
 //            self.collectionView.collectionViewLayout.invalidateLayout(with: context)
 //            self.collectionView.layoutIfNeeded()
 
-        collectionView.scrollRectToVisible(endRect, animated: false)
+        UIView.performWithoutAnimation {
+            collectionView.scrollRectToVisible(endRect, animated: false)
+        }
+        
 
     }
 }
@@ -719,7 +793,33 @@ extension PhotoListView {
 // MARK: - Private
 extension PhotoListView {
     
-    func configureCell(collectionView: UICollectionView, respone: Response, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
+    func configureCell(cell: PhotoListCollectionViewCell, respone: Response, indexPath: IndexPath) {
+       
+        cell.titleLabel.text = respone.user?.name
+        
+        if let loader = imageLoadOperations?[indexPath] {
+            cell.isLoading(isLoading: true)
+            if let image = loader.image {
+                cell.isLoading(isLoading: false)
+                cell.showImage(image: image)
+            } else {
+                cell.isLoading(isLoading: true)
+                loader.completionHandler = { [weak cell] image in
+                    cell?.isLoading(isLoading: false)
+                    cell?.showImage(image: image)
+                }
+            }
+        } else {
+            if let url = URL(string: respone.urls.small) {
+                let imageLoadOperation = ImageLoadOperation(imgUrl: url)
+                imageLoadQueue?.addOperation(imageLoadOperation)
+                imageLoadOperations?[indexPath] = imageLoadOperation
+                cell.configureImage(with: url)
+            }
+        }
+    }
+    
+    func configureCellOld(collectionView: UICollectionView, respone: Response, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier, for: indexPath) as? PhotoListCollectionViewCell
         
         cell?.titleLabel.text = respone.user?.name
@@ -747,8 +847,49 @@ extension PhotoListView {
         
         return cell
     }
+    
+    func configureTopicCell(cell: PhotoListCollectionViewCell, respone: Results, indexPath: IndexPath) {
+        
+        if section == .nature {
+            
+            cell.titleLabel.text = "Nature"
+            
+            
+        }else if section == .wallpapers {
+            
+            cell.titleLabel.text = "Wallpapers"
+        }
+      
+        
+        if let loader = imageLoadOperations?[indexPath] {
+            cell.isLoading(isLoading: true)
+            if let image = loader.image {
+                cell.isLoading(isLoading: false)
+                cell.showImage(image: image)
+            } else {
+                cell.isLoading(isLoading: true)
+                loader.completionHandler = { [weak cell] image in
+                    cell?.isLoading(isLoading: false)
+                    cell?.showImage(image: image)
+                }
+            }
+        } else {
+            
+            guard let urls = respone.urls else {
+                return
+            }
+            
+            if let url = URL(string: urls.small) {
+                let imageLoadOperation = ImageLoadOperation(imgUrl: url)
+                imageLoadQueue?.addOperation(imageLoadOperation)
+                imageLoadOperations?[indexPath] = imageLoadOperation
+                cell.configureImage(with: url)
+            }
+        }
+
+    }
    
-    func configureTopicCell(collectionView: UICollectionView, respone: Results, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
+    func configureTopicCellOld(collectionView: UICollectionView, respone: Results, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier, for: indexPath) as? PhotoListCollectionViewCell
         
         if section == .nature {

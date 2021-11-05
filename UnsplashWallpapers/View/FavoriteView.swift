@@ -200,12 +200,7 @@ extension FavoriteView: UITableViewDelegate {
         }
         
         // Apply `newSnapshot` to data source so that the changes will be reflected in the collection view.
-        if #available(iOS 15.0, *) {
-            dataSource.applySnapshotUsingReloadData(newSnapshot)
-        } else {
-            // Fallback on earlier versions
-            dataSource.apply(newSnapshot)
-        }
+        dataSource.reloadData(snapshot: newSnapshot)
         
         if favoriteManager.favorites.value.contains(photoInfo) {
             favoriteManager.favorites.value.remove(photoInfo)

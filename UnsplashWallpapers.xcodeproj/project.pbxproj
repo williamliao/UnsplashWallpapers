@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C80657DA2733C6BB0068E38B /* DiffableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C80657D92733C6BB0068E38B /* DiffableDataSource.swift */; };
 		C8284D7D264B69420032B7D3 /* UnsplashApiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8284D7C264B69420032B7D3 /* UnsplashApiTests.swift */; };
 		C8325C4326D5ED60008A16D7 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8325C4226D5ED60008A16D7 /* SettingViewController.swift */; };
 		C8325C4826D5ED77008A16D7 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8325C4726D5ED77008A16D7 /* SettingView.swift */; };
@@ -146,6 +147,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C80657D92733C6BB0068E38B /* DiffableDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffableDataSource.swift; sourceTree = "<group>"; };
 		C8284D7C264B69420032B7D3 /* UnsplashApiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsplashApiTests.swift; sourceTree = "<group>"; };
 		C8325C4226D5ED60008A16D7 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		C8325C4726D5ED77008A16D7 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
@@ -483,6 +485,7 @@
 				C8CA07BD26450A4E000FEB03 /* NetworkConnectivityManager.swift */,
 				C8D36F68272A836E006F2614 /* imageText.swift */,
 				C890C77827321CAA00945A19 /* ThemeManager.swift */,
+				C80657D92733C6BB0068E38B /* DiffableDataSource.swift */,
 			);
 			path = Share;
 			sourceTree = "<group>";
@@ -677,6 +680,7 @@
 				C89C8F452648C60D00BA8E10 /* URLProtocolMock.swift in Sources */,
 				C8AE36EB26390C5300AF57C4 /* UserProfileHeaderView.swift in Sources */,
 				C8AC4700263A50D500178411 /* UserCollectionRespone.swift in Sources */,
+				C80657DA2733C6BB0068E38B /* DiffableDataSource.swift in Sources */,
 				C89A72BB26034DF3003E188F /* User.swift in Sources */,
 				C89A725626034972003E188F /* PhotoListView.swift in Sources */,
 				C8BF2ABB2636994500BE7C51 /* Current_user_contributions.swift in Sources */,
