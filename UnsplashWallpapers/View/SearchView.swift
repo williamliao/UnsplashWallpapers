@@ -219,17 +219,13 @@ extension SearchView {
             snapshot.appendItems([result], toSection: .main)
         }
         
-        UIView.performWithoutAnimation {
-            //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
-            DispatchQueue.main.async {
-                dataSource.apply(snapshot, animatingDifferences: false)
-                self.collectionView.layoutIfNeeded()
-                self.reloadCollectionData()
-                
-                if let count = self.viewModel.searchRespone.value?.results.count {
-                    if count > 0 {
-                        self.searchResultsView.isHidden = true
-                    }
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
+            dataSource.reloadData(snapshot: snapshot)
+            self.reloadCollectionData()
+        } completion: { success in
+            if let count = self.viewModel.searchRespone.value?.results.count {
+                if count > 0 {
+                    self.searchResultsView.isHidden = true
                 }
             }
         }
@@ -496,22 +492,6 @@ extension SearchView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
         let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
-        if viewModel.category == .users {
-            
-            firstEnter = false
-            
-//            guard let total = viewModel.searchRespone.value?.total else {
-//                return
-//            }
-//
-//            if lastElement <= total {
-//                return
-//            }
-        }
-        
-        if (firstEnter) {
-            return
-        }
 
         if !viewModel.isLoading.value && indexPath.row == lastElement {
             

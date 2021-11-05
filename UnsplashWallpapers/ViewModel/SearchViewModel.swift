@@ -205,18 +205,17 @@ extension SearchViewModel {
                         guard var new = self?.searchRespone.value  else {
                             return
                         }
-                        
-    //                    if new.results.count == respone.results.count {
-    //                       self?.canFetchMore = false
-    //                        return
-    //                    }
-                        
+                  
                         new.total = respone.total
                         new.total_pages = respone.total_pages
-                        for index in 0...respone.results.count - 1 {
-                            if !new.results.contains(respone.results[index]) {
-                                new.results.append(respone.results[index])
+                        if (respone.results.count > 0) {
+                            for index in 0...respone.results.count - 1 {
+                                if !new.results.contains(respone.results[index]) {
+                                    new.results.append(respone.results[index])
+                                }
                             }
+                        } else {
+                            self?.canFetchMore = false
                         }
                         
                         self?.searchRespone.value = new

@@ -452,8 +452,9 @@ extension PhotoListView {
                 
                 UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
                     self.natureDataSource.reloadData(snapshot: snapshot)
-                } completion: { success in
                     self.reloadCollectionData()
+                } completion: { success in
+                    
                 }
 
             case .wallpapers:
@@ -476,8 +477,9 @@ extension PhotoListView {
                 
                 UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
                     self.wallpapersDataSource.reloadData(snapshot: snapshot)
-                } completion: { success in
                     self.reloadCollectionData()
+                } completion: { success in
+                    
                 }
                 
             case .collections:
@@ -496,17 +498,13 @@ extension PhotoListView {
                 collections.forEach { (collection) in
                     snapshot.appendItems([collection], toSection: .main)
                 }
+            
+                UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
+                    self.collectionDataSource.reloadData(snapshot: snapshot)
+                    self.reloadCollectionData()
+                } completion: { success in
                 
-                UIView.performWithoutAnimation {
-                    //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
-                    DispatchQueue.main.async {
-                        //self.collectionView.setNeedsLayout()
-                        self.collectionDataSource.apply(snapshot, animatingDifferences: false)
-                        self.collectionView.layoutIfNeeded()
-                        self.reloadCollectionData()
-                    }
-                }
-                
+            }
         }
     }
     

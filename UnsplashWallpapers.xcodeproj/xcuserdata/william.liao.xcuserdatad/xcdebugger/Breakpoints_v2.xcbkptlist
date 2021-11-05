@@ -302,8 +302,8 @@
             filePath = "UnsplashWallpapers/View/SearchView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "387"
-            endingLineNumber = "387"
+            startingLineNumber = "383"
+            endingLineNumber = "383"
             landmarkName = "searchBar(_:textDidChange:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -430,8 +430,8 @@
             filePath = "UnsplashWallpapers/View/PhotoListView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "562"
-            endingLineNumber = "562"
+            startingLineNumber = "560"
+            endingLineNumber = "560"
             landmarkName = "collectionView(_:prefetchItemsAt:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -446,8 +446,8 @@
             filePath = "UnsplashWallpapers/View/PhotoListView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "803"
-            endingLineNumber = "803"
+            startingLineNumber = "801"
+            endingLineNumber = "801"
             landmarkName = "configureCell(cell:respone:indexPath:)"
             landmarkType = "7">
          </BreakpointContent>
