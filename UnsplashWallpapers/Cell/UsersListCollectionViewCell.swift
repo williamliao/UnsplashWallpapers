@@ -18,7 +18,6 @@ class UsersListCollectionViewCell: UICollectionViewCell {
     var avatarImageView: UIImageView!
 
     private let downloader = ImageCombineDownloader()
-    private var animator: UIViewPropertyAnimator?
     private var isHeightCalculated: Bool = false
     private var act = UIActivityIndicatorView(style: .large)
     
@@ -112,7 +111,6 @@ extension UsersListCollectionViewCell {
     
     private func showImage(image: UIImage?) {
         DispatchQueue.main.async {
-            self.avatarImageView.alpha = 0.0
 
             guard let image = image else {
                 return
@@ -120,10 +118,6 @@ extension UsersListCollectionViewCell {
 
             self.avatarImageView.image = image
             self.avatarImageView.layer.cornerRadius = image.size.height/2
-            
-            self.animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: [.curveEaseOut, .transitionCrossDissolve], animations: {
-                self.avatarImageView.alpha = 1.0
-            })
         }
     }
     
@@ -139,8 +133,6 @@ extension UsersListCollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         avatarImageView.image = nil
-        avatarImageView.alpha = 0.0
-        animator?.stopAnimation(true)
         downloader.cancel()
     }
     

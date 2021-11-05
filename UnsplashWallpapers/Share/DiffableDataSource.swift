@@ -50,3 +50,15 @@ extension UITableViewDiffableDataSource {
         }
     }
 }
+
+extension UICollectionView.CellRegistration {
+    var cellProvider: (UICollectionView, IndexPath, Item) -> Cell {
+        return { collectionView, indexPath, product in
+            collectionView.dequeueConfiguredReusableCell(
+                using: self,
+                for: indexPath,
+                item: product
+            )
+        }
+    }
+}

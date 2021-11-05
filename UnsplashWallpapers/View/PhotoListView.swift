@@ -102,6 +102,7 @@ extension PhotoListView {
         
         if #available(iOS 10.0, *) {
             collectionView.prefetchDataSource = self
+            collectionView.isPrefetchingEnabled = true
             imageLoadQueue = OperationQueue()
             imageLoadOperations = [IndexPath: ImageLoadOperation]()
         }
@@ -361,7 +362,6 @@ extension PhotoListView {
                 }
             }
             
-
         } else {
             dataSource = UICollectionViewDiffableDataSource<Section, Response>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
                 let cell = self.configureCellOld(collectionView: collectionView, respone: respone, indexPath: indexPath)
@@ -425,23 +425,13 @@ extension PhotoListView {
         
         switch section {
             case .random:
-                var snapshot = NSDiffableDataSourceSnapshot<Section, Response>()
-                //Append available sections
-                Section.allCases.forEach { snapshot.appendSections([$0]) }
-                dataSource.apply(snapshot, animatingDifferences: false)
-                //dataSource = getDatasource()
+            
+                guard let respone = viewModel.respone.value else {
+                    return
+                }
                 
-                //Append annotations to their corresponding sections
-                viewModel.respone.value?.forEach { (respone) in
-                    snapshot.appendItems([respone], toSection: .main)
-                }
+                self.randomPhotoDidLoad(respone)
 
-                UIView.animate(withDuration: 0.2, delay: 0, options: UIView.AnimationOptions.curveLinear) {
-                    self.dataSource.reloadData(snapshot: snapshot)
-                } completion: { success in
-                    self.reloadCollectionData()
-                }
-             
             case .nature:
                 var snapshot = NSDiffableDataSourceSnapshot<Section, Results>()
                 natureDataSource.apply(snapshot, animatingDifferences: false)
@@ -517,6 +507,21 @@ extension PhotoListView {
                     }
                 }
                 
+        }
+    }
+    
+    func randomPhotoDidLoad(_ image: [Response]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Response>()
+        Section.allCases.forEach { snapshot.appendSections([$0]) }
+        dataSource.apply(snapshot, animatingDifferences: false)
+
+        snapshot.appendItems(image, toSection: .main)
+
+        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
+            self.dataSource.reloadData(snapshot: snapshot)
+            self.reloadCollectionData()
+        } completion: { success in
+
         }
     }
 }

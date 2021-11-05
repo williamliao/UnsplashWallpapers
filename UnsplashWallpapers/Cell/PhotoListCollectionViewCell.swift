@@ -18,7 +18,6 @@ class PhotoListCollectionViewCell: UICollectionViewCell {
     var blurEffectView : UIVisualEffectView!
     
     private let downloader = ImageCombineDownloader()
-    private var animator: UIViewPropertyAnimator?
     private var act = UIActivityIndicatorView(style: .large)
 
     var isHeightCalculated: Bool = false
@@ -125,19 +124,13 @@ extension PhotoListCollectionViewCell {
     
     func showImage(image: UIImage?) {
         DispatchQueue.main.async {
-            self.thumbnailImageView.alpha = 0.0
-
+           
             guard let image = image else {
                 return
             }
             
             //let resizeImage = self.resizedImage(at: image, for: CGSize(width: UIScreen.main.bounds.size.width, height: image.size.height))
             self.thumbnailImageView.image = image
-            
-            self.animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: [.curveEaseOut, .transitionCrossDissolve], animations: {
-                self.thumbnailImageView.alpha = 1.0
-                
-            })
         }
     }
     
@@ -167,8 +160,6 @@ extension PhotoListCollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         thumbnailImageView.image = nil
-        thumbnailImageView.alpha = 0.0
-        animator?.stopAnimation(true)
         downloader.cancel()
     }
     
