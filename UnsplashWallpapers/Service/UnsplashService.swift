@@ -138,36 +138,3 @@ extension UnsplashService {
         self.mock(method: .get, completion: completion)
     }
 }
-
-extension UnsplashService {
-    
-    func createSearchEndpoint(query: String, page: NSInteger, perPage: NSInteger = 10) {
-        var components = URLComponents()
-        components.scheme = UnsplashAPI.scheme
-        components.host = UnsplashAPI.host
-          components.path = "/search/photos"
-        
-        //print("prepareURLComponents \(page)")
-        
-        components.queryItems = [
-            URLQueryItem(name: "query", value: query),
-            URLQueryItem(name: "per_page", value: String(perPage)),
-            URLQueryItem(name: "page", value: String(page)),
-            URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey)
-        ]
-    }
-    
-    func createCollectionEndpoint(identifier: String) {
-        var components = URLComponents()
-        components.scheme = UnsplashAPI.scheme
-        components.host = UnsplashAPI.host
-          components.path = "/search/photos"
-        
-        components.queryItems = [
-            URLQueryItem(name: "identifier", value: identifier),
-            URLQueryItem(name: "per_page", value: "20"),
-            URLQueryItem(name: "page", value: "1"),
-            URLQueryItem(name: "client_id", value: UnsplashAPI.accessKey)
-        ]
-    }
-}
