@@ -34,8 +34,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 themeValue = ThemeManager.Theme.init(rawValue: 2)
         }
 
-        //UserDefaults.standard.setValue(themeValue?.rawValue, forKey: SelectedThemeKey)
-        //UserDefaults.standard.synchronize()
+        UserDefaults.standard.setValue(themeValue?.rawValue, forKey: SelectedThemeKey)
+        UserDefaults.standard.synchronize()
         ThemeManager.applyTheme(theme: themeValue!)
         
         if ((UserDefaults.standard.object(forKey: SelectedThemeKey) == nil)) {
