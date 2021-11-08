@@ -12,7 +12,7 @@ import Combine
 public final class ImageLoader {
     public static let shared = ImageLoader()
 
-    private let urlSession: URLSession
+    private var urlSession: URLSession = .shared
     private let cache: ImageCacheType
     private lazy var backgroundQueue: OperationQueue = {
         let queue = OperationQueue()
@@ -47,12 +47,13 @@ public final class ImageLoader {
     func publisher(for url: URL) -> AnyPublisher<UIImage, Error> {
         
         guard url.scheme == "https" else {
-            return Fail(error: URLError(.badURL, userInfo: [
-                NSLocalizedFailureReasonErrorKey: """
-                Image loading may only be performed over HTTPS
-                """,
-                NSURLErrorFailingURLErrorKey: url
-            ]))
+//            return Fail(error: URLError(.badURL, userInfo: [
+//                NSLocalizedFailureReasonErrorKey: """
+//                Image loading may only be performed over HTTPS
+//                """,
+//                NSURLErrorFailingURLErrorKey: url
+//            ]))
+            return Fail(error: ServerError.badURL)
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
         }
@@ -64,15 +65,33 @@ public final class ImageLoader {
                     .eraseToAnyPublisher()
         } else {
             return urlSession.dataTaskPublisher(for: url)
-                .map(\.data)
-                .tryMap { data in
-                    guard let image = UIImage(data: data) else {
-                        throw URLError(.badServerResponse, userInfo: [
-                            NSURLErrorFailingURLErrorKey: url
-                        ])
-                    }
-                    return image
+                
+//                .tryMap { data in
+//                    guard let image = UIImage(data: data) else {
+//                        throw URLError(.badServerResponse, userInfo: [
+//                            NSURLErrorFailingURLErrorKey: url
+//                        ])
+//                    }
+//                    return image
+//                }
+                .tryMap { response -> Data in
+                  guard
+                    let httpURLResponse = response.response as? HTTPURLResponse,
+                    httpURLResponse.statusCode == 200
+                    else {
+                        let httpURLResponse = response.response as? HTTPURLResponse
+                        throw ServerError.statusCode(httpURLResponse?.statusCode ?? 500)
+                  }
+                  
+                  return response.data
                 }
+                .tryMap { data -> UIImage in
+                  guard let image = UIImage(data: data) else {
+                    throw ServerError.invalidImage
+                  }
+                  return image
+                }
+                .mapError { ServerError.map($0) }
                 .handleEvents(receiveOutput: {[weak self] image in
                     self?.cache[url] = image
                 })

@@ -16,6 +16,7 @@ public enum APIResult<T, U> where U: Error  {
 public enum ServerError: Error {
     case encounteredError(Error)
     case statusCodeError(Error)
+    case statusCode(NSInteger)
     case badRequest
     case forbidden
     case notFound
@@ -27,7 +28,12 @@ public enum ServerError: Error {
     case badURL
     case badData
     case invalidURL
+    case invalidImage
     case noHTTPResponse
+    
+    static func map(_ error: Error) -> ServerError {
+        return (error as? ServerError) ?? .encounteredError(error)
+    }
     
     var localizedDescription: String {
         switch self {
@@ -55,8 +61,12 @@ public enum ServerError: Error {
             return NSLocalizedString("badData", comment: "")
         case .statusCodeError(let error):
             return NSLocalizedString("statusCodeError:\(error.localizedDescription)", comment: "")
+        case .statusCode(let code):
+            return NSLocalizedString("statusCode:\(code)", comment: "")
         case .invalidURL:
             return NSLocalizedString("invalidURL", comment: "")
+        case .invalidImage:
+            return NSLocalizedString("invalidImage", comment: "")
         case .noHTTPResponse:
             return NSLocalizedString("noHTTPResponse", comment: "")
         }
