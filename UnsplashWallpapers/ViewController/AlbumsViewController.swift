@@ -35,67 +35,87 @@ class AlbumsViewController: UIViewController {
          
         ])
        
-        //startDownload()
+        viewModel.featuredAlbumsRespone.bind { [weak self] (_) in
+            
+            DispatchQueue.main.async {
+                self?.albumsView.configureDataSource()
+            }
+            
+        }
+        
+        viewModel.allAlbumsRespone.bind { [weak self] (_) in
+            
+            DispatchQueue.main.async {
+                self?.albumsView.configureDataSource()
+            }
+            
+        }
+        
+        viewModel.sharedAlbumsRespone.bind { [weak self] (_) in
+            
+            DispatchQueue.main.async {
+                self?.albumsView.configureDataSource()
+            }
+            
+        }
+        
+        multipleAsyncOperations()
+        
     }
     
-    func startDownload() {
+    func multipleAsyncOperations() {
+        
         if #available(iOS 15.0.0, *) {
             Task {
                 try await downloadWithMultipleSource(images: 0)
                 try await downloadWithMultipleSource(images: 1)
                 try await downloadWithMultipleSource(images: 2)
             }
-            
         } else {
             // Fallback on earlier versions
-            multipleAsyncOperations()
-        }
-    }
-    
-    func multipleAsyncOperations() {
-        let group = DispatchGroup()
-        
-        let apiGroup = [0, 1, 2]
-        
-        
-        for url in apiGroup {
+            let group = DispatchGroup()
             
-            group.enter()
+            let apiGroup = [0, 1, 2]
             
-            if url == 0 {
-                self.viewModel.getFeaturedAlbums { (success) in
-                    group.leave()
+            for url in apiGroup {
+                
+                group.enter()
+                
+                if url == 0 {
+                    self.viewModel.getFeaturedAlbums { (success) in
+                        group.leave()
+                    }
+                    
+                } else if url == 1 {
+                    self.viewModel.getSharedAlbums { (success) in
+                        group.leave()
+                    }
+
+                } else {
+                    self.viewModel.getAllAlbums { (success) in
+                        group.leave()
+                    }
+
                 }
                 
-            } else if url == 1 {
-                self.viewModel.getSharedAlbums { (success) in
-                    group.leave()
-                }
-
-            } else {
-                self.viewModel.getAllAlbums { (success) in
-                    group.leave()
-                }
-
             }
             
-        }
-        
-        group.notify(queue: .main) { [weak self] in
+            group.notify(queue: .main) { [weak self] in
 
-            self?.viewModel.featuredAlbumsRespone.bind { [weak self] (_) in
+                self?.viewModel.featuredAlbumsRespone.bind { [weak self] (_) in
 
-                self?.albumsView.configureDataSource()
-            }
+                    self?.albumsView.configureDataSource()
+                }
 
-            self?.viewModel.allAlbumsRespone.bind { [weak self] (_) in
+                self?.viewModel.allAlbumsRespone.bind { [weak self] (_) in
 
-                self?.albumsView.configureDataSource()
-            }
-            
-            self?.viewModel.sharedAlbumsRespone.bind { [weak self] (_) in
+                    self?.albumsView.configureDataSource()
+                }
                 
-                self?.albumsView.configureDataSource()
+                self?.viewModel.sharedAlbumsRespone.bind { [weak self] (_) in
+                    
+                    self?.albumsView.configureDataSource()
+                }
             }
         }
     }
@@ -104,28 +124,19 @@ class AlbumsViewController: UIViewController {
     func downloadAll(imageNumber: Int) async throws -> Bool {
         
         if imageNumber == 0 {
-            async let _ = self.viewModel.getFeaturedAlbums { [weak self] (success) in
-                self?.viewModel.featuredAlbumsRespone.bind { [weak self] (_) in
-
-                    self?.albumsView.configureDataSource()
-                }
+            self.viewModel.getFeaturedAlbums {  (success) in
+                
             }
             
         } else if imageNumber == 1 {
-            async let _ = self.viewModel.getSharedAlbums { [weak self] (success) in
-                self?.viewModel.allAlbumsRespone.bind { [weak self] (_) in
-
-                    self?.albumsView.configureDataSource()
-                }
+            self.viewModel.getSharedAlbums {  (success) in
+                
             }
 
         } else {
            
-            async let _ = self.viewModel.getAllAlbums { [weak self] (success) in
-                self?.viewModel.sharedAlbumsRespone.bind { [weak self] (_) in
-                    
-                    self?.albumsView.configureDataSource()
-                }
+            self.viewModel.getAllAlbums { (success) in
+                
             }
 
         }
@@ -141,11 +152,13 @@ class AlbumsViewController: UIViewController {
             for image in images {
                 group.addTask {
                     async let image = self.downloadAll(imageNumber: image)
+                    
                     return try await image
                 }
             }
             for try await image in group {
                 imagesMetadata += [image]
+                
             }
         })
     }

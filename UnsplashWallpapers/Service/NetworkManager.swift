@@ -497,6 +497,30 @@ class NetworkManager {
         task.resume()
     }
     
+    @available(iOS 15.0.0, *)
+    func createConcurrencyRequestWithURL<T: Decodable>(url: URL, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+        let mutableRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: timeoutInterval)
+        
+        Task {
+            let task = try await decodingTaskWithConcurrency(with: mutableRequest, decodingType: T.self) { (json , error) in
+                
+                DispatchQueue.main.async {
+                    guard let json = json else {
+                        if let error = error {
+                            completion(APIResult.failure(error))
+                        }
+                        return
+                    }
+
+                    if let value = decode(json) {
+                        completion(.success(value))
+                    }
+                }
+            }
+            task?.resume()
+        }
+    }
+    
     func createRequestWithURL<T: Decodable>(url: URL, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
         let mutableRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: timeoutInterval)
         

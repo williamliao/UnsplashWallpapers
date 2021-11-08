@@ -30,6 +30,7 @@ class AlbumsViewModel {
     
 }
 
+// MARK: - Public
 extension AlbumsViewModel {
     
     func getAllAlbums(completionHandler: @escaping (Bool) -> Void) {
@@ -42,71 +43,44 @@ extension AlbumsViewModel {
         
         isLoading.value = true
         
-        service.search(pageRequest: unsplashAllPagedRequest) { (result) in
-            self.isLoading.value = false
-            switch result {
-                case .success(let respone):
-                    
-                    for index in 0...respone.results.count - 1 {
+        if #available(iOS 15.0.0, *) {
+            service.searchWithConcurrency(pageRequest: unsplashAllPagedRequest) { (result) in
+                self.isLoading.value = false
+                switch result {
+                    case .success(let respone):
                         
-                        var albumDetailItems:[AlbumDetailItem] = [AlbumDetailItem]()
+                        self.handleAllRespone(respone: respone)
                         
-                        guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name, let profile = respone.results[index].user?.profile_image, let owner = respone.results[index].user?.profile_image.small  else {
-                            return
-                        }
+                        completionHandler(true)
+            
+                    case .failure(let error):
                         
+                        self.handleError(error: error)
                         
-                        guard let preview_photos = respone.results[index].preview_photos  else {
-                            return
-                        }
+                        completionHandler(false)
+                }
+            }
+        } else {
+            service.search(pageRequest: unsplashAllPagedRequest) { (result) in
+                self.isLoading.value = false
+                switch result {
+                    case .success(let respone):
                         
-                        for index in 0...preview_photos.count - 1 {
-                            
-                            guard let detailItemUrl = URL(string: preview_photos[index].urls.small)  else {
-                                return
-                            }
-                            
-                            let albumDetailItem = AlbumDetailItem(identifier: preview_photos[index].id, title: title, photoURL: detailItemUrl, thumbnailURL: detailItemUrl, profile_image: profile, urls: preview_photos[index].urls)
-                            
-                            if !albumDetailItems.contains(albumDetailItem) {
-                                albumDetailItems.append(albumDetailItem)
-                            }
-                            
-                        }
+                    self.handleAllRespone(respone: respone)
                         
-                        var isLandscape = false
-                        if cover_photo.width > cover_photo.height {
-                            isLandscape = true
-                        }
+                        completionHandler(true)
+            
+                    case .failure(let error):
                         
-                        guard let ownerURL = URL(string: owner) else {
-                            return
-                        }
+                    self.handleError(error: error)
                         
-                        let albumItem = AlbumItem(albumTitle: "Cats", albumURL: url, ownerTitle: title, ownerURL: ownerURL, isLandscape: isLandscape, imageItems: albumDetailItems)
-                        
-                        self.allAlbumsRespone.value.append(albumItem)
-                        
-                    }
-                    
-                    completionHandler(true)
-        
-                case .failure(let error):
-                    
-                    switch error {
-                        case .statusCodeError(let code):
-                            print(code)
-                        default:
-                            self.error.value = error
-                    }
-                    
-                    completionHandler(false)
+                        completionHandler(false)
+                }
             }
         }
     }
     
     func getFeaturedAlbums(completionHandler: @escaping (Bool) -> Void) {
-        
         
         if featureCursor == nil {
             featureCursor = Cursor(query: "nature", page: 1, perPage: 10, parameters: [:])
@@ -117,64 +91,35 @@ extension AlbumsViewModel {
         
         isLoading.value = true
         
-        service.search(pageRequest: unsplashFeaturePagedRequest) { (result) in
-            self.isLoading.value = false
-            switch result {
-                case .success(let respone):
-                    
-                    for index in 0...respone.results.count - 1 {
+        if #available(iOS 15.0.0, *) {
+            service.searchWithConcurrency(pageRequest: unsplashFeaturePagedRequest) { (result) in
+                self.isLoading.value = false
+                switch result {
+                    case .success(let respone):
                         
-                        var albumDetailItems:[AlbumDetailItem] = [AlbumDetailItem]()
+                        self.handleFeaturedRespone(respone: respone)
+                        completionHandler(true)
                         
-                        guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name, let profile = respone.results[index].user?.profile_image, let owner = respone.results[index].user?.profile_image.small  else {
-                            return
-                        }
+                    case .failure(let error):
                         
+                        self.handleError(error: error)
+                        completionHandler(false)
+                }
+            }
+        } else {
+            service.search(pageRequest: unsplashFeaturePagedRequest) { (result) in
+                self.isLoading.value = false
+                switch result {
+                    case .success(let respone):
                         
-                        guard let preview_photos = respone.results[index].preview_photos  else {
-                            return
-                        }
+                        self.handleFeaturedRespone(respone: respone)
+                        completionHandler(true)
                         
-                        for index in 0...preview_photos.count - 1 {
-                            
-                            guard let detailItemUrl = URL(string: preview_photos[index].urls.small)  else {
-                                return
-                            }
-                            
-                            let albumDetailItem = AlbumDetailItem(identifier: preview_photos[index].id , title: title, photoURL: detailItemUrl, thumbnailURL: detailItemUrl, profile_image: profile, urls: preview_photos[index].urls)
-                            
-                            if !albumDetailItems.contains(albumDetailItem) {
-                                albumDetailItems.append(albumDetailItem)
-                            }
-                            
-                        }
+                    case .failure(let error):
                         
-                        var isLandscape = false
-                        if cover_photo.width > cover_photo.height {
-                            isLandscape = true
-                        }
-                        
-                        guard let ownerURL = URL(string: owner) else {
-                            return
-                        }
-                        
-                        let albumItem = AlbumItem(albumTitle: "Nature", albumURL: url, ownerTitle: title, ownerURL: ownerURL, isLandscape: isLandscape, imageItems: albumDetailItems)
-                        
-                        self.featuredAlbumsRespone.value.append(albumItem)
-                    }
-                    
-                    completionHandler(true)
-                    
-        
-                case .failure(let error):
-                    
-                    switch error {
-                        case .statusCodeError(let code):
-                            print(code)
-                        default:
-                            self.error.value = error
-                    }
-                    completionHandler(false)
+                        self.handleError(error: error)
+                        completionHandler(false)
+                }
             }
         }
     }
@@ -189,65 +134,180 @@ extension AlbumsViewModel {
         
         isLoading.value = true
         
-        service.search(pageRequest: unsplashSharePagedRequest) { (result) in
-            self.isLoading.value = false
-            switch result {
-                case .success(let respone):
-                    
-                    for index in 0...respone.results.count - 1 {
+        if #available(iOS 15.0.0, *) {
+            service.searchWithConcurrency(pageRequest: unsplashSharePagedRequest) { (result) in
+                self.isLoading.value = false
+                switch result {
+                    case .success(let respone):
                         
-                        var albumDetailItems:[AlbumDetailItem] = [AlbumDetailItem]()
+                        self.handleShareRespone(respone: respone)
+                        completionHandler(true)
                         
-                        guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name, let profile = respone.results[index].user?.profile_image, let owner = respone.results[index].user?.profile_image.small  else {
-                            return
-                        }
+                    case .failure(let error):
                         
-                        
-                        guard let preview_photos = respone.results[index].preview_photos  else {
-                            return
-                        }
-                        
-                        for index in 0...preview_photos.count - 1 {
-                            
-                            guard let detailItemUrl = URL(string: preview_photos[index].urls.small)  else {
-                                return
-                            }
-                            
-                            let albumDetailItem = AlbumDetailItem(identifier: preview_photos[index].id, title: title, photoURL: detailItemUrl, thumbnailURL: detailItemUrl, profile_image: profile, urls: preview_photos[index].urls)
-                            
-                            if !albumDetailItems.contains(albumDetailItem) {
-                                albumDetailItems.append(albumDetailItem)
-                            }
-                            
-                        }
-                        
-                        var isLandscape = false
-                        if cover_photo.width > cover_photo.height {
-                            isLandscape = true
-                        }
-                        
-                        guard let ownerURL = URL(string: owner) else {
-                            return
-                        }
-                        
-                        let albumItem = AlbumItem(albumTitle: "Wallpapers", albumURL: url, ownerTitle: title, ownerURL: ownerURL, isLandscape: isLandscape, imageItems: albumDetailItems)
-                        
-                        self.sharedAlbumsRespone.value.append(albumItem)
-                        
-                    }
-                    completionHandler(true)
-                    
-        
-                case .failure(let error):
-                    
-                    switch error {
-                        case .statusCodeError(let code):
-                            print(code)
-                        default:
-                            self.error.value = error
-                    }
-                    completionHandler(false)
+                        self.handleError(error: error)
+                        completionHandler(false)
+                }
             }
+        } else {
+            service.search(pageRequest: unsplashSharePagedRequest) { (result) in
+                self.isLoading.value = false
+                switch result {
+                    case .success(let respone):
+                        
+                        self.handleShareRespone(respone: respone)
+                        completionHandler(true)
+                        
+                    case .failure(let error):
+                        
+                        self.handleError(error: error)
+                        completionHandler(false)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Private
+extension AlbumsViewModel {
+    
+    func handleShareRespone(respone: SearchRespone) {
+        for index in 0...respone.results.count - 1 {
+            
+            var albumDetailItems:[AlbumDetailItem] = [AlbumDetailItem]()
+            
+            guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name, let profile = respone.results[index].user?.profile_image, let owner = respone.results[index].user?.profile_image.small  else {
+                return
+            }
+            
+            
+            guard let preview_photos = respone.results[index].preview_photos  else {
+                return
+            }
+            
+            for index in 0...preview_photos.count - 1 {
+                
+                guard let detailItemUrl = URL(string: preview_photos[index].urls.small)  else {
+                    return
+                }
+                
+                let albumDetailItem = AlbumDetailItem(identifier: preview_photos[index].id, title: title, photoURL: detailItemUrl, thumbnailURL: detailItemUrl, profile_image: profile, urls: preview_photos[index].urls)
+                
+                if !albumDetailItems.contains(albumDetailItem) {
+                    albumDetailItems.append(albumDetailItem)
+                }
+                
+            }
+            
+            var isLandscape = false
+            if cover_photo.width > cover_photo.height {
+                isLandscape = true
+            }
+            
+            guard let ownerURL = URL(string: owner) else {
+                return
+            }
+            
+            let albumItem = AlbumItem(albumTitle: "Wallpapers", albumURL: url, ownerTitle: title, ownerURL: ownerURL, isLandscape: isLandscape, imageItems: albumDetailItems)
+            
+            self.sharedAlbumsRespone.value.append(albumItem)
+            
+        }
+    }
+    
+    func handleFeaturedRespone(respone: SearchRespone) {
+        for index in 0...respone.results.count - 1 {
+            
+            var albumDetailItems:[AlbumDetailItem] = [AlbumDetailItem]()
+            
+            guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name, let profile = respone.results[index].user?.profile_image, let owner = respone.results[index].user?.profile_image.small  else {
+                return
+            }
+            
+            
+            guard let preview_photos = respone.results[index].preview_photos  else {
+                return
+            }
+            
+            for index in 0...preview_photos.count - 1 {
+                
+                guard let detailItemUrl = URL(string: preview_photos[index].urls.small)  else {
+                    return
+                }
+                
+                let albumDetailItem = AlbumDetailItem(identifier: preview_photos[index].id , title: title, photoURL: detailItemUrl, thumbnailURL: detailItemUrl, profile_image: profile, urls: preview_photos[index].urls)
+                
+                if !albumDetailItems.contains(albumDetailItem) {
+                    albumDetailItems.append(albumDetailItem)
+                }
+                
+            }
+            
+            var isLandscape = false
+            if cover_photo.width > cover_photo.height {
+                isLandscape = true
+            }
+            
+            guard let ownerURL = URL(string: owner) else {
+                return
+            }
+            
+            let albumItem = AlbumItem(albumTitle: "Nature", albumURL: url, ownerTitle: title, ownerURL: ownerURL, isLandscape: isLandscape, imageItems: albumDetailItems)
+            
+            self.featuredAlbumsRespone.value.append(albumItem)
+        }
+    }
+    
+    func handleAllRespone(respone: SearchRespone) {
+        for index in 0...respone.results.count - 1 {
+            
+            var albumDetailItems:[AlbumDetailItem] = [AlbumDetailItem]()
+            
+            guard let cover_photo = respone.results[index].cover_photo , let url = URL(string: cover_photo.urls.small), let title = respone.results[index].user?.name, let profile = respone.results[index].user?.profile_image, let owner = respone.results[index].user?.profile_image.small  else {
+                return
+            }
+            
+            
+            guard let preview_photos = respone.results[index].preview_photos  else {
+                return
+            }
+            
+            for index in 0...preview_photos.count - 1 {
+                
+                guard let detailItemUrl = URL(string: preview_photos[index].urls.small)  else {
+                    return
+                }
+                
+                let albumDetailItem = AlbumDetailItem(identifier: preview_photos[index].id, title: title, photoURL: detailItemUrl, thumbnailURL: detailItemUrl, profile_image: profile, urls: preview_photos[index].urls)
+                
+                if !albumDetailItems.contains(albumDetailItem) {
+                    albumDetailItems.append(albumDetailItem)
+                }
+                
+            }
+            
+            var isLandscape = false
+            if cover_photo.width > cover_photo.height {
+                isLandscape = true
+            }
+            
+            guard let ownerURL = URL(string: owner) else {
+                return
+            }
+            
+            let albumItem = AlbumItem(albumTitle: "Cats", albumURL: url, ownerTitle: title, ownerURL: ownerURL, isLandscape: isLandscape, imageItems: albumDetailItems)
+            
+            self.allAlbumsRespone.value.append(albumItem)
+            
+        }
+    }
+    
+    func handleError(error: ServerError) {
+        switch error {
+            case .statusCodeError(let code):
+                print(code)
+            default:
+                self.error.value = error
         }
     }
     
