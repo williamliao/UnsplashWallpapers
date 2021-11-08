@@ -67,10 +67,9 @@ class AlbumsViewController: UIViewController {
         
         if #available(iOS 15.0.0, *) {
             Task {
-                try await downloadWithMultipleSource(images: 0)
-                try await downloadWithMultipleSource(images: 1)
-                try await downloadWithMultipleSource(images: 2)
+                await downloadWithMultipleSource()
             }
+            
         } else {
             // Fallback on earlier versions
             let group = DispatchGroup()
@@ -121,7 +120,7 @@ class AlbumsViewController: UIViewController {
     }
     
     @available(iOS 15.0.0, *)
-    func downloadAll(imageNumber: Int) async throws -> Bool {
+    func downloadAll(imageNumber: Int) {
         
         if imageNumber == 0 {
             self.viewModel.getFeaturedAlbums {  (success) in
@@ -141,25 +140,23 @@ class AlbumsViewController: UIViewController {
 
         }
        
-        return true
- 
     }
     
     @available(iOS 15.0.0, *)
-    func downloadWithMultipleSource(images: Int...) async throws {
-        var imagesMetadata: [Bool] = []
-        try await withThrowingTaskGroup(of: Bool.self, body: { group in
-            for image in images {
+    func downloadWithMultipleSource() async {
+        print("AlbumView Before task group")
+        
+        await withThrowingTaskGroup(of: Void.self, body: { group -> Void in
+            for i in 0...2 {
                 group.addTask {
-                    async let image = self.downloadAll(imageNumber: image)
-                    
-                    return try await image
+                    print("AlbumView Task completed")
+                    try Task.checkCancellation()
+                    await self.downloadAll(imageNumber: i)
                 }
             }
-            for try await image in group {
-                imagesMetadata += [image]
-                
-            }
+            
+            print("AlbumView For loop completed")
         })
+        print("AlbumView After task group")
     }
 }
