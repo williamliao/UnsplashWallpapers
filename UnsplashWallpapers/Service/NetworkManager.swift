@@ -349,7 +349,7 @@ class NetworkManager {
     
     // MARK: - Help Method
     
-    func fetch<T: Decodable>(method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+   /* func fetch<T: Decodable>(method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
         
         guard var request = try? createURLRequest(method: method) else {
             completion(APIResult.failure(ServerError.invalidURL))
@@ -367,7 +367,7 @@ class NetworkManager {
             }
         }
         
-        let task = decodingTask(with: request, decodingType: T.self) { (json , error) in
+        let task = decodingTaskWithConcurrency(with: request, decodingType: T.self) { (json , error) in
             
             DispatchQueue.main.async {
                 guard let json = json else {
@@ -383,86 +383,164 @@ class NetworkManager {
             }
         }
         task?.resume()
+    }*/
+    
+    func queryWithRandom<T: Decodable>(query: String, pageRequest: UnsplashPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError>  {
+        
+        let components = prepareURLComponents()
+        
+        try Task.checkCancellation()
+        return try await withCheckedThrowingContinuation({
+            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+            
+            guard let url = components?.url else {
+                continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                return
+            }
+            
+            createRequestWithURL(url: url, decode: decode) { result in
+                continuation.resume(returning: result)
+            }
+        })
+        
+        //createRequestWithURL(url: url, decode: decode, completion: completion)
     }
     
-    func queryWithRandom<T: Decodable>(query: String, pageRequest: UnsplashPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+    func query<T: Decodable>(pageRequest: UnsplashSearchPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
         let components = prepareURLComponents()
         
-        guard let url = components?.url else {
-            return
-        }
+        try Task.checkCancellation()
+        return try await withCheckedThrowingContinuation({
+            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+            
+            guard let url = components?.url else {
+                continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                return
+            }
+            
+            createRequestWithURL(url: url, decode: decode) { result in
+                continuation.resume(returning: result)
+            }
+        })
         
-        createRequestWithURL(url: url, decode: decode, completion: completion)
     }
     
-    func query<T: Decodable>(pageRequest: UnsplashSearchPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+    func topic<T: Decodable>(id: String, pageRequest: UnsplashTopicRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
         let components = prepareURLComponents()
         
-        guard let url = components?.url else {
-            return
-        }
-        
-        createRequestWithURL(url: url, decode: decode, completion: completion)
+        try Task.checkCancellation()
+        return try await withCheckedThrowingContinuation({
+            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+            
+            guard let url = components?.url else {
+                continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                return
+            }
+            
+            createRequestWithURL(url: url, decode: decode) { result in
+                continuation.resume(returning: result)
+            }
+        })
     }
     
-    func topic<T: Decodable>(id: String, pageRequest: UnsplashTopicRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+    func topicPhotos<T: Decodable>(id: String, pageRequest: UnsplashTopicRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
         let components = prepareURLComponents()
         
-        guard let url = components?.url else {
-            return
-        }
-        
-        createRequestWithURL(url: url, decode: decode, completion: completion)
+        try Task.checkCancellation()
+        return try await withCheckedThrowingContinuation({
+            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+            
+            guard let url = components?.url else {
+                continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                return
+            }
+            
+            createRequestWithURL(url: url, decode: decode) { result in
+                continuation.resume(returning: result)
+            }
+        })
     }
     
-    func topicPhotos<T: Decodable>(id: String, pageRequest: UnsplashTopicRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+    func get_Collection<T: Decodable>(pageRequest: UnsplashCollectionRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
         let components = prepareURLComponents()
         
-        guard let url = components?.url else {
-            return
-        }
-        
-        createRequestWithURL(url: url, decode: decode, completion: completion)
+        try Task.checkCancellation()
+        return try await withCheckedThrowingContinuation({
+            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+            
+            guard let url = components?.url else {
+                continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                return
+            }
+            
+            createRequestWithURL(url: url, decode: decode) { result in
+                continuation.resume(returning: result)
+            }
+        })
     }
     
-    func get_Collection<T: Decodable>(pageRequest: UnsplashCollectionRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+    func listUserData<T: Decodable>(pageRequest: UnsplashUserListRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
         let components = prepareURLComponents()
         
-        guard let url = components?.url else {
-            return
-        }
-        
-        createRequestWithURL(url: url, decode: decode, completion: completion)
+        try Task.checkCancellation()
+        return try await withCheckedThrowingContinuation({
+            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+            
+            guard let url = components?.url else {
+                continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                return
+            }
+            
+            createRequestWithURL(url: url, decode: decode) { result in
+                continuation.resume(returning: result)
+            }
+        })
     }
     
-    func listUserData<T: Decodable>(pageRequest: UnsplashUserListRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+    func getPhotoInfo<T: Decodable>(pageRequest: UnsplashUserPhotoRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
         let components = prepareURLComponents()
         
-        guard let url = components?.url else {
-            return
-        }
-        
-        createRequestWithURL(url: url, decode: decode, completion: completion)
+        try Task.checkCancellation()
+        return try await withCheckedThrowingContinuation({
+            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+            
+            guard let url = components?.url else {
+                continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                return
+            }
+            
+            createRequestWithURL(url: url, decode: decode) { result in
+                continuation.resume(returning: result)
+            }
+        })
     }
     
-    func getPhotoInfo<T: Decodable>(pageRequest: UnsplashUserPhotoRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+    func getAlbum<T: Decodable>(pageRequest: UnsplashAlbumsRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
         let components = prepareURLComponents()
         
-        guard let url = components?.url else {
-            return
-        }
-        
-        createRequestWithURL(url: url, decode: decode, completion: completion)
+        try Task.checkCancellation()
+        return try await withCheckedThrowingContinuation({
+            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+            
+            guard let url = components?.url else {
+                continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                return
+            }
+            
+            createRequestWithURL(url: url, decode: decode) { result in
+                continuation.resume(returning: result)
+            }
+        })
     }
-    
-    func getAlbum<T: Decodable>(pageRequest: UnsplashAlbumsRequest, method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
+
+    func get(completion: @escaping DataTaskResult) async {
         
         let components = prepareURLComponents()
         
@@ -470,34 +548,7 @@ class NetworkManager {
             return
         }
         
-        createRequestWithURL(url: url, decode: decode, completion: completion)
-    }
-  
-    func mock(method: RequestType, completion: @escaping (APIResult<Data, Error>) -> Void) {
-        
-        let components = prepareURLComponents()
-        
-        guard let url = components?.url else {
-            return
-        }
-        
-        let task = session.dataTaskWithURL(url) { (data, _, error) in
-            let result = data.map(APIResult.success) ?? .failure(error!)
-            completion(result)
-        }
-       
-        task.resume()
-    }
-    
-    func get(completion: @escaping DataTaskResult) {
-        
-        let components = prepareURLComponents()
-        
-        guard let url = components?.url else {
-            return
-        }
-        
-        let task = session.dataTaskWithURL(url) { (data, _, error) -> Void in
+        let task = await session.dataTaskWithURL(url) { (data, _, error) -> Void in
             if let _ = error {
                 completion(nil, nil, ServerError.badURL)
             } else {
@@ -534,22 +585,28 @@ class NetworkManager {
     func createRequestWithURL<T: Decodable>(url: URL, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
         let mutableRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: timeoutInterval)
         
-        let task = decodingTask(with: mutableRequest, decodingType: T.self) { (json , error) in
-            
-            DispatchQueue.main.async {
-                guard let json = json else {
-                    if let error = error {
-                        completion(APIResult.failure(error))
-                    }
-                    return
-                }
+        Task {
+            do {
+                let task = try await decodingTaskWithConcurrency(with: mutableRequest, decodingType: T.self) { (json , error) in
+                    
+                    DispatchQueue.main.async {
+                        guard let json = json else {
+                            if let error = error {
+                                completion(APIResult.failure(error))
+                            }
+                            return
+                        }
 
-                if let value = decode(json) {
-                    completion(.success(value))
+                        if let value = decode(json) {
+                            completion(.success(value))
+                        }
+                    }
                 }
+                task?.resume()
+            } catch  {
+                
             }
         }
-        task?.resume()
     }
     
     func createURLRequest(params: Dictionary<String, AnyObject>? = nil, method: RequestType ) throws -> URLRequest {
@@ -613,7 +670,7 @@ class NetworkManager {
 // MARK: - Base URLSession
 
 extension NetworkManager {
-    private func decodingTask<T: Decodable>(with request: URLRequest, decodingType: T.Type, completionHandler completion: @escaping JSONTaskCompletionHandler) -> URLSessionDataTaskProtocol? {
+   /* private func decodingTask<T: Decodable>(with request: URLRequest, decodingType: T.Type, completionHandler completion: @escaping JSONTaskCompletionHandler) -> URLSessionDataTaskProtocol? {
         
         let decoder = JSONDecoder()
         
@@ -682,7 +739,7 @@ extension NetworkManager {
         }
         
         return task
-    }
+    }*/
 
     private func queryParameters(_ parameters: [String: Any]?, urlEncoded: Bool = false) -> String {
         var allowedCharacterSet = CharacterSet.alphanumerics
@@ -711,7 +768,7 @@ extension NetworkManager {
         
         let decoder = JSONDecoder()
         
-        task = try await session.dataTask(with: request) { data, response, error in
+        task = await session.dataTask(with: request) { data, response, error in
             
             guard error == nil else {
                 if let error = error {
