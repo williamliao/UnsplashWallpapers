@@ -195,27 +195,18 @@ extension PhotoListViewModel {
                             return
                         }
                        
-                        guard var new = self?.respone.value  else {
+                        guard var dataSource = self?.respone.value  else {
                             return
                         }
-                        
-                        for index in 0...respone.count - 1 {
-                            
-                            if !new.contains(respone[index]) {
-                                new.append(respone[index])
+                    
+                        for newValue in respone {
+                            if !dataSource.contains(newValue) {
+                                dataSource.append(newValue)
                             }
                         }
 
-                        self?.respone.value = new
-                        
-//                            let startIndex = new.count - respone.count
-//                            let endIndex = startIndex + respone.count - 1
-//                            let newIndexPaths = (startIndex ... endIndex).map { i in
-//                                return IndexPath(row: i, section: 0)
-//                            }
-                        
-                        //self?.fetchMoreDataDelegate?.realodSection(newData: new)
-                       
+                        self?.respone.value = dataSource
+
                         guard let count = self?.respone.value?.count else {
                             return
                         }
@@ -251,28 +242,26 @@ extension PhotoListViewModel {
                             return
                         }
                         
-                        guard var new = self?.searchRespone.value  else {
+                        guard var dataSource = self?.searchRespone.value  else {
                             return
                         }
      
-                        new.total = respone.total
-                        new.total_pages = respone.total_pages
-                        //new.results = respone.results
-                      
-                        for index in 0...respone.results.count - 1 {
-                            
-                            if !new.results.contains(respone.results[index]) {
-                                new.results.append(respone.results[index])
+                        dataSource.total = respone.total
+                        dataSource.total_pages = respone.total_pages
+
+                        for newValue in respone.results {
+                            if !dataSource.results.contains(newValue) {
+                                dataSource.results.append(newValue)
                             }
                         }
                         
-                        self?.searchRespone.value = new
+                        self?.searchRespone.value = dataSource
                         
                         guard let cursor = self?.fetchNatureCursor else {
                             return
                         }
                         
-                        if new.results.count < cursor.perPage {
+                        if dataSource.results.count < cursor.perPage {
                             self?.canFetchMore = false
                         } else {
                             self?.fetchNatureCursor = self?.unsplashNaturePagedRequest.nextCursor()
@@ -308,27 +297,26 @@ extension PhotoListViewModel {
                             return
                         }
                         
-                        guard var new = self?.searchRespone.value  else {
+                        guard var dataSource = self?.searchRespone.value  else {
                             return
                         }
-                        
-                        new.total = respone.total
-                        new.total_pages = respone.total_pages
-                    
-                        for index in 0...respone.results.count - 1 {
+     
+                        dataSource.total = respone.total
+                        dataSource.total_pages = respone.total_pages
 
-                            if !new.results.contains(respone.results[index]) {
-                                new.results.append(respone.results[index])
+                        for newValue in respone.results {
+                            if !dataSource.results.contains(newValue) {
+                                dataSource.results.append(newValue)
                             }
                         }
                         
-                        self?.searchRespone.value = new
+                        self?.searchRespone.value = dataSource
                         
                         guard let cursor = self?.fetchWallpapersCursor else {
                             return
                         }
                         
-                        if new.results.count < cursor.perPage {
+                        if dataSource.results.count < cursor.perPage {
                             self?.canFetchMore = false
                         } else {
                             self?.fetchWallpapersCursor = self?.unsplashWallpaperPagedRequest.nextCursor()
