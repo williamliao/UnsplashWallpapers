@@ -16,7 +16,7 @@ public final class ImageLoader {
     private let cache: ImageCacheType
     private lazy var backgroundQueue: OperationQueue = {
         let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 5
+        queue.maxConcurrentOperationCount = 30
         return queue
     }()
     
@@ -54,14 +54,14 @@ public final class ImageLoader {
 //                NSURLErrorFailingURLErrorKey: url
 //            ]))
             return Fail(error: ServerError.badURL)
-            .receive(on: DispatchQueue.main)
+            //.receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
         }
         
         if let image = cache[url] {
             return Just(image)
                     .setFailureType(to: Error.self)
-                    .receive(on: DispatchQueue.main)
+                    //.receive(on: DispatchQueue.main)
                     .eraseToAnyPublisher()
         } else {
             return urlSession.dataTaskPublisher(for: url)
@@ -85,22 +85,54 @@ public final class ImageLoader {
                   
                   return response.data
                 }
-                .tryMap { data -> UIImage in
-                  guard let image = UIImage(data: data) else {
-                    throw ServerError.invalidImage
-                  }
-                  return image
+//                .tryMap { data -> UIImage in
+//                  guard let image = UIImage(data: data) else {
+//                    throw ServerError.invalidImage
+//                  }
+//                  return image
+//                }
+                .asyncMap { [cache] data in
+//                    guard let image = UIImage(data: data) else {
+//                        throw ServerError.invalidImage
+//                    }
+                    guard let image = UIImage(data: data) else { throw ServerError.invalidImage }
+                    cache[url] = image
+                    
+                    if let cacheImage = cache[url] {
+                        return cacheImage
+                    } else {
+                        return image
+                    }
                 }
                 .mapError { ServerError.map($0) }
-                .handleEvents(receiveOutput: {[weak self] image in
-                    self?.cache[url] = image
-                })
-                .receive(on: DispatchQueue.main)
+//                .handleEvents(receiveOutput: {[weak self] image in
+//                    self?.cache[url] = image
+//                })
+                //.receive(on: DispatchQueue.main)
                 .eraseToAnyPublisher()
         }
     }
     
     func getCacheImage(url: URL) -> UIImage? {
         return cache[url]
+    }
+}
+
+extension Publisher {
+    func asyncMap<T>(
+        _ transform: @escaping (Output) async throws -> T
+    ) -> Publishers.FlatMap<Future<T, Error>, Self> {
+        flatMap { value in
+            Future { promise in
+                Task {
+                    do {
+                        let output = try await transform(value)
+                        promise(.success(output))
+                    } catch {
+                        promise(.failure(error))
+                    }
+                }
+            }
+        }
     }
 }
