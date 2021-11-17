@@ -129,16 +129,18 @@ extension CollectionListView {
             return
         }
         
-        collections.forEach { (collection) in
-            snapshot.appendItems([collection], toSection: .main)
-        }
+        snapshot.appendItems(collections, toSection: .main)
         
        // UIView.performWithoutAnimation {
             //Force the update on the main thread to silence a warning about collectionView not being in the hierarchy!
             DispatchQueue.main.async {
-                self.dataSource.apply(snapshot, animatingDifferences: false)
-                self.collectionView.layoutIfNeeded()
-                self.collectionView.scrollRectToVisible(self.endRect, animated: false)
+                UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
+                    self.dataSource.applySnapshot(snapshot, animated: false) {
+                        self.collectionView.scrollRectToVisible(self.endRect, animated: false)
+                    }
+                } completion: { success in
+                    
+                }
             }
        // }
     }

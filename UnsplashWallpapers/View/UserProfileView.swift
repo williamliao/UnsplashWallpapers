@@ -276,49 +276,67 @@ extension UserProfileView {
         
         switch viewModel.section {
             case .photos:
-                
+                var snapshot = NSDiffableDataSourceSnapshot<Section, CollectionResponse>()
+
+                //Append available sections
+                Section.allCases.forEach { snapshot.appendSections([$0]) }
                 dataSource = getUserListPhotosDatasource()
-                
-                //Append annotations to their corresponding sections
-                viewModel.userPhotosResponse.value?.forEach { (respone) in
-                    snapshot.appendItems([respone], toSection: .main)
+
+                guard let results = viewModel.userPhotosResponse.value else {
+                    return
                 }
+            
+                snapshot.appendItems(results, toSection: .main)
                 
-                reloadDataSource(dataSource: dataSource, snapshot: snapshot)
+                UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
+                    self.dataSource.applySnapshot(snapshot, animated: false) {
+                        self.collectionView.scrollRectToVisible(self.endRect, animated: false)
+                    }
+                } completion: { success in
+                    
+                }
                 
             case .likes:
-                
+                var snapshot = NSDiffableDataSourceSnapshot<Section, CollectionResponse>()
+
+                //Append available sections
+                Section.allCases.forEach { snapshot.appendSections([$0]) }
                 likeDataSource = getUserLikesPhotosDatasource()
-                
-                //Append annotations to their corresponding sections
-                viewModel.userLikesResponse.value?.forEach { (respone) in
-                    snapshot.appendItems([respone], toSection: .main)
+              
+                guard let results = viewModel.userLikesResponse.value else {
+                    return
                 }
+            
+                snapshot.appendItems(results, toSection: .main)
                 
-                reloadDataSource(dataSource: likeDataSource, snapshot: snapshot)
+                UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
+                    self.likeDataSource.applySnapshot(snapshot, animated: false) {
+                        self.collectionView.scrollRectToVisible(self.endRect, animated: false)
+                    }
+                } completion: { success in
+                    
+                }
                 
             case .collections:
                 
                 var snapshot = NSDiffableDataSourceSnapshot<Section, UserCollectionRespone>()
-                
+
                 //Append available sections
                 Section.allCases.forEach { snapshot.appendSections([$0]) }
                 
                 collectionsDataSource = getUserCollectionsDatasource()
-                
-                //Append annotations to their corresponding sections
-                viewModel.userCollectionsResponse.value?.forEach { (respone) in
-                    snapshot.appendItems([respone], toSection: .main)
+              
+                guard let results = viewModel.userCollectionsResponse.value else {
+                    return
                 }
+            
+                snapshot.appendItems(results, toSection: .main)
                 
-                DispatchQueue.main.async {
-                    self.collectionsDataSource.apply(snapshot, animatingDifferences: false)
-                    
-                    if (self.currentIndex > 0) {
-                        UIView.animate(withDuration: 0.25) {
-                            self.collectionView.scrollToItem(at: IndexPath(row: self.currentIndex, section: Section.main.rawValue), at: .bottom, animated: false)
-                        }
+                UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
+                    self.collectionsDataSource.applySnapshot(snapshot, animated: false) {
+                        self.collectionView.scrollRectToVisible(self.endRect, animated: false)
                     }
+                } completion: { success in
                     
                 }
                 

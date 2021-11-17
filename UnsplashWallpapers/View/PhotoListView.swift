@@ -410,55 +410,21 @@ extension PhotoListView {
                 self.randomPhotoDidLoad(respone)
 
             case .nature:
-                var snapshot = NSDiffableDataSourceSnapshot<Section, Results>()
-                natureDataSource.apply(snapshot, animatingDifferences: false)
-                natureDataSource = getNatureDatasource()
-                
-                //Append available sections
-                Section.allCases.forEach { snapshot.appendSections([$0]) }
-                
-                //Append annotations to their corresponding sections
-                
+
                 guard let topics = viewModel.searchRespone.value else {
                     return
                 }
-                
-                topics.results.forEach { (result) in
-                    snapshot.appendItems([result], toSection: .main)
-                }
-                
-                UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
-                    self.natureDataSource.reloadData(snapshot: snapshot)
-                    //self.reloadCollectionData()
-                } completion: { success in
-                    self.collectionView.scrollRectToVisible(self.endRect, animated: false)
-                }
+            
+                naturePhotoDidLoad(topics.results)
 
             case .wallpapers:
-                var snapshot = NSDiffableDataSourceSnapshot<Section, Results>()
-                wallpapersDataSource.apply(snapshot, animatingDifferences: false)
-                wallpapersDataSource = getWallpapersDatasource()
-                //Append available sections
-                Section.allCases.forEach { snapshot.appendSections([$0]) }
-                
-                //Append annotations to their corresponding sections
-                
+  
                 guard let topics = viewModel.searchRespone.value else {
                     return
                 }
-                
-                topics.results.forEach { (result) in
-                    
-                    snapshot.appendItems([result], toSection: .main)
-                }
-                
-                UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
-                    self.wallpapersDataSource.reloadData(snapshot: snapshot)
-                    self.reloadCollectionData()
-                } completion: { success in
-                    
-                }
-                
+            
+                wallpaperPhotoDidLoad(topics.results)
+
             case .collections:
                 var snapshot = NSDiffableDataSourceSnapshot<Section, CollectionResponse>()
                 collectionDataSource = getCollectionDatasource()
@@ -488,15 +454,37 @@ extension PhotoListView {
     func randomPhotoDidLoad(_ image: [Response]) {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Response>()
         Section.allCases.forEach { snapshot.appendSections([$0]) }
-        dataSource.apply(snapshot, animatingDifferences: false)
+        //dataSource.apply(snapshot, animatingDifferences: false)
 
         snapshot.appendItems(image, toSection: .main)
 
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
-            self.dataSource.reloadData(snapshot: snapshot)
-            self.reloadCollectionData()
-        } completion: { success in
+      //  UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
+        dataSource.applySnapshot(snapshot, animated: false) {
+            self.collectionView.scrollRectToVisible(self.endRect, animated: false)
+        }
+            //self.reloadCollectionData()
+       // } completion: { success in
+            
+      //  }
+    }
+    
+    func naturePhotoDidLoad(_ image: [Results]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Results>()
+        Section.allCases.forEach { snapshot.appendSections([$0]) }
+        snapshot.appendItems(image, toSection: .main)
 
+        natureDataSource.applySnapshot(snapshot, animated: false) {
+            self.collectionView.scrollRectToVisible(self.endRect, animated: false)
+        }
+    }
+    
+    func wallpaperPhotoDidLoad(_ image: [Results]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Results>()
+        Section.allCases.forEach { snapshot.appendSections([$0]) }
+        snapshot.appendItems(image, toSection: .main)
+
+        wallpapersDataSource.applySnapshot(snapshot, animated: false) {
+            self.collectionView.scrollRectToVisible(self.endRect, animated: false)
         }
     }
 }

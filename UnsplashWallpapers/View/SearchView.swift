@@ -211,17 +211,24 @@ extension SearchView {
         
         //Append available sections
         Section.allCases.forEach { snapshot.appendSections([$0]) }
-        dataSource.apply(snapshot, animatingDifferences: false)
+        //dataSource.apply(snapshot, animatingDifferences: false)
         
         //Append annotations to their corresponding sections
         
-        viewModel.searchRespone.value?.results.forEach { (result) in
-            snapshot.appendItems([result], toSection: .main)
+//        viewModel.searchRespone.value?.results.forEach { (result) in
+//            snapshot.appendItems([result], toSection: .main)
+//        }
+        
+        guard let results = viewModel.searchRespone.value?.results else {
+            return
         }
         
+        snapshot.appendItems(results, toSection: .main)
+        
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
-            dataSource.reloadData(snapshot: snapshot)
-            self.reloadCollectionData()
+            dataSource.applySnapshot(snapshot, animated: false) {
+                self.collectionView.scrollRectToVisible(self.endRect, animated: false)
+            }
         } completion: { success in
             if let count = self.viewModel.searchRespone.value?.results.count {
                 if count > 0 {

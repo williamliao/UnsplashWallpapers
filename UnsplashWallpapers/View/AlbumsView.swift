@@ -246,17 +246,9 @@ extension AlbumsView {
 
         snapshot.appendSections([Section.myAlbums])
         
-        self.viewModel.allAlbumsRespone.value.forEach { (respone) in
-            snapshot.appendItems([respone], toSection: .myAlbums)
-        }
-        
-        self.viewModel.featuredAlbumsRespone.value.forEach { (respone) in
-            snapshot.appendItems([respone], toSection: .featuredAlbums)
-        }
-        
-        self.viewModel.sharedAlbumsRespone.value.forEach { (respone) in
-            snapshot.appendItems([respone], toSection: .sharedAlbums)
-        }
+        snapshot.appendItems(self.viewModel.allAlbumsRespone.value, toSection: .myAlbums)
+        snapshot.appendItems(self.viewModel.featuredAlbumsRespone.value, toSection: .featuredAlbums)
+        snapshot.appendItems(self.viewModel.sharedAlbumsRespone.value, toSection: .sharedAlbums)
         
         return snapshot
     }
