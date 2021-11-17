@@ -48,8 +48,16 @@ class ImageCombineDownloader: ImageDownLoader {
     func downloadWithErrorHandler(url: URL, completionHandler: @escaping (UIImage?, Error?) -> Void) {
         
         if #available(iOS 13.0, *) {
+            
+//            Task {
+//                let image = try await loadImageWithConcurrency(for: url)
+//                DispatchQueue.main.async {
+//                    completionHandler(image, nil)
+//                }
+//            }
+            
             cancellable = self.loadImageWithError(for: url).sink(receiveCompletion: { (completion) in
-                
+
                 switch completion {
                     case .finished:
                         //print("🏁 finished")
@@ -58,7 +66,7 @@ class ImageCombineDownloader: ImageDownLoader {
                         print("❗️ failure: \(error)")
                         completionHandler(nil, error)
                 }
-                
+
             }, receiveValue: { (image) in
                 DispatchQueue.main.async {
                     completionHandler(image, nil)
@@ -103,6 +111,16 @@ class ImageCombineDownloader: ImageDownLoader {
             return ImageLoader.shared.publisher(for: poster)
         })
         .eraseToAnyPublisher()
+    }
+    
+    @available(iOS 15.0, *)
+    func loadImageWithConcurrency(for url: URL) async throws -> UIImage {
+        do {
+            let image = try await ImageLoader.shared.awaitAsync(for: url)
+            return image
+        } catch  {
+            throw ServerError.invalidImage
+        }
     }
     
     private func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {

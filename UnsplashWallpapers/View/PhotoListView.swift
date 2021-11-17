@@ -57,7 +57,7 @@ class PhotoListView: UIView {
     lazy var segmentedControl = UISegmentedControl(items: items)
     
     var imageLoadQueue: OperationQueue?
-    var imageLoadOperations: [IndexPath: ImageLoadOperation]?
+    var imageLoadOperations: [IndexPath: ImageLoadOperation] = [:]
     var imageHeightDictionary: [IndexPath: String]?
 
     init(viewModel: PhotoListViewModel, coordinator: MainCoordinator?) {
@@ -82,7 +82,8 @@ extension PhotoListView {
     
     func configureCollectionView() {
        
-        //self.backgroundColor = .systemBackground
+        let theme = ThemeManager.currentTheme()
+        self.backgroundColor = theme.backgroundColor
         
         let flowLayout = UICollectionViewFlowLayout()
         //flowLayout.itemSize = CGSize(width: UIScreen.main.bounds.size.width, height: 300)
@@ -255,31 +256,7 @@ extension PhotoListView: UICollectionViewDelegateFlowLayout {
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         if section == .nature, section == .wallpapers {
-            let res = viewModel.searchRespone.value
-            let height = res?.results[indexPath.row].height
-            let width = res?.results[indexPath.row].width
-            
-            if imageHeightDictionary?[indexPath] == "v" {
-                return CGSize(width: collectionView.bounds.size.width, height: 600)
-            } else if imageHeightDictionary?[indexPath] == "h" {
-                return CGSize(width: collectionView.bounds.size.width, height: 300)
-            } else {
-                if let safeHeight = height, let safeWidth = width {
-                    
-                    if safeHeight > safeWidth {
-                        imageHeightDictionary?[indexPath] = "v"
-                        return CGSize(width: collectionView.bounds.size.width, height: 600)
-                    } else {
-                        imageHeightDictionary?[indexPath] = "h"
-                        return CGSize(width: collectionView.bounds.size.width, height: 300)
-                    }
-                    
-                } else {
-                    imageHeightDictionary?[indexPath] = "h"
-                    return CGSize(width: collectionView.bounds.size.width, height: 300)
-                }
-            }
-            
+            return CGSize(width: collectionView.bounds.size.width, height: 300)
         } else {
             
             let res = viewModel.respone.value
@@ -452,9 +429,9 @@ extension PhotoListView {
                 
                 UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
                     self.natureDataSource.reloadData(snapshot: snapshot)
-                    self.reloadCollectionData()
+                    //self.reloadCollectionData()
                 } completion: { success in
-                    
+                    self.collectionView.scrollRectToVisible(self.endRect, animated: false)
                 }
 
             case .wallpapers:
@@ -537,9 +514,9 @@ extension PhotoListView: UICollectionViewDataSourcePrefetching {
                 }
                 
                 for indexPath in indexPaths {
-                    
-                    if let _ = imageLoadOperations?[indexPath] {
-                        return
+
+                    if let _ = imageLoadOperations[indexPath] {
+                        continue
                     }
                     
                     let urls = res[indexPath.row].urls
@@ -547,7 +524,7 @@ extension PhotoListView: UICollectionViewDataSourcePrefetching {
                     if let url = URL(string: urls.small) {
                         let imageLoadOperation = ImageLoadOperation(imgUrl: url)
                         imageLoadQueue?.addOperation(imageLoadOperation)
-                        imageLoadOperations?[indexPath] = imageLoadOperation
+                        imageLoadOperations[indexPath] = imageLoadOperation
                     }
                     
                    /* if section == .random {
@@ -592,8 +569,8 @@ extension PhotoListView: UICollectionViewDataSourcePrefetching {
                 }
                 
                 for indexPath in indexPaths {
-                    if let _ = imageLoadOperations?[indexPath] {
-                        return
+                    if let _ = imageLoadOperations[indexPath] {
+                        continue
                     }
                     
                     guard let urls = res.results[indexPath.row].urls else {
@@ -603,7 +580,7 @@ extension PhotoListView: UICollectionViewDataSourcePrefetching {
                     if let url = URL(string: urls.small) {
                         let imageLoadOperation = ImageLoadOperation(imgUrl: url)
                         imageLoadQueue?.addOperation(imageLoadOperation)
-                        imageLoadOperations?[indexPath] = imageLoadOperation
+                        imageLoadOperations[indexPath] = imageLoadOperation
                     }
                  }
                 
@@ -614,11 +591,11 @@ extension PhotoListView: UICollectionViewDataSourcePrefetching {
     
     func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
         for indexPath in indexPaths {
-            guard let imageLoadOperation = imageLoadOperations?[indexPath] else {
+            guard let imageLoadOperation = imageLoadOperations[indexPath] else {
                 return
             }
             imageLoadOperation.cancel()
-            _ = imageLoadOperations?.removeValue(forKey: indexPath)
+            imageLoadOperations.removeValue(forKey: indexPath)
         }
     }
 }
@@ -728,28 +705,34 @@ extension PhotoListView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
         //let lastElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
-        let preloadElement = collectionView.numberOfItems(inSection: indexPath.section) - 3
+        let preloadElement = collectionView.numberOfItems(inSection: indexPath.section) - 1
         
         if !viewModel.isLoading.value && indexPath.row == preloadElement {
+            
+            let theAttributes = collectionView.layoutAttributesForItem(at: indexPath)
+            //endRect = theAttributes?.frame ?? CGRect.zero
+            
+            guard let saveEndRect = theAttributes?.frame else {
+                print("someThing wrong with the indexPath \(indexPath)")
+                return
+            }
+            
+            endRect = saveEndRect
+            
             if #available(iOS 15.0.0, *) {
                 viewModel.fetchNextPage()
             } else {
                 // Fallback on earlier versions
             }
         }
-        
-        if !viewModel.isLoading.value && indexPath.row == preloadElement {
-            let theAttributes = collectionView.layoutAttributesForItem(at: indexPath)
-            endRect = theAttributes?.frame ?? CGRect.zero
-        }
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let imageLoadOperation = imageLoadOperations?[indexPath] else {
+        guard let dataLoader = imageLoadOperations[indexPath] else {
             return
         }
-        imageLoadOperation.cancel()
-        _ = imageLoadOperations?.removeValue(forKey: indexPath)
+        dataLoader.cancel()
+        imageLoadOperations.removeValue(forKey: indexPath)
     }
     
     private func reloadCollectionData() {
@@ -759,9 +742,9 @@ extension PhotoListView: UICollectionViewDelegate {
 //            self.collectionView.collectionViewLayout.invalidateLayout(with: context)
 //            self.collectionView.layoutIfNeeded()
 
-        UIView.performWithoutAnimation {
-            collectionView.scrollRectToVisible(endRect, animated: false)
-        }
+       // UIView.performWithoutAnimation {
+            
+       // }
         
 
     }
@@ -786,7 +769,7 @@ extension PhotoListView {
         }
 
         if #available(iOS 10.0, *) {
-            imageLoadOperations?.forEach { $1.cancel() }
+            imageLoadOperations.forEach { $1.cancel() }
         }
         viewModel.reset()
         collectionView.reloadData()
@@ -800,23 +783,31 @@ extension PhotoListView {
        
         cell.titleLabel.text = respone.user?.name
         
-        if let loader = imageLoadOperations?[indexPath] {
-            cell.isLoading(isLoading: true)
-            if let image = loader.image {
+        let updateCellClosure: (UIImage?) -> Void = { [weak self] image in
+            guard let self = self else {
+              return
+            }
+            //cell.updateAppearanceFor(emojiRating, animated: true)
+            cell.isLoading(isLoading: false)
+            cell.showImage(image: image)
+            self.imageLoadOperations.removeValue(forKey: indexPath)
+        }
+        
+        if let dataLoader = imageLoadOperations[indexPath] {
+           // cell.isLoading(isLoading: true)
+            if let image = dataLoader.image {
                 cell.isLoading(isLoading: false)
                 cell.showImage(image: image)
+                imageLoadOperations.removeValue(forKey: indexPath)
             } else {
-                cell.isLoading(isLoading: true)
-                loader.completionHandler = { [weak cell] image in
-                    cell?.isLoading(isLoading: false)
-                    cell?.showImage(image: image)
-                }
+               // cell.isLoading(isLoading: true)
+                dataLoader.completionHandler = updateCellClosure
             }
         } else {
             if let url = URL(string: respone.urls.small) {
                 let imageLoadOperation = ImageLoadOperation(imgUrl: url)
                 imageLoadQueue?.addOperation(imageLoadOperation)
-                imageLoadOperations?[indexPath] = imageLoadOperation
+                imageLoadOperations[indexPath] = imageLoadOperation
                 cell.configureImage(with: url)
             }
         }
@@ -827,14 +818,14 @@ extension PhotoListView {
         
         cell?.titleLabel.text = respone.user?.name
         
-        if let loader = imageLoadOperations?[indexPath] {
+        if let dataLoader = imageLoadOperations[indexPath] {
             cell?.isLoading(isLoading: true)
-            if let image = loader.image {
+            if let image = dataLoader.image {
                 cell?.isLoading(isLoading: false)
                 cell?.showImage(image: image)
             } else {
                 cell?.isLoading(isLoading: true)
-                loader.completionHandler = { [weak cell] image in
+                dataLoader.completionHandler = { [weak cell] image in
                     cell?.isLoading(isLoading: false)
                     cell?.showImage(image: image)
                 }
@@ -843,7 +834,7 @@ extension PhotoListView {
             if let url = URL(string: respone.urls.small) {
                 let imageLoadOperation = ImageLoadOperation(imgUrl: url)
                 imageLoadQueue?.addOperation(imageLoadOperation)
-                imageLoadOperations?[indexPath] = imageLoadOperation
+                imageLoadOperations[indexPath] = imageLoadOperation
                 cell?.configureImage(with: url)
             }
         }
@@ -862,19 +853,26 @@ extension PhotoListView {
             
             cell.titleLabel.text = "Wallpapers"
         }
-      
         
-        if let loader = imageLoadOperations?[indexPath] {
-            cell.isLoading(isLoading: true)
-            if let image = loader.image {
+        let updateCellClosure: (UIImage?) -> Void = { [weak self] image in
+            guard let self = self else {
+              return
+            }
+            //cell.updateAppearanceFor(emojiRating, animated: true)
+            cell.isLoading(isLoading: false)
+            cell.showImage(image: image)
+            self.imageLoadOperations.removeValue(forKey: indexPath)
+        }
+      
+        if let dataLoader = imageLoadOperations[indexPath] {
+            //cell.isLoading(isLoading: true)
+            if let image = dataLoader.image {
                 cell.isLoading(isLoading: false)
                 cell.showImage(image: image)
+                self.imageLoadOperations.removeValue(forKey: indexPath)
             } else {
-                cell.isLoading(isLoading: true)
-                loader.completionHandler = { [weak cell] image in
-                    cell?.isLoading(isLoading: false)
-                    cell?.showImage(image: image)
-                }
+                //cell.isLoading(isLoading: true)
+                dataLoader.completionHandler = updateCellClosure
             }
         } else {
             
@@ -885,7 +883,7 @@ extension PhotoListView {
             if let url = URL(string: urls.small) {
                 let imageLoadOperation = ImageLoadOperation(imgUrl: url)
                 imageLoadQueue?.addOperation(imageLoadOperation)
-                imageLoadOperations?[indexPath] = imageLoadOperation
+                imageLoadOperations[indexPath] = imageLoadOperation
                 cell.configureImage(with: url)
             }
         }
@@ -906,7 +904,7 @@ extension PhotoListView {
         }
       
         
-        if let loader = imageLoadOperations?[indexPath] {
+        if let loader = imageLoadOperations[indexPath] {
             cell?.isLoading(isLoading: true)
             if let image = loader.image {
                 cell?.isLoading(isLoading: false)
@@ -927,7 +925,7 @@ extension PhotoListView {
             if let url = URL(string: urls.small) {
                 let imageLoadOperation = ImageLoadOperation(imgUrl: url)
                 imageLoadQueue?.addOperation(imageLoadOperation)
-                imageLoadOperations?[indexPath] = imageLoadOperation
+                imageLoadOperations[indexPath] = imageLoadOperation
                 cell?.configureImage(with: url)
             }
         }

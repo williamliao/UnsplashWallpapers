@@ -34,12 +34,13 @@ class AlbumsViewModel {
 extension AlbumsViewModel {
     
     func getAllAlbums(completionHandler: @escaping (Bool) -> Void) {
-        service = UnsplashService(endPoint: .collections("cat", unsplashFeaturePagedRequest))
         
         if allCursor == nil {
             allCursor = Cursor(query: "cat", page: 1, perPage: 10, parameters: [:])
             unsplashAllPagedRequest = UnsplashSearchPagedRequest(with: allCursor)
         }
+        
+        service = UnsplashService(endPoint: .collections("cat", unsplashAllPagedRequest))
         
         isLoading.value = true
         
@@ -125,12 +126,13 @@ extension AlbumsViewModel {
     }
     
     func getSharedAlbums(completionHandler: @escaping (Bool) -> Void) {
-        service = UnsplashService(endPoint: .collections("wallpapers", unsplashFeaturePagedRequest))
         
         if shareCursor == nil {
             shareCursor = Cursor(query: "wallpapers", page: 1, perPage: 10, parameters: [:])
             unsplashSharePagedRequest = UnsplashSearchPagedRequest(with: shareCursor)
         }
+        
+        service = UnsplashService(endPoint: .collections("wallpapers", unsplashSharePagedRequest))
         
         isLoading.value = true
         
