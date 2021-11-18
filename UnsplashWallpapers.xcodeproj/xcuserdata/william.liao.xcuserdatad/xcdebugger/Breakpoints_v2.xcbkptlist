@@ -176,7 +176,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "262"
             endingLineNumber = "262"
-            landmarkName = "snapshotForCurrentState()"
+            landmarkName = "configureAllAlbumCell(collectionView:albumItem:indexPath:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -192,7 +192,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "284"
             endingLineNumber = "284"
-            landmarkName = "configureSharedAlbumItemCell(collectionView:albumItem:indexPath:)"
+            landmarkName = "configureFeaturedAlbumItemCell(collectionView:albumItem:indexPath:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -359,22 +359,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "C12C5D2C-61F1-4107-8705-09BE9D63201C"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "UnsplashWallpapers/View/PhotoListView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "526"
-            endingLineNumber = "526"
-            landmarkName = "collectionView(_:prefetchItemsAt:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "44F88346-A1F5-4A15-869E-7A4DF61A537D"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -401,6 +385,22 @@
             startingLineNumber = "89"
             endingLineNumber = "89"
             landmarkName = "viewDidLoad()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BF40EB67-DE0C-4152-BE89-B2AB6512ED86"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "UnsplashWallpapers/View/DetailView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "206"
+            endingLineNumber = "206"
+            landmarkName = "getPhotoInfo()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

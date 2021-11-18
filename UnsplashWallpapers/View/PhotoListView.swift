@@ -87,7 +87,7 @@ extension PhotoListView {
         
         let flowLayout = UICollectionViewFlowLayout()
         //flowLayout.itemSize = CGSize(width: UIScreen.main.bounds.size.width, height: 300)
-        //flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         //let config = UICollectionLayoutListConfiguration(appearance: .plain)
         //let flowLayout = UICollectionViewCompositionalLayout.list(using: config)
 
