@@ -540,7 +540,25 @@ class NetworkManager {
         })
     }
 
-    func get(completion: @escaping DataTaskResult) async {
+    func get(completion: @escaping DataTaskResult) {
+        
+        let components = prepareURLComponents()
+        
+        guard let url = components?.url else {
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: url) { (data, _, error) -> Void in
+            if let _ = error {
+                completion(nil, nil, ServerError.badURL)
+            } else {
+                completion(data, nil, nil)
+            }
+        }
+        task.resume()
+    }
+    
+    func getConcurrency(completion: @escaping DataTaskResult) async throws {
         
         let components = prepareURLComponents()
         

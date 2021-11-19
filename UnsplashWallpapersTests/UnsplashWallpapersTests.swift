@@ -12,6 +12,7 @@ class UnsplashWallpapersTests: XCTestCase {
     
     var sut : UnsplashService!
     var mockSession: MockURLSession!
+    var mockConcurrencySession: MockConcurrencyURLSession!
 
     override func setUpWithError() throws {
         
@@ -21,6 +22,7 @@ class UnsplashWallpapersTests: XCTestCase {
     override func tearDownWithError() throws {
         sut = nil
         mockSession = nil
+        mockConcurrencySession = nil
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
@@ -334,5 +336,44 @@ extension UnsplashWallpapersTests {
             print(error)
             XCTFail("Deocde error")
         }
+    }
+    
+    @available(iOS 15.0.0, *)
+    func testPhotoListApiCall() async throws {
+        
+        let data = getFakeData()
+        mockConcurrencySession = createMockConcurrencySession(data: data, andStatusCode: 200, andError: nil)
+
+        let dataTask = MockConcurrencyURLSessionDataTask()
+        mockConcurrencySession.dataTask = dataTask
+       
+        sut = UnsplashService(endPoint: .random, withSession: mockConcurrencySession)
+        
+        let components = sut.prepareURLComponents()
+
+        guard let url = components?.url else {
+            return
+        }
+       
+        let result = try await withCheckedThrowingContinuation({
+            (continuation: CheckedContinuation<[Response], Error>) in
+            
+            sut.fetchWithConcurrency { (result) in
+               
+                switch result {
+                    case .success(let respone):
+                        continuation.resume(with: Result.success(respone))
+                        
+                    case .failure(_):
+                        break
+                }
+            }
+        })
+        
+        XCTAssertNotNil(result)
+        XCTAssertTrue(result.count == 1)
+        XCTAssertEqual(mockConcurrencySession.lastURL, url)
+        XCTAssert(dataTask.resumeWasCalled)
+        
     }
 }

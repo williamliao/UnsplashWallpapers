@@ -12,6 +12,7 @@
 		C8325C4326D5ED60008A16D7 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8325C4226D5ED60008A16D7 /* SettingViewController.swift */; };
 		C8325C4826D5ED77008A16D7 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8325C4726D5ED77008A16D7 /* SettingView.swift */; };
 		C852BDCF26142054002059F5 /* UnsplashSearchPagedRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C852BDCE26142054002059F5 /* UnsplashSearchPagedRequest.swift */; };
+		C879403727479A370030D99B /* NetworkManager+MockConcurrency.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879403627479A370030D99B /* NetworkManager+MockConcurrency.swift */; };
 		C890C7772732160D00945A19 /* SettingMainItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C890C7762732160D00945A19 /* SettingMainItemCell.swift */; };
 		C890C77927321CAA00945A19 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C890C77827321CAA00945A19 /* ThemeManager.swift */; };
 		C89A71F7260347F2003E188F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89A71F6260347F2003E188F /* AppDelegate.swift */; };
@@ -152,6 +153,7 @@
 		C8325C4226D5ED60008A16D7 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		C8325C4726D5ED77008A16D7 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		C852BDCE26142054002059F5 /* UnsplashSearchPagedRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsplashSearchPagedRequest.swift; sourceTree = "<group>"; };
+		C879403627479A370030D99B /* NetworkManager+MockConcurrency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkManager+MockConcurrency.swift"; sourceTree = "<group>"; };
 		C890C7762732160D00945A19 /* SettingMainItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingMainItemCell.swift; sourceTree = "<group>"; };
 		C890C77827321CAA00945A19 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		C89A71F3260347F2003E188F /* UnsplashWallpapers.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnsplashWallpapers.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -495,6 +497,7 @@
 			children = (
 				C89A72C026035204003E188F /* NetworkManager.swift */,
 				C89A72C126035204003E188F /* NetworkManager+Mock.swift */,
+				C879403627479A370030D99B /* NetworkManager+MockConcurrency.swift */,
 				C89C8F442648C60D00BA8E10 /* URLProtocolMock.swift */,
 				C89A72BF26035204003E188F /* URLSessionDataTaskProtocol.swift */,
 				C89A72C82603521E003E188F /* EndPoint.swift */,
@@ -758,6 +761,7 @@
 				C89A724C26034943003E188F /* PhotoListViewController.swift in Sources */,
 				C89A7242260348EA003E188F /* MainCoordinator.swift in Sources */,
 				C8A8FD582631777400C38FAF /* CodableUserDefault.swift in Sources */,
+				C879403727479A370030D99B /* NetworkManager+MockConcurrency.swift in Sources */,
 				C8BF2AAC263695ED00BE7C51 /* UnsplashTopicRequest.swift in Sources */,
 				C8D36F69272A836E006F2614 /* imageText.swift in Sources */,
 				C89A723C260348BD003E188F /* AppCoordinator.swift in Sources */,
@@ -982,7 +986,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = UnsplashWallpapersTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1003,7 +1007,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = UnsplashWallpapersTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

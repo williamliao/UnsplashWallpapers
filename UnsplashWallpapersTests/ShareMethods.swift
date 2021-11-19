@@ -127,6 +127,14 @@ extension XCTestCase {
         return MockURLSession(completionHandler: (data, response, error))
     }
     
+    func createMockConcurrencySession(data: Data,
+                            andStatusCode code: Int,
+                            andError error: Error?) -> MockConcurrencyURLSession? {
+
+        let response = HTTPURLResponse(url: URL(string: "TestUrl")!, statusCode: code, httpVersion: nil, headerFields: nil)
+        return MockConcurrencyURLSession(completionHandler: (data, response, error))
+    }
+    
     func createMockSessionFromFile(fromJsonFile file: String,
                             andStatusCode code: Int,
                             andError error: Error?) -> MockURLSession? {
