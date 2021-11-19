@@ -187,6 +187,7 @@ extension UnsplashService {
     }
     
     func mock(completion: @escaping (APIResult<Data, Error>) -> Void) {
-        //self.mock(method: .get, completion: completion)
+        
+        
     }
 }

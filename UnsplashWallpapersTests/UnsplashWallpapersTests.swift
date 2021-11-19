@@ -11,8 +11,9 @@ import XCTest
 class UnsplashWallpapersTests: XCTestCase {
     
     var sut : UnsplashService!
-    var mockSession: MockURLSession!
-    var mockConcurrencySession: MockConcurrencyURLSession!
+    //var mockSession: MockURLSession!
+    var mockSession: MockConcurrencyURLSession!
+    //var mockConcurrencySession: MockConcurrencyURLSession!
 
     override func setUpWithError() throws {
         
@@ -22,7 +23,7 @@ class UnsplashWallpapersTests: XCTestCase {
     override func tearDownWithError() throws {
         sut = nil
         mockSession = nil
-        mockConcurrencySession = nil
+        //mockConcurrencySession = nil
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
@@ -41,77 +42,103 @@ class UnsplashWallpapersTests: XCTestCase {
 
 extension UnsplashWallpapersTests {
     
-    func test_GET_StartsTheRequest() {
+    func test_GET_StartsTheRequest() async {
      
         let fakeData = Data([0, 1, 0, 1])
-        mockSession = createMockSession(data: fakeData, andStatusCode: 200, andError: nil)
+        mockSession = createMockConcurrencySession(data: fakeData, andStatusCode: 200, andError: nil)
 
-        let dataTask = MockURLSessionDataTask()
+        let dataTask = MockConcurrencyURLSessionDataTask()
         mockSession.dataTask = dataTask
 
         let url = URL(string: "https://api.unsplash.com/photos/random?count=30&client_id=d0bd0d66796be14d38b9f5e45852397c35457a7479978ff4db3eea2fcd7e2383")!
         
         sut = UnsplashService(endPoint: .random, withSession: mockSession)
         
-        sut.get { (data, res, error) in
-            XCTAssertNotNil(data)
+        do {
+            try await sut.getConcurrency { (data, res, error) in
+                XCTAssertNotNil(data)
+            }
+        } catch  {
+            
         }
         
         XCTAssertEqual(mockSession.lastURL, url)
         XCTAssert(dataTask.resumeWasCalled)
     }
     
-    func test_GET_WithResponseData_ReturnsTheData() {
+    func test_GET_WithResponseData_ReturnsTheData() async {
         
         let expectedData = "{}".data(using: .utf8)
-        mockSession = createMockSession(data: expectedData!, andStatusCode: 200, andError: nil)
+        mockSession = createMockConcurrencySession(data: expectedData!, andStatusCode: 200, andError: nil)
         mockSession.nextData = expectedData
 
         var actualData: Data?
         sut = UnsplashService(endPoint: .random, withSession: mockSession)
-        sut.get() { (data, _, _)  in
-            actualData = data
+        do {
+            try await sut.getConcurrency { (data, res, error) in
+                actualData = data
+            }
+        } catch  {
+            
         }
 
         XCTAssertEqual(actualData, expectedData)
     }
     
-    func test_GET_WithANetworkError_ReturnsANetworkError() {
+    func test_GET_WithANetworkError_ReturnsANetworkError() async {
         
-        mockSession = createMockSessionFromFile(fromJsonFile: "A", andStatusCode: 200, andError: NSError(domain: "error", code: 0, userInfo: nil))
+        mockSession = createMockConcurrencySessionFromFile(fromJsonFile: "A", andStatusCode: 200, andError: NSError(domain: "error", code: 0, userInfo: nil))
         
         mockSession.nextError = NSError(domain: "error", code: 0, userInfo: nil)
 
-        var error: Error?
+        //var returnError: String!
         sut = UnsplashService(endPoint: .random, withSession: mockSession)
-        sut.get() { (_, _, networkError) -> Void in
-            error = networkError
-        }
         
-        XCTAssertNotNil(error)
+        sut.fetchWithConcurrency() { (result) in
+            switch result {
+                case .success(_):
+                    break
+                case .failure(let error):
+                   print(error)
+                    switch error {
+                        case .encounteredError(let error):
+                            XCTAssertNotNil(error)
+                        default:
+                            break
+                    }
+            }
+        }
+   
+        //XCTAssertEqual(returnError, ServerError.encounteredError(returnError))
     }
     
-    func testNetworkClient_successResult() {
+    func testNetworkClient_successResult() async {
         
-        let expectation = XCTestExpectation()
-        sut = UnsplashService(endPoint: .random)
+        //let expectation = XCTestExpectation()
+        let data = getFakeData()
+        mockSession = createMockConcurrencySession(data: data, andStatusCode: 200, andError: nil)
+
+        let dataTask = MockConcurrencyURLSessionDataTask()
+        mockSession.dataTask = dataTask
+       
+        sut = UnsplashService(endPoint: .random, withSession: mockSession)
         
-        sut.fetchDataWithNetworkManager() { (result) in
+        sut.fetchWithConcurrency() { (result) in
 
             switch result {
                 case .success(let respone):
                    
                     XCTAssertNotNil(respone)
-                    XCTAssertTrue(respone.count == 30)
-                    expectation.fulfill()
+                    XCTAssertTrue(respone.count == 1)
+                    //expectation.fulfill()
                     
                 case .failure(let error):
                     XCTAssertNotNil(error)
             }
         }
         
-        let wait = XCTWaiter()
-        _ = wait.wait(for: [expectation], timeout: 1)
+        //let wait = XCTWaiter()
+       // _ = wait.wait(for: [expectation], timeout: 1)
     }
     
     func testSuccessfulResponse() {
@@ -120,7 +147,7 @@ extension UnsplashWallpapersTests {
         
         let fakeData = Data([0, 1, 0, 1])
     
-        mockSession = createMockSession(data: fakeData, andStatusCode: 200, andError: nil)
+        mockSession = createMockConcurrencySession(data: fakeData, andStatusCode: 200, andError: nil)
         
         let fetchCursor = Cursor(query: "", page: 1, perPage: 10, parameters: [:])
         let unsplashPagedRequest = UnsplashSearchPagedRequest(with: fetchCursor)
@@ -143,13 +170,13 @@ extension UnsplashWallpapersTests {
     
     func testNetworkClient_404Result() {
         let fakeData = Data([0, 1, 0, 1])
-        mockSession = createMockSession(data: fakeData, andStatusCode: 404, andError: nil)
+        mockSession = createMockConcurrencySession(data: fakeData, andStatusCode: 404, andError: nil)
         
         sut = UnsplashService(endPoint: .random, withSession: mockSession)
         
         let expectation = XCTestExpectation()
         
-        sut.fetchDataWithNetworkManager() { (result) in
+        sut.fetchWithConcurrency() { (result) in
 
             switch result {
                 case .success(let respone):
@@ -176,13 +203,13 @@ extension UnsplashWallpapersTests {
     
     func testNetworkClient_NoData() {
         
-        mockSession = createMockSessionFromFile(fromJsonFile: "A", andStatusCode: 200, andError: nil)
+        mockSession = createMockConcurrencySessionFromFile(fromJsonFile: "A", andStatusCode: 200, andError: nil)
        
         sut = UnsplashService(endPoint: .random, withSession: mockSession)
         
         let expectation = XCTestExpectation()
 
-        sut.fetchDataWithNetworkManager() { (result) in
+        sut.fetchWithConcurrency() { (result) in
 
             switch result {
                 case .success(_):
@@ -206,13 +233,13 @@ extension UnsplashWallpapersTests {
     
     func testNetworkClient_UnExpectStatusCode() {
         let fakeData = Data([0, 1, 0, 1])
-        mockSession = createMockSession(data: fakeData, andStatusCode: 500, andError: nil)
+        mockSession = createMockConcurrencySession(data: fakeData, andStatusCode: 500, andError: nil)
         
         sut = UnsplashService(endPoint: .random, withSession: mockSession)
         
         let expectation = XCTestExpectation()
         
-        sut.fetchDataWithNetworkManager() { (result) in
+        sut.fetchWithConcurrency() { (result) in
 
             switch result {
                 case .success(_):
@@ -267,7 +294,7 @@ extension UnsplashWallpapersTests {
      
         sut = UnsplashService(endPoint: .random, withSession: mockURLSession)
         
-        sut.fetchDataWithNetworkManager() { (result) in
+        sut.fetchWithConcurrency() { (result) in
 
             switch result {
                 case .success(let respone):
@@ -342,12 +369,12 @@ extension UnsplashWallpapersTests {
     func testPhotoListApiCall() async throws {
         
         let data = getFakeData()
-        mockConcurrencySession = createMockConcurrencySession(data: data, andStatusCode: 200, andError: nil)
+        mockSession = createMockConcurrencySession(data: data, andStatusCode: 200, andError: nil)
 
         let dataTask = MockConcurrencyURLSessionDataTask()
-        mockConcurrencySession.dataTask = dataTask
+        mockSession.dataTask = dataTask
        
-        sut = UnsplashService(endPoint: .random, withSession: mockConcurrencySession)
+        sut = UnsplashService(endPoint: .random, withSession: mockSession)
         
         let components = sut.prepareURLComponents()
 
@@ -372,7 +399,7 @@ extension UnsplashWallpapersTests {
         
         XCTAssertNotNil(result)
         XCTAssertTrue(result.count == 1)
-        XCTAssertEqual(mockConcurrencySession.lastURL, url)
+        XCTAssertEqual(mockSession.lastURL, url)
         XCTAssert(dataTask.resumeWasCalled)
         
     }

@@ -33,6 +33,7 @@ class MockConcurrencyURLSession: URLSessionProtocol {
     }
     
     func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) async -> URLSessionDataTaskProtocol  {
+        lastURL = url
         completionHandler(self.completionHandler.0, self.completionHandler.1, self.completionHandler.2)
         return dataTask as URLSessionDataTaskProtocol
     }

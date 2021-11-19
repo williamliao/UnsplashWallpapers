@@ -144,6 +144,15 @@ extension XCTestCase {
         return MockURLSession(completionHandler: (data, response, error))
     }
     
+    func createMockConcurrencySessionFromFile(fromJsonFile file: String,
+                            andStatusCode code: Int,
+                            andError error: Error?) -> MockConcurrencyURLSession? {
+
+        let data = loadJsonData(file: file)
+        let response = HTTPURLResponse(url: URL(string: "TestUrl")!, statusCode: code, httpVersion: nil, headerFields: nil)
+        return MockConcurrencyURLSession(completionHandler: (data, response, error))
+    }
+    
         
     func baseApiTest(endPoint: NetworkManager.NetworkEndpoint, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) {
         let expectation = XCTestExpectation()
