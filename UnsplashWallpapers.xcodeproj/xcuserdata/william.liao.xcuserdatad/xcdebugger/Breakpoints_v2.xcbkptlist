@@ -439,22 +439,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "553B1944-6F97-41B5-A0CD-C8B5324C6292"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "UnsplashWallpapers/Service/URLSessionDataTaskProtocol.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "42"
-            endingLineNumber = "42"
-            landmarkName = "dataTask(with:completionHandler:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "082A1A55-3F3C-4B30-9471-7FED797EA3B5"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -466,22 +450,6 @@
             endingLineNumber = "52"
             landmarkName = "URLSession"
             landmarkType = "21">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "69120731-6743-494D-9059-7475A697B0A7"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "UnsplashWallpapers/Service/NetworkManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "604"
-            endingLineNumber = "604"
-            landmarkName = "createRequestWithURL(url:decode:completion:)"
-            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -514,70 +482,6 @@
             endingLineNumber = "37"
             landmarkName = "dataTask(with:completionHandler:)"
             landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "330C792A-21CA-4D1A-8AE6-4956D7C12DE9"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "UnsplashWallpapersTests/UnsplashWallpapersTests.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "85"
-            endingLineNumber = "85"
-            landmarkName = "test_GET_WithResponseData_ReturnsTheData()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "D6D5EF9E-21CF-4E13-BECF-FD2ED637EE04"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "UnsplashWallpapers/Service/UnsplashService.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "43"
-            endingLineNumber = "43"
-            landmarkName = "searchWithConcurrency(pageRequest:completion:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "D6D5EF9E-21CF-4E13-BECF-FD2ED637EE04 - d25c00206cb85def"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Sendable () async -&gt; () in UnsplashWallpapers.UnsplashService.searchWithConcurrency(pageRequest: UnsplashWallpapers.UnsplashSearchPagedRequest, completion: (UnsplashWallpapers.APIResult&lt;UnsplashWallpapers.SearchRespone, UnsplashWallpapers.ServerError&gt;) -&gt; ()) -&gt; ()"
-                  moduleName = "UnsplashWallpapers"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/william.liao/Documents/iOS_Practice/UnsplashWallpapers/UnsplashWallpapers/Service/UnsplashService.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "43"
-                  endingLineNumber = "43"
-                  offsetFromSymbolStart = "232">
-               </Location>
-               <Location
-                  uuid = "D6D5EF9E-21CF-4E13-BECF-FD2ED637EE04 - ac1d550190ae06f3"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Decodable) -&gt; Swift.Optional&lt;UnsplashWallpapers.SearchRespone&gt; in closure #1 @Sendable () async -&gt; () in UnsplashWallpapers.UnsplashService.searchWithConcurrency(pageRequest: UnsplashWallpapers.UnsplashSearchPagedRequest, completion: (UnsplashWallpapers.APIResult&lt;UnsplashWallpapers.SearchRespone, UnsplashWallpapers.ServerError&gt;) -&gt; ()) -&gt; ()"
-                  moduleName = "UnsplashWallpapers"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/william.liao/Documents/iOS_Practice/UnsplashWallpapers/UnsplashWallpapers/Service/UnsplashService.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "43"
-                  endingLineNumber = "43"
-                  offsetFromSymbolStart = "44">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

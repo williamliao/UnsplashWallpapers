@@ -141,9 +141,7 @@ extension UnsplashWallpapersTests {
        // _ = wait.wait(for: [expectation], timeout: 1)
     }
     
-    func testSuccessfulResponse() {
-        
-        let expectation = XCTestExpectation()
+    func testSuccessfulResponse() async {
         
         let fakeData = Data([0, 1, 0, 1])
     
@@ -154,18 +152,15 @@ extension UnsplashWallpapersTests {
         
         sut = UnsplashService(endPoint: .collections("mock", unsplashPagedRequest), withSession: mockSession)
         
-        sut.mock() { (result) in
+        await sut.mock() { (result) in
             switch result {
                 case .success(let data):
                     XCTAssertEqual(fakeData, data)
-                    expectation.fulfill()
+                    //expectation.fulfill()
                 case .failure(_):
                     break
             }
         }
-            
-        let wait = XCTWaiter()
-        _ = wait.wait(for: [expectation], timeout: 1)
     }
     
     func testNetworkClient_404Result() {

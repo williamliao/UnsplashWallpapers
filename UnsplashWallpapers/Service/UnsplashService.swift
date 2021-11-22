@@ -186,8 +186,18 @@ extension UnsplashService {
         
     }
     
-    func mock(completion: @escaping (APIResult<Data, Error>) -> Void) {
-        
-        
+    func mock(completion: @escaping (APIResult<Data, Error>) -> Void) async {
+        do {
+            try await getConcurrency { data, response, error in
+                
+                guard let data = data else {
+                    return
+                }
+                
+                completion(APIResult.success(data))
+            }
+        } catch  {
+            
+        }
     }
 }
