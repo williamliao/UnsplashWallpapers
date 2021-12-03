@@ -49,4 +49,9 @@ class SearchViewController: UIViewController {
             print("search error", error)
         }
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        viewModel.cancelWhenViewDidDisappear()
+    }
 }

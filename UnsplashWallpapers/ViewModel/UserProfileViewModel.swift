@@ -299,4 +299,8 @@ extension UserProfileViewModel {
         isLoading.value = false
         query = ""
     }
+    
+    func cancelWhenViewDidDisappear() {
+        service.cancelTask()
+    }
 }

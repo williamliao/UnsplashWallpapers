@@ -115,4 +115,8 @@ extension CollectionListViewModel {
             }
         }
     }
+    
+    func cancelWhenViewDidDisappear() {
+        service.cancelTask()
+    }
 }

@@ -100,4 +100,9 @@ class PhotoListViewController: UIViewController {
             viewModel.fetchData()
         }
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        viewModel.cancelWhenViewDidDisappear()
+    }
 }

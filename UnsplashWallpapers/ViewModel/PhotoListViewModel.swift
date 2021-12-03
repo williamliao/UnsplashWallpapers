@@ -91,7 +91,7 @@ extension PhotoListViewModel {
                     
                     switch error {
                         case .statusCodeError(let code):
-                            print(code)
+                            print("fetchData statusCodeError \(code)")
                             
                         case .encounteredError(let error):
                             self.error.value = error
@@ -128,7 +128,7 @@ extension PhotoListViewModel {
                     
                     switch error {
                         case .statusCodeError(let code):
-                            print(code)
+                            print("fetchNature statusCodeError \(code)")
                         default:
                             self.error.value = error
                     }
@@ -159,7 +159,7 @@ extension PhotoListViewModel {
                     
                     switch error {
                         case .statusCodeError(let code):
-                            print(code)
+                            print("fetchWallpapers statusCodeError \(code)")
                         default:
                             self.error.value = error
                     }
@@ -219,7 +219,7 @@ extension PhotoListViewModel {
                         
                         switch error {
                             case .statusCodeError(let code):
-                                print(code)
+                                print("fetchNextPage random statusCodeError \(code)")
                             default:
                                 self?.error.value = error
                         }
@@ -271,7 +271,7 @@ extension PhotoListViewModel {
                         
                         switch error {
                             case .statusCodeError(let code):
-                                print(code)
+                                print("fetchNextPage nature statusCodeError \(code)")
                             default:
                                 self?.error.value = error
                         }
@@ -326,7 +326,7 @@ extension PhotoListViewModel {
                         
                         switch error {
                             case .statusCodeError(let code):
-                                print(code)
+                                print("fetchNextPage wallpapers statusCodeError \(code)")
                             default:
                                 self?.error.value = error
                         }
@@ -363,6 +363,10 @@ extension PhotoListViewModel {
     func didCloseSearchFunction() {
         self.isSearching.value = false
         self.searchRespone.value = nil
+    }
+    
+    func cancelWhenViewDidDisappear() {
+        service.cancelTask()
     }
 }
 

@@ -111,4 +111,8 @@ extension DetailViewModel {
             }
         }
     }
+    
+    func cancelWhenViewDidDisappear() {
+        service.cancelTask()
+    }
 }

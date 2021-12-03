@@ -272,4 +272,8 @@ extension SearchViewModel {
         collectionsCursor = nil
         usersCursor = nil
     }
+    
+    func cancelWhenViewDidDisappear() {
+        service.cancelTask()
+    }
 }

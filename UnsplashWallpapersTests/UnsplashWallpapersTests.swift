@@ -50,7 +50,7 @@ extension UnsplashWallpapersTests {
         let dataTask = MockConcurrencyURLSessionDataTask()
         mockSession.dataTask = dataTask
 
-        let url = URL(string: "https://api.unsplash.com/photos/random?count=30&client_id=d0bd0d66796be14d38b9f5e45852397c35457a7479978ff4db3eea2fcd7e2383")!
+        let url = URL(string: "https://api.unsplash.com/photos/random?count=30&client_id=")!
         
         sut = UnsplashService(endPoint: .random, withSession: mockSession)
         

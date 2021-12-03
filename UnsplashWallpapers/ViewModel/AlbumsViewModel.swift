@@ -322,4 +322,8 @@ extension AlbumsViewModel {
         unsplashSharePagedRequest  = nil
         unsplashAllPagedRequest  = nil
     }
+    
+    func cancelWhenViewDidDisappear() {
+        service.cancelTask()
+    }
 }

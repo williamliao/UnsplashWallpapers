@@ -159,4 +159,9 @@ class AlbumsViewController: UIViewController {
         })
         print("AlbumView After task group")
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        viewModel.cancelWhenViewDidDisappear()
+    }
 }
