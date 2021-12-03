@@ -172,8 +172,8 @@ extension PhotoListView {
                 //print("Random")
                 dataSource = makeDataSource()
                 collectionView.dataSource = dataSource
-                viewModel.fetchDataWithConcurrency()
                 viewModel.reset()
+                viewModel.fetchDataWithConcurrency()
                 section = .random
                 viewModel.segmentedIndex = .random
                 
