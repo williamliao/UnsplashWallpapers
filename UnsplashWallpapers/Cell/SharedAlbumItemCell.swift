@@ -67,6 +67,7 @@ extension SharedAlbumItemCell {
     }
     featuredPhotoView.layer.cornerRadius = 4
     featuredPhotoView.clipsToBounds = true
+    featuredPhotoView.accessibilityIgnoresInvertColors = true
     contentContainer.addSubview(featuredPhotoView)
 
     titleLabel.translatesAutoresizingMaskIntoConstraints = false

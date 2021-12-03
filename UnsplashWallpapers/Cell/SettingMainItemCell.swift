@@ -19,6 +19,7 @@ class SettingMainItemCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
+        adaptToUserInterfaceStyle()
     }
 
     required init?(coder: NSCoder) {
@@ -72,20 +73,6 @@ extension SettingMainItemCell {
         self.addSubview(label)
         self.addSubview(button)
         
-        let theme = ThemeManager.currentTheme()
-        self.backgroundColor = theme.backgroundColor
-        button.setTitleColor(theme.titleTextColor, for: .normal)
-        label.textColor = theme.titleTextColor
-        
-        switch theme {
-            case .dark:
-                button.setTitle("dark", for: .normal)
-            case .light:
-                button.setTitle("light", for: .normal)
-            case .auto:
-                button.setTitle("auto", for: .normal)
-        }
-        
         NSLayoutConstraint.activate([
            
             label.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 20),
@@ -99,5 +86,39 @@ extension SettingMainItemCell {
         ])
     }
     
+    private func adaptToUserInterfaceStyle() {
+            
+        let theme = ThemeManager.currentTheme()
+        
+        if #available(iOS 12.0, *) {
+            
+            if contentView.traitCollection.userInterfaceStyle == .dark {
+                self.backgroundColor = .secondarySystemBackground
+            } else {
+                self.backgroundColor = .white
+            }
+        }
+        
+        button.setTitleColor(theme.titleTextColor, for: .normal)
+        label.textColor = theme.titleTextColor
+        
+        switch theme {
+            case .dark:
+                button.setTitle("dark", for: .normal)
+                
+            case .light:
+                button.setTitle("light", for: .normal)
+                
+            case .auto:
+                button.setTitle("auto", for: .normal)
+                self.backgroundColor = .secondarySystemBackground
+        }
+        
+        
+    }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        // Trait collection has already changed
+        adaptToUserInterfaceStyle()
+    }
 }

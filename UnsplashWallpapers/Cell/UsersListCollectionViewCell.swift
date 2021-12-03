@@ -47,6 +47,7 @@ extension UsersListCollectionViewCell {
         avatarImageView.layer.masksToBounds = false
         avatarImageView.layer.borderColor = traitCollection.userInterfaceStyle == .light ? UIColor.black.cgColor : UIColor.white.cgColor
         avatarImageView.clipsToBounds = true
+        avatarImageView.accessibilityIgnoresInvertColors = true
         
         contentView.addSubview(avatarImageView)
         contentView.addSubview(titleLabel)

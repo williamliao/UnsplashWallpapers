@@ -45,6 +45,7 @@ extension AlbumPhotoItemCell {
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         imageView.layer.masksToBounds = true
+        imageView.accessibilityIgnoresInvertColors = true
 
         guard let photoURL = self.photoURL else { return }
         self.configureImage(with: photoURL)

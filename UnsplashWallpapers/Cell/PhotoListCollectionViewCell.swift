@@ -56,6 +56,7 @@ extension PhotoListCollectionViewCell {
         thumbnailImageView = UIImageView()
         thumbnailImageView.contentMode = .scaleAspectFill
         thumbnailImageView.clipsToBounds = true
+        thumbnailImageView.accessibilityIgnoresInvertColors = true
         
         act.color = traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
 

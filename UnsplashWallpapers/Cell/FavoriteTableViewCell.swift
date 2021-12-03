@@ -53,6 +53,7 @@ extension FavoriteTableViewCell {
         thumbnailImageView.clipsToBounds = true
         thumbnailImageView.contentMode = .scaleAspectFill
         thumbnailImageView.layer.masksToBounds = true
+        thumbnailImageView.accessibilityIgnoresInvertColors = true
         
         avatarImageView = UIImageView()
         avatarImageView.contentMode = .scaleAspectFit
@@ -60,6 +61,7 @@ extension FavoriteTableViewCell {
         avatarImageView.layer.masksToBounds = false
         avatarImageView.layer.borderColor = traitCollection.userInterfaceStyle == .light ? UIColor.black.cgColor : UIColor.white.cgColor
         avatarImageView.clipsToBounds = true
+        avatarImageView.accessibilityIgnoresInvertColors = true
         
         act.color = traitCollection.userInterfaceStyle == .light ? UIColor.white : UIColor.black
     

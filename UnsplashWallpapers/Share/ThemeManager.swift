@@ -21,47 +21,84 @@ struct ThemeManager {
         }
     }
     
-    static func applyTheme(theme: Theme) {
+    static func applyTheme(theme: Theme, rootViewController: UITabBarController) {
         // First persist the selected theme using NSUserDefaults.
         //UserDefaults.standard.setValue(theme.rawValue, forKey: SelectedThemeKey)
         //UserDefaults.standard.synchronize()
         
-        
+        print("applyTheme \(theme)")
          
         // You get your current (selected) theme and apply the main color to the tintColor property of your application's window.
-        let sharedApplication = UIApplication.shared
-        sharedApplication.delegate?.window??.tintColor = theme.mainColor
+       //
+      //  sharedApplication.delegate?.window??.tintColor = theme.mainColor
 
-        UINavigationBar.appearance().barStyle = theme.navigationBarStyle
-        UINavigationBar.appearance().barTintColor = UITraitCollection.current.userInterfaceStyle == .dark ? .black : .white
         
+        //UINavigationBar.appearance().setBackgroundImage(theme.navigationBackgroundImage, for: .default)
+        //UINavigationBar.appearance().backIndicatorImage = UIImage(named: "backArrow")
+        //UINavigationBar.appearance().backIndicatorTransitionMaskImage = UIImage(named: "backArrowMaskFixed")
+       // UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: theme.titleTextColor]
+      //  UINavigationBar.appearance().barStyle = UITraitCollection.current.userInterfaceStyle == .dark ? .black : .default
+      //  UINavigationBar.appearance().barTintColor = UITraitCollection.current.userInterfaceStyle == .dark ? .black : .white
+        
+       
         let barAppearance = UINavigationBarAppearance()
-        barAppearance.backgroundColor = theme.mainColor
+        barAppearance.backgroundColor = UITraitCollection.current.userInterfaceStyle == .dark ? .black : .white
+        barAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: theme.titleTextColor]
 
-        let navigationBar = UINavigationBar.appearance()
-        navigationBar.standardAppearance = barAppearance
-        navigationBar.scrollEdgeAppearance = barAppearance
+        UINavigationBar.appearance().standardAppearance = barAppearance
+        UINavigationBar.appearance().scrollEdgeAppearance = barAppearance
         
-         //UINavigationBar.appearance().setBackgroundImage(theme.navigationBackgroundImage, for: .default)
-         //UINavigationBar.appearance().backIndicatorImage = UIImage(named: "backArrow")
-         //UINavigationBar.appearance().backIndicatorTransitionMaskImage = UIImage(named: "backArrowMaskFixed")
-        UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: theme.titleTextColor]
-
-
-        UITabBar.appearance().barStyle = theme.tabBarStyle
-        UITabBar.appearance().barTintColor = UITraitCollection.current.userInterfaceStyle == .dark ? .black : .white
-        UITabBar.appearance().unselectedItemTintColor = theme.titleTextColor
-        
-        let tabBarAppearance = UITabBarAppearance()
-        tabBarAppearance.backgroundColor = theme.mainColor
-        
-        let tabBar = UITabBar.appearance()
-        tabBar.standardAppearance = tabBarAppearance
-        if #available(iOS 15.0, *) {
-            tabBar.scrollEdgeAppearance = tabBarAppearance
-        } else {
-            // Fallback on earlier versions
+        let compactAppearance = barAppearance.copy()
+        UINavigationBar.appearance().compactAppearance = compactAppearance
+        if #available(iOS 15.0, *) { // For compatibility with earlier iOS.
+            UINavigationBar.appearance().compactScrollEdgeAppearance = compactAppearance
         }
+        
+//        guard let selectVC = rootViewController.selectedViewController else {
+//            return
+//        }
+//
+//        selectVC.navigationItem.standardAppearance = barAppearance
+//        selectVC.navigationItem.scrollEdgeAppearance = barAppearance
+        
+        
+
+        let tabBar = UITabBar.appearance()
+        
+        guard let items = rootViewController.tabBar.items else {
+            return
+        }
+        
+        for currentItem in items {
+            let itemAppearance = UITabBarItemAppearance()
+            itemAppearance.normal.badgeTextAttributes = [NSAttributedString.Key.foregroundColor: UITraitCollection.current.userInterfaceStyle == .dark ? UIColor.white : UIColor.black]
+            itemAppearance.normal.badgePositionAdjustment = UIOffset(horizontal: 10, vertical: -10)
+           
+            itemAppearance.normal.iconColor = UIColor.lightGray
+            itemAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+                    
+            itemAppearance.selected.iconColor = .systemCyan
+            itemAppearance.selected.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.systemCyan]
+            
+            
+            let tabBarAppearance = UITabBarAppearance()
+            tabBarAppearance.backgroundColor = UITraitCollection.current.userInterfaceStyle == .dark ? .black : .white
+            
+            
+            tabBarAppearance.stackedLayoutAppearance = itemAppearance
+            tabBarAppearance.inlineLayoutAppearance = itemAppearance
+            tabBarAppearance.compactInlineLayoutAppearance = itemAppearance
+            tabBar.standardAppearance = tabBarAppearance
+            tabBar.scrollEdgeAppearance = tabBarAppearance
+            
+            currentItem.standardAppearance = tabBarAppearance
+            currentItem.scrollEdgeAppearance = tabBarAppearance
+            
+        }
+        
+        //UITabBar.appearance().barStyle = theme.tabBarStyle
+//        UITabBar.appearance().barTintColor = UITraitCollection.current.userInterfaceStyle == .dark ? .black : .white
+//        UITabBar.appearance().unselectedItemTintColor = theme.titleTextColor
         
         UICollectionView.appearance().tintColor = theme.mainColor
         UICollectionView.appearance().backgroundColor = theme.mainColor
@@ -77,6 +114,7 @@ struct ThemeManager {
         let titleTextAttributes1 = [NSAttributedString.Key.foregroundColor: theme.segmentedSelectedTitleColor]
         UISegmentedControl.appearance().setTitleTextAttributes(titleTextAttributes1, for:.selected)
         
+     
          //UITabBar.appearance().backgroundImage = theme.tabBarBackgroundImage
 
 //         let tabIndicator = UIImage(named: "tabBarSelectionIndicator")?.withRenderingMode(.alwaysTemplate)
@@ -225,4 +263,13 @@ struct ThemeManager {
             }
         }
     }
+}
+
+extension UIApplication {
+
+    /// The app's key window taking into consideration apps that support multiple scenes.
+    var keyWindowInConnectedScenes: UIWindow? {
+        return windows.first(where: { $0.isKeyWindow })
+    }
+
 }

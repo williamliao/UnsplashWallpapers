@@ -54,6 +54,7 @@ extension AlbumItemCell {
       //featuredPhotoView.image = UIImage(contentsOfFile: featuredPhotoURL.path)
     }
     featuredPhotoView.clipsToBounds = true
+    featuredPhotoView.accessibilityIgnoresInvertColors = true
     contentContainer.addSubview(featuredPhotoView)
 
     titleLabel.translatesAutoresizingMaskIntoConstraints = false

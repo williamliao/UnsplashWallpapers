@@ -54,22 +54,24 @@ class MainCoordinator: Coordinator {
         
         if #available(iOS 13.0, *) {
             
-            let tintColor = self.rootViewController.traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
+            //let tintColor = self.rootViewController.traitCollection.userInterfaceStyle == .light ? UIColor.black : UIColor.white
             
-            self.rootViewController.tabBar.items?[0].image = UIImage(systemName: "square")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
-            self.rootViewController.tabBar.items?[0].selectedImage = UIImage(systemName: "square.fill")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            self.rootViewController.tabBar.items?[0].image = UIImage(systemName: "square")
+            self.rootViewController.tabBar.items?[0].selectedImage = UIImage(systemName: "square.fill")
             
-            self.rootViewController.tabBar.items?[1].image = UIImage(systemName: "square")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
-            self.rootViewController.tabBar.items?[1].selectedImage = UIImage(systemName: "square.fill")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            self.rootViewController.tabBar.items?[1].image = UIImage(systemName: "square")
+            self.rootViewController.tabBar.items?[1].selectedImage = UIImage(systemName: "square.fill")
             
-            self.rootViewController.tabBar.items?[2].image = UIImage(systemName: "magnifyingglass")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
-            self.rootViewController.tabBar.items?[2].selectedImage = UIImage(systemName: "magnifyingglass.circle.fill")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            self.rootViewController.tabBar.items?[2].image = UIImage(systemName: "magnifyingglass")
+            self.rootViewController.tabBar.items?[2].selectedImage = UIImage(systemName: "magnifyingglass.circle.fill")
      
-            self.rootViewController.tabBar.items?[3].image = UIImage(systemName: "heart")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
-            self.rootViewController.tabBar.items?[3].selectedImage = UIImage(systemName: "heart.fill")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            self.rootViewController.tabBar.items?[3].image = UIImage(systemName: "heart")
+            self.rootViewController.tabBar.items?[3].selectedImage = UIImage(systemName: "heart.fill")
             
-            self.rootViewController.tabBar.items?[4].image = UIImage(systemName: "square.grid.3x3")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
-            self.rootViewController.tabBar.items?[4].selectedImage = UIImage(systemName: "square.grid.3x3.fill")?.withRenderingMode(.alwaysOriginal).withTintColor(tintColor)
+            self.rootViewController.tabBar.items?[4].image = UIImage(systemName: "square.grid.3x3")
+            self.rootViewController.tabBar.items?[4].selectedImage = UIImage(systemName: "square.grid.3x3.fill")
+            
+            
             
         } else {
             // Fallback on earlier versions

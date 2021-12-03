@@ -21,7 +21,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         coordinator.start()
         mainCoordinator = coordinator
         
-        var themeValue = ThemeManager.Theme.init(rawValue: 1)
+        NotificationCenter.default.addObserver(forName: traitCollectionDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
+            //print("isDark: \(UITraitCollection.current.userInterfaceStyle == .dark)")
+            // Do your things...
+            self?.setupThemeManager(rootViewController: tabController)
+        }
+        
+        setupThemeManager(rootViewController: tabController)
+        
+        window = MyWindow(frame: windowScene.coordinateSpace.bounds)
+        window?.windowScene = windowScene
+        window?.rootViewController = tabController
+        window?.makeKeyAndVisible()
+        
+    }
+    
+    func setupThemeManager(rootViewController: UITabBarController) {
+        let value = UITraitCollection.current.userInterfaceStyle == .light ? 1 : 0
+        var themeValue = ThemeManager.Theme.init(rawValue: value)
         
         switch UITraitCollection.current.userInterfaceStyle {
             case .dark:
@@ -36,21 +53,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         UserDefaults.standard.setValue(themeValue?.rawValue, forKey: SelectedThemeKey)
         UserDefaults.standard.synchronize()
-        ThemeManager.applyTheme(theme: themeValue!)
-        
-        if ((UserDefaults.standard.object(forKey: SelectedThemeKey) == nil)) {
-            
-            
-        } else {
-            let storeTheme = UserDefaults.standard.object(forKey: SelectedThemeKey) as! Int
-            let theme = ThemeManager.Theme.init(rawValue: storeTheme)
-            ThemeManager.applyTheme(theme: theme ?? .light)
-        }
-        
-        window = UIWindow(frame: windowScene.coordinateSpace.bounds)
-        window?.windowScene = windowScene
-        window?.rootViewController = tabController
-        window?.makeKeyAndVisible()
+        ThemeManager.applyTheme(theme: themeValue!, rootViewController: rootViewController)
+//
+//        if ((UserDefaults.standard.object(forKey: SelectedThemeKey) == nil)) {
+//
+//
+//        } else {
+//            let storeTheme = UserDefaults.standard.object(forKey: SelectedThemeKey) as! Int
+//            let theme = ThemeManager.Theme.init(rawValue: storeTheme)
+//            ThemeManager.applyTheme(theme: theme ?? .light)
+//        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

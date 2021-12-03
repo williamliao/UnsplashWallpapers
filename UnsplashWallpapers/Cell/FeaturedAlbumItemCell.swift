@@ -74,6 +74,7 @@ extension FeaturedAlbumItemCell {
     }
     featuredPhotoView.layer.cornerRadius = 4
     featuredPhotoView.clipsToBounds = true
+    featuredPhotoView.accessibilityIgnoresInvertColors = true
     //featuredPhotoView.contentMode = .scaleAspectFit
     contentContainer.addSubview(featuredPhotoView)
 

@@ -42,7 +42,7 @@ extension SettingView {
     
     func configureHierarchy() {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: configureLayout())
-        //collectionView.backgroundColor = .systemBackground
+        collectionView.backgroundColor = .clear
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.dataSource = self.dataSource
         self.addSubview(collectionView)
@@ -66,8 +66,7 @@ extension SettingView {
        
         let configuredMainCell = UICollectionView.CellRegistration<SettingMainItemCell, SettingItem> { (cell, indexPath, itemIdentifier) in
             cell.label.text = itemIdentifier.title
-            
-            
+
         }
         
         let configuredAboutCell = UICollectionView.CellRegistration<UICollectionViewListCell, SettingItem> { (cell, indexPath, itemIdentifier) in

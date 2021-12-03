@@ -64,6 +64,8 @@ extension DetailView {
         
         imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
+        imageView.accessibilityIgnoresInvertColors = true
+        
         scrollView.addSubview(imageView)
         scrollView.addSubview(act)
         

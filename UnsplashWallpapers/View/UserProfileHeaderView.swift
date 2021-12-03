@@ -44,6 +44,7 @@ extension UserProfileHeaderView {
         avatarImageView.layer.masksToBounds = false
         avatarImageView.layer.borderColor = traitCollection.userInterfaceStyle == .light ? UIColor.black.cgColor : UIColor.white.cgColor
         avatarImageView.clipsToBounds = true
+        avatarImageView.accessibilityIgnoresInvertColors = true
         
         self.addSubview(avatarImageView)
         self.addSubview(titleLabel)
