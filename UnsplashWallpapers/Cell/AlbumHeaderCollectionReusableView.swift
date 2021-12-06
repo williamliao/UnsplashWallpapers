@@ -12,35 +12,43 @@ class AlbumHeaderCollectionReusableView: UICollectionReusableView {
     static var reuseIdentifier: String {
         return String(describing: AlbumHeaderCollectionReusableView.self)
     }
-    
+
     let label = UILabel()
 
     override init(frame: CGRect) {
-      super.init(frame: frame)
-      configure()
+    super.init(frame: frame)
+        configure()
+        adaptToUserInterfaceStyle()
     }
 
     required init?(coder: NSCoder) {
-      fatalError()
+        fatalError()
     }
 }
 
 extension AlbumHeaderCollectionReusableView {
-  func configure() {
-    let theme = ThemeManager.currentTheme()
-    
-    label.textColor = theme.titleTextColor
-    addSubview(label)
-    label.translatesAutoresizingMaskIntoConstraints = false
-    label.adjustsFontForContentSizeCategory = true
+    func configure() {
+        addSubview(label)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.adjustsFontForContentSizeCategory = true
 
-    let inset = CGFloat(10)
-    NSLayoutConstraint.activate([
-      label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: inset),
-      label.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -inset),
-      label.topAnchor.constraint(equalTo: topAnchor, constant: inset),
-      label.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -inset)
-    ])
-    label.font = UIFont.preferredFont(forTextStyle: .title3)
-  }
+        let inset = CGFloat(10)
+        NSLayoutConstraint.activate([
+          label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: inset),
+          label.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -inset),
+          label.topAnchor.constraint(equalTo: topAnchor, constant: inset),
+          label.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -inset)
+        ])
+        label.font = UIFont.preferredFont(forTextStyle: .title3)
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        // Trait collection has already changed
+        adaptToUserInterfaceStyle()
+    }
+    
+    private func adaptToUserInterfaceStyle() {
+        let textColor: UIColor = UITraitCollection.current.userInterfaceStyle == .dark ? .white : .black
+        label.textColor = textColor;
+    }
 }

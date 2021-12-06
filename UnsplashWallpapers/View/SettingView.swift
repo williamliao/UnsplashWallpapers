@@ -75,7 +75,7 @@ extension SettingView {
             contentConfiguration.text = itemIdentifier.title
             contentConfiguration.secondaryText = itemIdentifier.subTitle
             
-            contentConfiguration.textProperties.color = UITraitCollection.current.userInterfaceStyle == .light ? .black : .white
+            contentConfiguration.textProperties.color = .label
             contentConfiguration.secondaryTextProperties.color = .systemGray
 
             if (indexPath.row != 0) {

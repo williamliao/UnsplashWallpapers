@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CollectionListViewController: UIViewController {
+class CollectionListViewController: BaseViewController {
     
     var viewModel: CollectionListViewModel!
     var collectionView: CollectionListView!

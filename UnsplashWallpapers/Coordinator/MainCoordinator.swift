@@ -87,7 +87,7 @@ class MainCoordinator: Coordinator {
         albums.title = "Albums"
         albums.viewModel = albumsViewModel
         albums.viewModel.coordinator = self
-        let nav = UINavigationController(rootViewController: albums)
+        let nav = BaseNavigationViewController(rootViewController: albums)
         return nav
     }
     
@@ -96,7 +96,7 @@ class MainCoordinator: Coordinator {
         photo.title = "Photo"
         photo.viewModel = photoListViewModel
         photo.viewModel.coordinator = self
-        let nav = UINavigationController(rootViewController: photo)
+        let nav = BaseNavigationViewController(rootViewController: photo)
         return nav
     }
     
@@ -113,7 +113,7 @@ class MainCoordinator: Coordinator {
         search.viewModel = searchViewModel
         search.viewModel.coordinator = self
         search.title = "Search"
-        let nav = UINavigationController(rootViewController: search)
+        let nav = BaseNavigationViewController(rootViewController: search)
         return nav
     }
     
@@ -121,14 +121,14 @@ class MainCoordinator: Coordinator {
         let favorite = FavoriteViewController()
         favorite.viewModel = favoriteViewModel
         favorite.title = "Favorite"
-        let nav = UINavigationController(rootViewController: favorite)
+        let nav = BaseNavigationViewController(rootViewController: favorite)
         return nav
     }
     
     func createSettingView() -> UINavigationController {
         let setting = SettingViewController()
         setting.title = "Setting"
-        let nav = UINavigationController(rootViewController: setting)
+        let nav = BaseNavigationViewController(rootViewController: setting)
         return nav
     }
 }

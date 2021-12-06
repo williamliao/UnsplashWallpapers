@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SettingViewController: UIViewController {
+class SettingViewController: BaseViewController {
     
     var settingListView: SettingView!
 

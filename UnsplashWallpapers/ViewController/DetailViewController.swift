@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DetailViewController: UIViewController {
+class DetailViewController: BaseViewController {
     var viewModel: DetailViewModel!
     var detailView: DetailView!
 

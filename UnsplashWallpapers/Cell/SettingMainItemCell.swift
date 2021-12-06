@@ -87,34 +87,14 @@ extension SettingMainItemCell {
     }
     
     private func adaptToUserInterfaceStyle() {
-            
-        let theme = ThemeManager.currentTheme()
         
-        if #available(iOS 12.0, *) {
-            
-            if contentView.traitCollection.userInterfaceStyle == .dark {
-                self.backgroundColor = .secondarySystemBackground
-            } else {
-                self.backgroundColor = .white
-            }
-        }
+        let textColor: UIColor = UITraitCollection.current.userInterfaceStyle == .dark ? .white : .black
+        let text = UITraitCollection.current.userInterfaceStyle == .dark ? "dark" : "light"
         
-        button.setTitleColor(theme.titleTextColor, for: .normal)
-        label.textColor = theme.titleTextColor
+        button.setTitle(text, for: .normal)
+        button.setTitleColor(textColor, for: .normal)
         
-        switch theme {
-            case .dark:
-                button.setTitle("dark", for: .normal)
-                
-            case .light:
-                button.setTitle("light", for: .normal)
-                
-            case .auto:
-                button.setTitle("auto", for: .normal)
-                self.backgroundColor = .secondarySystemBackground
-        }
-        
-        
+        self.backgroundColor = .tertiarySystemBackground
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PhotoListViewController: UIViewController {
+class PhotoListViewController: BaseViewController {
     
     var viewModel: PhotoListViewModel!
     

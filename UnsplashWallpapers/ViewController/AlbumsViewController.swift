@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AlbumsViewController: UIViewController {
+class AlbumsViewController: BaseViewController {
     
     var viewModel: AlbumsViewModel!
     var albumsView: AlbumsView!

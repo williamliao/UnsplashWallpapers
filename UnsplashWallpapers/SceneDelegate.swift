@@ -21,13 +21,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         coordinator.start()
         mainCoordinator = coordinator
         
-        NotificationCenter.default.addObserver(forName: traitCollectionDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
-            //print("isDark: \(UITraitCollection.current.userInterfaceStyle == .dark)")
-            // Do your things...
-            self?.setupThemeManager(rootViewController: tabController)
-        }
-        
-        setupThemeManager(rootViewController: tabController)
+//        NotificationCenter.default.addObserver(forName: traitCollectionDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
+//            //print("isDark: \(UITraitCollection.current.userInterfaceStyle == .dark)")
+//            // Do your things...
+//            self?.setupThemeManager(rootViewController: tabController)
+//        }
+//
+//        setupThemeManager(rootViewController: tabController)
         
         window = MyWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene

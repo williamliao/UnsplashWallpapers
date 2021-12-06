@@ -7,7 +7,7 @@
 
 import UIKit
 
-class FeaturedAlbumItemCell: UICollectionViewCell {
+class FeaturedAlbumItemCell: BaseCollectionViewCell {
     static var reuseIdentifier: String {
         return String(describing: FeaturedAlbumItemCell.self)
     }

@@ -54,7 +54,7 @@ class PhotoListView: UIView {
     var isLoadingNewData = false
     
     let items = ["Random", "Nature", "Wallpapers"]
-    lazy var segmentedControl = UISegmentedControl(items: items)
+    lazy var segmentedControl = BaseSegmentedControl(items: items)
     
     var imageLoadQueue: OperationQueue?
     var imageLoadOperations: [IndexPath: ImageLoadOperation] = [:]
@@ -82,8 +82,8 @@ extension PhotoListView {
     
     func configureCollectionView() {
        
-        let theme = ThemeManager.currentTheme()
-        self.backgroundColor = theme.backgroundColor
+        //let theme = ThemeManager.currentTheme()
+        //self.backgroundColor = theme.backgroundColor
         
         let flowLayout = UICollectionViewFlowLayout()
         //flowLayout.itemSize = CGSize(width: UIScreen.main.bounds.size.width, height: 300)

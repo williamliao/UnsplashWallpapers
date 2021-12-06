@@ -7,7 +7,7 @@
 
 import UIKit
 
-class FavoriteViewController: UIViewController {
+class FavoriteViewController: BaseViewController {
     
     var viewModel: FavoriteViewModel!
    

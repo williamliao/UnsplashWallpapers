@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PhotoExifViewController: UIViewController {
+class PhotoExifViewController: BaseViewController {
     
     var photoExifView: PhotoExifView!
     var viewModel: PhotoExifViewModel!

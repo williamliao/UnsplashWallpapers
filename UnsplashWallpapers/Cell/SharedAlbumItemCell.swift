@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SharedAlbumItemCell: UICollectionViewCell {
+class SharedAlbumItemCell: BaseCollectionViewCell {
     static var reuseIdentifier: String {
         return String(describing: SharedAlbumItemCell.self)
     }

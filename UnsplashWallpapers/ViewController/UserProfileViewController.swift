@@ -7,7 +7,7 @@
 
 import UIKit
 
-class UserProfileViewController: UIViewController {
+class UserProfileViewController: BaseViewController {
     
     var viewModel: UserProfileViewModel!
     var userProfileView: UserProfileView!

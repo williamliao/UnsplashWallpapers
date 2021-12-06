@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AlbumItemCell: UICollectionViewCell {
+class AlbumItemCell: BaseCollectionViewCell {
     static var reuseIdentifier: String {
         return String(describing: AlbumItemCell.self)
     }
