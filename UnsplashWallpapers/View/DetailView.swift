@@ -139,12 +139,16 @@ extension DetailView {
         }
        
         viewModel.isLoading.value = true
-        viewModel.downloader.downloadWithErrorHandler(url: url) { [weak self] (image, error) in
-            self?.viewModel.isLoading.value = false
-            guard error == nil else {
-                return
+        if #available(iOS 14.0.0, *) {
+            viewModel.downloader.downloadWithErrorHandler(url: url) { [weak self] (image, error) in
+                self?.viewModel.isLoading.value = false
+                guard error == nil else {
+                    return
+                }
+                self?.showImage(image: image)
             }
-            self?.showImage(image: image)
+        } else {
+            // Fallback on earlier versions
         }
     }
     
@@ -257,28 +261,54 @@ extension DetailView {
         }
     }
     
-    @available(iOS 15.0.0, *)
+    @available(iOS 13.0.0, *)
     func getDataWithConcurrency(from imageUrl: URL, completion: @escaping (UIImage?, URLResponse?, Error?) -> ()) async throws {
         let imageRequest = URLRequest(url: imageUrl)
         
-        let (imageData, imageResponse) = try await URLSession.shared.data(for: imageRequest)
-        guard let imageData = UIImage(data: imageData) else {
-            throw ImageDownloadError.badImage
+        if #available(iOS 15.0, *) {
+            let (imageData, imageResponse) = try await URLSession.shared.data(for: imageRequest)
+            guard let imageData = UIImage(data: imageData) else {
+                throw ImageDownloadError.badImage
+            }
+            
+            completion(imageData, imageResponse, nil)
+        } else {
+            // Fallback on earlier versions
+            
+            var imageData: UIImage?
+            var imageResponse: URLResponse?
+            
+            let semaphore = DispatchSemaphore(value: 0)
+            let task = await URLSession.shared.dataTask(with: imageRequest, completionHandler: { data, response, error in
+                
+                guard let data = data, let imgData = UIImage(data: data) else {
+                    return
+                }
+                imageData = imgData
+                imageResponse = response
+                semaphore.signal()
+            })
+            task.resume()
+            
+            semaphore.wait()
+            completion(imageData, imageResponse, nil)
         }
         
-        completion(imageData, imageResponse, nil)
     }
     
-    @available(iOS 15.0.0, *)
+    @available(iOS 13.0.0, *)
     func downloadImageWithConcurrency(from url: URL) async throws {
         print("Download Started")
         try await getDataWithConcurrency(from: url) { image, response, error in
             guard let image = image, error == nil else { return }
             print(response?.suggestedFilename ?? url.lastPathComponent)
             
-            Task.detached(priority: .background) {
-                print("storeImageInDisk")
-                await self.storeImageInDisk(image: image)
+            if #available(iOS 15.0.0, *) {
+                Task.detached(priority: .background) {
+                    print("storeImageInDisk")
+                    await self.storeImageInDisk(image: image)
+                    
+                }
             }
             
             // always update the UI from the main thread
@@ -289,7 +319,7 @@ extension DetailView {
         }
     }
     
-    @available(iOS 15.0.0, *)
+    @available(iOS 13.0.0, *)
     func storeImageInDisk(image: UIImage) async {
         guard
             let imageData = image.pngData(),

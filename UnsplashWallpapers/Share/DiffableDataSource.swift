@@ -51,6 +51,7 @@ extension UITableViewDiffableDataSource {
     }
 }
 
+@available(iOS 14.0.0, *)
 extension UICollectionView.CellRegistration {
     var cellProvider: (UICollectionView, IndexPath, Item) -> Cell {
         return { collectionView, indexPath, product in

@@ -101,25 +101,29 @@ extension PhotoListCollectionViewCell {
         
         DispatchQueue.global().async { [weak self] in
           
-            self?.downloader.downloadWithErrorHandler(url: url, completionHandler: { [weak self] (image, error) in
-                
-                DispatchQueue.main.async {
-                    self?.isLoading(isLoading: false)
-                }
-                
-                guard error == nil else {
+            if #available(iOS 14.0.0, *) {
+                self?.downloader.downloadWithErrorHandler(url: url, completionHandler: { [weak self] (image, error) in
                     
-                    print(error?.localizedDescription ?? "")
-                    return
-                }
-                
-                guard let image = image else {
+                    DispatchQueue.main.async {
+                        self?.isLoading(isLoading: false)
+                    }
                     
-                    return
-                }
-                self?.showImage(image: image)
-                
-            })
+                    guard error == nil else {
+                        
+                        print(error?.localizedDescription ?? "")
+                        return
+                    }
+                    
+                    guard let image = image else {
+                        
+                        return
+                    }
+                    self?.showImage(image: image)
+                    
+                })
+            } else {
+                // Fallback on earlier versions
+            }
         }
     }
     

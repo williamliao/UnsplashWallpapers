@@ -14,7 +14,7 @@ class UnsplashService: NetworkManager {
 
 extension UnsplashService {
     
-    @available(iOS 15.0.0, *)
+    @available(iOS 13.0.0, *)
     func fetchWithConcurrency(completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
         
         guard loadingTask == nil else {
@@ -42,7 +42,7 @@ extension UnsplashService {
 //        }, completion: completion)
     }
     
-    @available(iOS 15.0.0, *)
+    @available(iOS 13.0.0, *)
     func searchWithConcurrency(pageRequest: UnsplashSearchPagedRequest, completion: @escaping (APIResult<SearchRespone, ServerError>) -> Void) {
         
         guard loadingTask == nil else {

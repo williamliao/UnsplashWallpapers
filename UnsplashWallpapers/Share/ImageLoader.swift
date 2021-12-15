@@ -113,6 +113,7 @@ public final class ImageLoader {
         }
     }
     
+    @available(iOS 15.0.0, *)
     func awaitAsync(for url: URL) async throws -> UIImage {
         let (data, response) = try await urlSession.data(from: url)
         guard (response as? HTTPURLResponse)?.statusCode == 200 else {

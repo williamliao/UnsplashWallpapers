@@ -65,7 +65,7 @@ class AlbumsViewController: BaseViewController {
     
     func multipleAsyncOperations() {
         
-        if #available(iOS 15.0.0, *) {
+        if #available(iOS 13.0.0, *) {
             Task {
                 await downloadWithMultipleSource()
             }
@@ -119,7 +119,7 @@ class AlbumsViewController: BaseViewController {
         }
     }
     
-    @available(iOS 15.0.0, *)
+    @available(iOS 13.0.0, *)
     func downloadAll(imageNumber: Int) {
         
         if imageNumber == 0 {
@@ -142,7 +142,7 @@ class AlbumsViewController: BaseViewController {
        
     }
     
-    @available(iOS 15.0.0, *)
+    @available(iOS 13.0.0, *)
     func downloadWithMultipleSource() async {
         print("AlbumView Before task group")
         

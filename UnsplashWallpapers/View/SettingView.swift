@@ -41,7 +41,16 @@ class SettingView: UIView {
 extension SettingView {
     
     func configureHierarchy() {
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: configureLayout())
+        if #available(iOS 14.0.0, *) {
+            collectionView = UICollectionView(frame: .zero, collectionViewLayout: configureLayout())
+        } else {
+            // Fallback on earlier versions
+            let flowLayout = UICollectionViewFlowLayout()
+            collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+            
+            collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "SettingAboutItemCell_Id")
+            collectionView.register(SettingMainItemCell.self, forCellWithReuseIdentifier: SettingMainItemCell.reuseIdentifier)
+        }
         collectionView.backgroundColor = .clear
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.dataSource = self.dataSource
@@ -54,6 +63,7 @@ extension SettingView {
         ])
     }
     
+    @available(iOS 14.0.0, *)
     func configureLayout() -> UICollectionViewLayout {
       let provider = {(_: Int, layoutEnv: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
         let configuration = UICollectionLayoutListConfiguration(appearance: .grouped)
@@ -64,46 +74,69 @@ extension SettingView {
     
     func configureDataSource() {
        
-        let configuredMainCell = UICollectionView.CellRegistration<SettingMainItemCell, SettingItem> { (cell, indexPath, itemIdentifier) in
-            cell.label.text = itemIdentifier.title
+        if #available(iOS 14.0, *) {
+            let configuredMainCell = UICollectionView.CellRegistration<SettingMainItemCell, SettingItem> { (cell, indexPath, itemIdentifier) in
+                cell.label.text = itemIdentifier.title
+                
+            }
+            
+            let configuredAboutCell = UICollectionView.CellRegistration<UICollectionViewListCell, SettingItem> { (cell, indexPath, itemIdentifier) in
+                var contentConfiguration = UIListContentConfiguration.valueCell()
+                
+                contentConfiguration.text = itemIdentifier.title
+                contentConfiguration.secondaryText = itemIdentifier.subTitle
+                
+                contentConfiguration.textProperties.color = .label
+                contentConfiguration.secondaryTextProperties.color = .systemGray
 
+                if (indexPath.row != 0) {
+                    // 1
+                    let options = UICellAccessory.OutlineDisclosureOptions(style: .header)
+                    // 2
+                    let disclosureAccessory = UICellAccessory.outlineDisclosure(options: options)
+                    // 3
+                    cell.accessories = [disclosureAccessory]
+                }
+                
+                cell.contentConfiguration = contentConfiguration
+            }
+            
+            dataSource = UICollectionViewDiffableDataSource<SectionLayoutKind, SettingItem>(collectionView: collectionView) {
+                (collectionView: UICollectionView, indexPath: IndexPath, identifier: SettingItem) -> UICollectionViewCell? in
+                // Return the cell.
+                guard let section = SectionLayoutKind(rawValue: indexPath.section) else {
+                    return nil
+                }
+                
+                switch section {
+                    case .main:
+                        return collectionView.dequeueConfiguredReusableCell(using: configuredMainCell, for: indexPath, item: identifier)
+                    case .about:
+                        return collectionView.dequeueConfiguredReusableCell(using: configuredAboutCell, for: indexPath, item: identifier)
+                }
+            }
+            
+        } else {
+            // Fallback on earlier versions
+            
+            dataSource = UICollectionViewDiffableDataSource<SectionLayoutKind, SettingItem>(collectionView: collectionView) {
+                (collectionView: UICollectionView, indexPath: IndexPath, identifier: SettingItem) -> UICollectionViewCell? in
+                // Return the cell.
+                guard let section = SectionLayoutKind(rawValue: indexPath.section) else {
+                    return nil
+                }
+                
+                switch section {
+                    case .main:
+                        return collectionView.dequeueReusableCell(withReuseIdentifier: SettingMainItemCell.reuseIdentifier, for: indexPath)
+                    case .about:
+                        return collectionView.dequeueReusableCell(withReuseIdentifier: "SettingAboutItemCell_Id", for: indexPath)
+                }
+            }
+            
         }
         
-        let configuredAboutCell = UICollectionView.CellRegistration<UICollectionViewListCell, SettingItem> { (cell, indexPath, itemIdentifier) in
-            var contentConfiguration = UIListContentConfiguration.valueCell()
-            
-            contentConfiguration.text = itemIdentifier.title
-            contentConfiguration.secondaryText = itemIdentifier.subTitle
-            
-            contentConfiguration.textProperties.color = .label
-            contentConfiguration.secondaryTextProperties.color = .systemGray
-
-            if (indexPath.row != 0) {
-                // 1
-                let options = UICellAccessory.OutlineDisclosureOptions(style: .header)
-                // 2
-                let disclosureAccessory = UICellAccessory.outlineDisclosure(options: options)
-                // 3
-                cell.accessories = [disclosureAccessory]
-            }
-            
-            cell.contentConfiguration = contentConfiguration
-        }
         
-        dataSource = UICollectionViewDiffableDataSource<SectionLayoutKind, SettingItem>(collectionView: collectionView) {
-            (collectionView: UICollectionView, indexPath: IndexPath, identifier: SettingItem) -> UICollectionViewCell? in
-            // Return the cell.
-            guard let section = SectionLayoutKind(rawValue: indexPath.section) else {
-                return nil
-            }
-            
-            switch section {
-                case .main:
-                    return collectionView.dequeueConfiguredReusableCell(using: configuredMainCell, for: indexPath, item: identifier)
-                case .about:
-                    return collectionView.dequeueConfiguredReusableCell(using: configuredAboutCell, for: indexPath, item: identifier)
-            }
-        }
     }
     
     func applyInitialSnapshots() {
@@ -113,12 +146,21 @@ extension SettingView {
         snapshot.appendSections(SectionLayoutKind.allCases)
         dataSource.apply(snapshot, animatingDifferences: false)
         
-        var mainSnapshot = NSDiffableDataSourceSectionSnapshot<SettingItem>()
-        mainSnapshot.append(settingTexts)
-        dataSource.apply(mainSnapshot, to: .main, animatingDifferences: false)
+        if #available(iOS 14.0, *) {
+            var mainSnapshot = NSDiffableDataSourceSectionSnapshot<SettingItem>()
+            mainSnapshot.append(settingTexts)
+            dataSource.apply(mainSnapshot, to: .main, animatingDifferences: false)
+            
+            var aboutSnapshot = NSDiffableDataSourceSectionSnapshot<SettingItem>()
+            aboutSnapshot.append(settingAboutTexts)
+            dataSource.apply(aboutSnapshot, to: .about, animatingDifferences: false)
+        } else {
+            // Fallback on earlier versions
+            
+            snapshot.appendItems(settingTexts, toSection: .main)
+            snapshot.appendItems(settingAboutTexts, toSection: .about)
+            dataSource.applySnapshot(snapshot, animated: false, completion: nil)
+        }
         
-        var aboutSnapshot = NSDiffableDataSourceSectionSnapshot<SettingItem>()
-        aboutSnapshot.append(settingAboutTexts)
-        dataSource.apply(aboutSnapshot, to: .about, animatingDifferences: false)
     }
 }

@@ -360,7 +360,7 @@ extension UnsplashWallpapersTests {
         }
     }
     
-    @available(iOS 15.0.0, *)
+    @available(iOS 13.0.0, *)
     func testPhotoListApiCall() async throws {
         
         let data = getFakeData()

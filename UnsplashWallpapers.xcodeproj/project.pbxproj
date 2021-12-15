@@ -975,10 +975,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6AH3KD253Z;
 				INFOPLIST_FILE = UnsplashWallpapers/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"-Wl,-weak-lswift_Concurrency",
+					"-Wl,-rpath,/usr/lib/swift",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = william.UnsplashWallpapers;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -995,10 +999,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6AH3KD253Z;
 				INFOPLIST_FILE = UnsplashWallpapers/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"-Wl,-weak-lswift_Concurrency",
+					"-Wl,-rpath,/usr/lib/swift",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = william.UnsplashWallpapers;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -31,9 +31,12 @@ class BaseTabBarViewController: UITabBarController {
             itemAppearance.normal.iconColor = UIColor.lightGray
             itemAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
                     
-            itemAppearance.selected.iconColor = .systemCyan
-            itemAppearance.selected.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.systemCyan]
-            
+            if #available(iOS 15.0, *) {
+                itemAppearance.selected.iconColor = .systemCyan
+                itemAppearance.selected.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.systemCyan]
+            } else {
+                // Fallback on earlier versions
+            }
             
             let tabBarAppearance = UITabBarAppearance()
             tabBarAppearance.backgroundColor = UITraitCollection.current.userInterfaceStyle == .dark ? .black : .white
@@ -43,10 +46,12 @@ class BaseTabBarViewController: UITabBarController {
             tabBarAppearance.inlineLayoutAppearance = itemAppearance
             tabBarAppearance.compactInlineLayoutAppearance = itemAppearance
             tabBar.standardAppearance = tabBarAppearance
-            tabBar.scrollEdgeAppearance = tabBarAppearance
-            
+            if #available(iOS 15.0, *) {
+                tabBar.scrollEdgeAppearance = tabBarAppearance
+                currentItem.scrollEdgeAppearance = tabBarAppearance
+            }
             currentItem.standardAppearance = tabBarAppearance
-            currentItem.scrollEdgeAppearance = tabBarAppearance
+            
             
         }
     }

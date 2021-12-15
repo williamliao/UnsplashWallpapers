@@ -51,7 +51,7 @@ class PhotoListViewModel  {
 
 extension PhotoListViewModel {
     
-    @available(iOS 15.0.0, *)
+    @available(iOS 13.0.0, *)
     func fetchDataWithConcurrency() {
         service = UnsplashService(endPoint: .random)
         
@@ -168,7 +168,7 @@ extension PhotoListViewModel {
 
     }
     
-    @available(iOS 15.0.0, *)
+    @available(iOS 13.0.0, *)
     func fetchNextPage() {
         if isLoading.value {
             return

@@ -385,6 +385,7 @@ class NetworkManager {
         task?.resume()
     }*/
     
+    @available(iOS 13.0.0, *)
     func queryWithRandom<T: Decodable>(query: String, pageRequest: UnsplashPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError>  {
         
         let components = prepareURLComponents()
@@ -406,6 +407,7 @@ class NetworkManager {
         //createRequestWithURL(url: url, decode: decode, completion: completion)
     }
     
+    @available(iOS 13.0.0, *)
     func query<T: Decodable>(pageRequest: UnsplashSearchPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
         let components = prepareURLComponents()
@@ -426,6 +428,7 @@ class NetworkManager {
         
     }
     
+    @available(iOS 13.0.0, *)
     func topic<T: Decodable>(id: String, pageRequest: UnsplashTopicRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
         let components = prepareURLComponents()
@@ -445,6 +448,7 @@ class NetworkManager {
         })
     }
     
+    @available(iOS 13.0.0, *)
     func topicPhotos<T: Decodable>(id: String, pageRequest: UnsplashTopicRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
         let components = prepareURLComponents()
@@ -464,6 +468,7 @@ class NetworkManager {
         })
     }
     
+    @available(iOS 13.0.0, *)
     func get_Collection<T: Decodable>(pageRequest: UnsplashCollectionRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
         let components = prepareURLComponents()
@@ -483,6 +488,7 @@ class NetworkManager {
         })
     }
     
+    @available(iOS 13.0.0, *)
     func listUserData<T: Decodable>(pageRequest: UnsplashUserListRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
         let components = prepareURLComponents()
@@ -502,6 +508,7 @@ class NetworkManager {
         })
     }
     
+    @available(iOS 13.0.0, *)
     func getPhotoInfo<T: Decodable>(pageRequest: UnsplashUserPhotoRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
         let components = prepareURLComponents()
@@ -521,6 +528,7 @@ class NetworkManager {
         })
     }
     
+    @available(iOS 13.0.0, *)
     func getAlbum<T: Decodable>(pageRequest: UnsplashAlbumsRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
         let components = prepareURLComponents()
@@ -540,6 +548,7 @@ class NetworkManager {
         })
     }
 
+    @available(iOS 13.0.0, *)
     func get(completion: @escaping DataTaskResult) {
         
         let components = prepareURLComponents()
@@ -558,6 +567,7 @@ class NetworkManager {
         task.resume()
     }
     
+    @available(iOS 13.0.0, *)
     func getConcurrency(completion: @escaping DataTaskResult) async throws {
         
         let components = prepareURLComponents()
@@ -576,7 +586,7 @@ class NetworkManager {
         task.resume()
     }
     
-    @available(iOS 15.0.0, *)
+    @available(iOS 13.0.0, *)
     func createConcurrencyRequestWithURL<T: Decodable>(url: URL, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
         let mutableRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: timeoutInterval)
         
@@ -600,6 +610,7 @@ class NetworkManager {
         }
     }
     
+    @available(iOS 13.0.0, *)
     func createRequestWithURL<T: Decodable>(url: URL, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
         let mutableRequest = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: timeoutInterval)
         
@@ -781,7 +792,7 @@ extension NetworkManager {
 
 extension NetworkManager {
     
-    @available(iOS 15.0.0, *)
+    @available(iOS 13.0.0, *)
     private func decodingTaskWithConcurrency<T: Decodable>(with request: URLRequest, decodingType: T.Type, completionHandler completion: @escaping JSONTaskCompletionHandler) async throws -> URLSessionDataTaskProtocol? {
         
         let decoder = JSONDecoder()
@@ -853,7 +864,7 @@ extension NetworkManager {
         return task
     }
     
-    @available(iOS 15.0.0, *)
+    @available(iOS 13.0.0, *)
     func fetchWithConcurrency<T: Decodable>(method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
         
         guard let request = try? createURLRequest(method: method) else {
@@ -883,7 +894,7 @@ extension NetworkManager {
         
     }
     
-    @available(iOS 15.0.0, *)
+    @available(iOS 13.0.0, *)
     func fetchDataWithConcurrency<T: Decodable>(method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         try Task.checkCancellation()
         return try await withCheckedThrowingContinuation({
@@ -894,7 +905,7 @@ extension NetworkManager {
         })
     }
     
-    @available(iOS 15.0.0, *)
+    @available(iOS 13.0.0, *)
     func queryWithConcurrency<T: Decodable>(pageRequest: UnsplashSearchPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
         let components = prepareURLComponents()

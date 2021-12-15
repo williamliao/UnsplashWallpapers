@@ -173,7 +173,12 @@ extension PhotoListView {
                 dataSource = makeDataSource()
                 collectionView.dataSource = dataSource
                 viewModel.reset()
-                viewModel.fetchDataWithConcurrency()
+                if #available(iOS 15.0.0, *) {
+                    viewModel.fetchDataWithConcurrency()
+                } else {
+                    // Fallback on earlier versions
+                    viewModel.fetchData()
+                }
                 section = .random
                 viewModel.segmentedIndex = .random
                 
@@ -334,9 +339,7 @@ extension PhotoListView {
             }
             
             dataSource = UICollectionViewDiffableDataSource<Section, Response>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
-                if #available(iOS 14.0, *) {
-                    return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: respone)
-                }
+                return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: respone)
             }
             
         } else {
@@ -364,8 +367,9 @@ extension PhotoListView {
                 let cell = self.configureTopicCellOld(collectionView: collectionView, respone: respone, indexPath: indexPath)
                 return cell
             }
+            
+            return natureDataSource
         }
-        
     }
     
     func makeWallpapersDataSource() -> UICollectionViewDiffableDataSource<Section, Results> {
@@ -383,17 +387,27 @@ extension PhotoListView {
                 let cell = self.configureTopicCellOld(collectionView: collectionView, respone: respone, indexPath: indexPath)
                 return cell
             }
+            
+            return wallpapersDataSource
         }
     }
     
     func makeCollectionDataSource() -> UICollectionViewDiffableDataSource<Section, CollectionResponse> {
         
-        let cellRegistration = UICollectionView.CellRegistration<PhotoListCollectionViewCell, CollectionResponse> { (cell, indexPath, respone) in
-            let _ = self.configureCollectionCell(collectionView: self.collectionView, respone: respone, indexPath: indexPath)
-        }
-        
-        return UICollectionViewDiffableDataSource<Section, CollectionResponse>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
-            return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: respone)
+        if #available(iOS 14.0, *) {
+            let cellRegistration = UICollectionView.CellRegistration<PhotoListCollectionViewCell, CollectionResponse> { (cell, indexPath, respone) in
+                let _ = self.configureCollectionCell(collectionView: self.collectionView, respone: respone, indexPath: indexPath)
+            }
+            
+            return UICollectionViewDiffableDataSource<Section, CollectionResponse>(collectionView: collectionView) { (collectionView, indexPath, respone) -> PhotoListCollectionViewCell? in
+                return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: respone)
+            }
+            
+        } else {
+            // Fallback on earlier versions
+            return UICollectionViewDiffableDataSource<Section, CollectionResponse>(collectionView: collectionView) { (collectionView, indexPath, respone) -> UICollectionViewCell? in
+                return collectionView.dequeueReusableCell(withReuseIdentifier: PhotoListCollectionViewCell.reuseIdentifier, for: indexPath)
+            }
         }
     }
     
@@ -796,6 +810,7 @@ extension PhotoListView {
                 let imageLoadOperation = ImageLoadOperation(imgUrl: url)
                 imageLoadQueue?.addOperation(imageLoadOperation)
                 imageLoadOperations[indexPath] = imageLoadOperation
+                
                 cell.configureImage(with: url)
             }
         }

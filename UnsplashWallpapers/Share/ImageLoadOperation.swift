@@ -32,12 +32,16 @@ class ImageLoadOperation: Operation {
     }
     
     func downloadImage() {
-        self.downloader.downloadWithErrorHandler(url: self.imgUrl) { [weak self] (downloadImage, error) in
-            guard let strongSelf = self else { return }
-            strongSelf.image = downloadImage
-            if let completionHandler = strongSelf.completionHandler {
-                completionHandler(downloadImage)
+        if #available(iOS 14.0.0, *) {
+            self.downloader.downloadWithErrorHandler(url: self.imgUrl) { [weak self] (downloadImage, error) in
+                guard let strongSelf = self else { return }
+                strongSelf.image = downloadImage
+                if let completionHandler = strongSelf.completionHandler {
+                    completionHandler(downloadImage)
+                }
             }
+        } else {
+            // Fallback on earlier versions
         }
     }
     
