@@ -87,29 +87,30 @@ extension UsersListCollectionViewCell {
         isLoading(isLoading: true)
         
         DispatchQueue.global().async { [weak self] in
+            
+            guard let self = self else { return }
           
             if #available(iOS 14.0.0, *) {
-                self?.downloader.downloadWithErrorHandler(url: url, completionHandler: { [weak self] (image, error) in
+                Task {
+                    let result = try await self.downloader.downloadWithConcurrencyCombineErrorHandler(url: url)
                     
-                    DispatchQueue.main.async {
-                        self?.isLoading(isLoading: false)
-                    }
-                    
-                    guard error == nil else {
+                    switch result {
+                    case .success(let image):
+                        self.isLoading(isLoading: false)
+                        self.showImage(image: image)
                         
-                        print(error?.localizedDescription ?? "")
-                        return
+                    case .failure(let error):
+                        self.isLoading(isLoading: false)
+                        print("configureImage error \(error)")
                     }
                     
-                    guard let image = image else {
-                        
-                        return
-                    }
-                    self?.showImage(image: image)
-                    
-                })
+                }
             } else {
                 // Fallback on earlier versions
+                _ = self.downloader.loadImage(for: url).sink { [weak self] image in
+                    self?.isLoading(isLoading: false)
+                    self?.showImage(image: image)
+                }
             }
         }
     }

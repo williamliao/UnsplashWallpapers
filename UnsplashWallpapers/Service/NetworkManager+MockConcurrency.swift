@@ -18,6 +18,8 @@ class MockConcurrencyURLSessionDataTask: URLSessionDataTaskProtocol {
 }
 
 class MockConcurrencyURLSession: URLSessionProtocol {
+    
+    
    
     private (set) var lastURL: URL?
     
@@ -51,6 +53,14 @@ class MockConcurrencyURLSession: URLSessionProtocol {
         nextResponse = self.completionHandler.1
         nextError = self.completionHandler.2
         completion(self.completionHandler.0, self.completionHandler.1, self.completionHandler.2)
+        return dataTask as URLSessionDataTaskProtocol
+    }
+    
+    func dataTask(with url: URL) async -> URLSessionDataTaskProtocol {
+        lastURL = url
+        nextData = self.completionHandler.0
+        nextResponse = self.completionHandler.1
+        nextError = self.completionHandler.2
         return dataTask as URLSessionDataTaskProtocol
     }
 }

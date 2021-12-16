@@ -785,7 +785,7 @@ extension PhotoListView {
        
         cell.titleLabel.text = respone.user?.name
         
-        let updateCellClosure: (UIImage?) -> Void = { [weak self] image in
+       /* let updateCellClosure: (UIImage?) -> Void = { [weak self] image in
             guard let self = self else {
               return
             }
@@ -799,20 +799,22 @@ extension PhotoListView {
            // cell.isLoading(isLoading: true)
             if let image = dataLoader.image {
                 cell.isLoading(isLoading: false)
-                cell.showImage(image: image)
+               cell.showImage(image: image)
                 imageLoadOperations.removeValue(forKey: indexPath)
             } else {
                // cell.isLoading(isLoading: true)
                 dataLoader.completionHandler = updateCellClosure
             }
         } else {
-            if let url = URL(string: respone.urls.small) {
-                let imageLoadOperation = ImageLoadOperation(imgUrl: url)
-                imageLoadQueue?.addOperation(imageLoadOperation)
-                imageLoadOperations[indexPath] = imageLoadOperation
-                
-                cell.configureImage(with: url)
-            }
+            
+        }*/
+        
+        if let url = URL(string: respone.urls.small) {
+//            let imageLoadOperation = ImageLoadOperation(imgUrl: url)
+//            imageLoadQueue?.addOperation(imageLoadOperation)
+//            imageLoadOperations[indexPath] = imageLoadOperation
+            
+            cell.configureImage(with: url)
         }
     }
     
@@ -821,25 +823,11 @@ extension PhotoListView {
         
         cell?.titleLabel.text = respone.user?.name
         
-        if let dataLoader = imageLoadOperations[indexPath] {
-            cell?.isLoading(isLoading: true)
-            if let image = dataLoader.image {
-                cell?.isLoading(isLoading: false)
-                cell?.showImage(image: image)
-            } else {
-                cell?.isLoading(isLoading: true)
-                dataLoader.completionHandler = { [weak cell] image in
-                    cell?.isLoading(isLoading: false)
-                    cell?.showImage(image: image)
-                }
-            }
-        } else {
-            if let url = URL(string: respone.urls.small) {
-                let imageLoadOperation = ImageLoadOperation(imgUrl: url)
-                imageLoadQueue?.addOperation(imageLoadOperation)
-                imageLoadOperations[indexPath] = imageLoadOperation
-                cell?.configureImage(with: url)
-            }
+        if let url = URL(string: respone.urls.small) {
+            let imageLoadOperation = ImageLoadOperation(imgUrl: url)
+            imageLoadQueue?.addOperation(imageLoadOperation)
+            imageLoadOperations[indexPath] = imageLoadOperation
+            cell?.configureImage(with: url)
         }
         
         return cell
@@ -857,7 +845,7 @@ extension PhotoListView {
             cell.titleLabel.text = "Wallpapers"
         }
         
-        let updateCellClosure: (UIImage?) -> Void = { [weak self] image in
+       /* let updateCellClosure: (UIImage?) -> Void = { [weak self] image in
             guard let self = self else {
               return
             }
@@ -879,16 +867,20 @@ extension PhotoListView {
             }
         } else {
             
-            guard let urls = respone.urls else {
-                return
-            }
             
-            if let url = URL(string: urls.small) {
-                let imageLoadOperation = ImageLoadOperation(imgUrl: url)
-                imageLoadQueue?.addOperation(imageLoadOperation)
-                imageLoadOperations[indexPath] = imageLoadOperation
-                cell.configureImage(with: url)
-            }
+            
+            
+        }*/
+        
+        guard let urls = respone.urls else {
+            return
+        }
+        
+        if let url = URL(string: urls.small) {
+            let imageLoadOperation = ImageLoadOperation(imgUrl: url)
+            imageLoadQueue?.addOperation(imageLoadOperation)
+            imageLoadOperations[indexPath] = imageLoadOperation
+            cell.configureImage(with: url)
         }
 
     }
@@ -907,30 +899,15 @@ extension PhotoListView {
         }
       
         
-        if let loader = imageLoadOperations[indexPath] {
-            cell?.isLoading(isLoading: true)
-            if let image = loader.image {
-                cell?.isLoading(isLoading: false)
-                cell?.showImage(image: image)
-            } else {
-                cell?.isLoading(isLoading: true)
-                loader.completionHandler = { [weak cell] image in
-                    cell?.isLoading(isLoading: false)
-                    cell?.showImage(image: image)
-                }
-            }
-        } else {
-            
-            guard let urls = respone.urls else {
-                return cell
-            }
-            
-            if let url = URL(string: urls.small) {
-                let imageLoadOperation = ImageLoadOperation(imgUrl: url)
-                imageLoadQueue?.addOperation(imageLoadOperation)
-                imageLoadOperations[indexPath] = imageLoadOperation
-                cell?.configureImage(with: url)
-            }
+        guard let urls = respone.urls else {
+            return cell
+        }
+        
+        if let url = URL(string: urls.small) {
+//            let imageLoadOperation = ImageLoadOperation(imgUrl: url)
+//            imageLoadQueue?.addOperation(imageLoadOperation)
+//            imageLoadOperations[indexPath] = imageLoadOperation
+            cell?.configureImage(with: url)
         }
 
         return cell

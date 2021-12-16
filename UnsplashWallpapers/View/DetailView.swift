@@ -139,16 +139,34 @@ extension DetailView {
         }
        
         viewModel.isLoading.value = true
-        if #available(iOS 14.0.0, *) {
-            viewModel.downloader.downloadWithErrorHandler(url: url) { [weak self] (image, error) in
-                self?.viewModel.isLoading.value = false
-                guard error == nil else {
-                    return
+        
+        DispatchQueue.global().async { [weak self] in
+            
+            guard let self = self else { return }
+          
+            if #available(iOS 14.0.0, *) {
+                
+                Task {
+                    let result = try await self.viewModel.downloader.downloadWithConcurrencyCombineErrorHandler(url: url)
+                    
+                    switch result {
+                    case .success(let image):
+                        self.viewModel.isLoading.value = false
+                        self.showImage(image: image)
+                        
+                    case .failure(let error):
+                        self.viewModel.isLoading.value = false
+                        print("configureImage error \(error)")
+                    }
+                    
                 }
-                self?.showImage(image: image)
+            } else {
+                // Fallback on earlier versions
+                _ = self.viewModel.downloader.loadImage(for: url).sink { [weak self] image in
+                    self?.viewModel.isLoading.value = false
+                    self?.showImage(image: image)
+                }
             }
-        } else {
-            // Fallback on earlier versions
         }
     }
     

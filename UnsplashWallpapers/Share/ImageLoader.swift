@@ -130,6 +130,28 @@ public final class ImageLoader {
         }
     }
     
+    func awaitAsyncWithCompletion(for url: URL, completion: @escaping (Result<UIImage, Error>) -> ()) async throws {
+        let task = await urlSession.dataTask(with: url) { data, response, error in
+            guard let responseData = data, error == nil else {
+                completion(.failure(error ?? ServerError.badData))
+                return
+            }
+            
+            guard let image = UIImage(data: responseData) else {
+                completion(.failure(ServerError.invalidImage))
+                return
+            }
+            self.cache[url] = image
+            
+            if let cacheImage = self.cache[url] {
+                completion(.success(cacheImage))
+            } else {
+                completion(.success(image))
+            }
+        }
+        task.resume()
+    }
+    
     func getCacheImage(url: URL) -> UIImage? {
         return cache[url]
     }
@@ -150,6 +172,62 @@ extension Publisher {
                     }
                 }
             }
+        }
+    }
+}
+
+@available(iOS 14.0.0, *)
+extension Publisher {
+    func asyncMap<T>(
+        _ transform: @escaping (Output) async throws -> T
+    ) -> Publishers.FlatMap<Future<T, Error>,
+                            Publishers.SetFailureType<Self, Error>> {
+        flatMap { value in
+            Future { promise in
+                Task {
+                    do {
+                        let output = try await transform(value)
+                        promise(.success(output))
+                    } catch {
+                        promise(.failure(error))
+                    }
+                }
+            }
+        }
+    }
+}
+
+extension Publishers {
+    struct MissingOutputError: Error {}
+}
+
+extension Publisher {
+    func singleResult() async throws -> Output {
+        var cancellable: AnyCancellable?
+        var didReceiveValue = false
+
+        return try await withCheckedThrowingContinuation { continuation in
+            cancellable = sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        continuation.resume(throwing: error)
+                    case .finished:
+                        if !didReceiveValue {
+                            continuation.resume(
+                                throwing: Publishers.MissingOutputError()
+                            )
+                        }
+                    }
+                },
+                receiveValue: { value in
+                    guard !didReceiveValue else { return }
+
+                    didReceiveValue = true
+                    cancellable?.cancel()
+                    continuation.resume(returning: value)
+                }
+            )
         }
     }
 }

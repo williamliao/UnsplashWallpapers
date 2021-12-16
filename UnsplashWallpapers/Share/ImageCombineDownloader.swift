@@ -46,39 +46,26 @@ class ImageCombineDownloader: ImageDownLoader {
         }
     }
     
+    @available(iOS 15.0.0, *)
+    func downloadWithConcurrencyErrorHandler(url: URL, completionHandler: @escaping (UIImage?, Error?) -> Void) {
+        Task {
+            let image = try await self.loadImageWithConcurrency(for: url)
+            
+            completionHandler(image, nil)
+        }
+        
+    }
+    
     @available(iOS 14.0.0, *)
-    func downloadWithConcurrencyErrorHandler(url: URL) async throws -> APIResult<UIImage, ServerError> {
-        // Only Call This for one Time
-        try Task.checkCancellation()
-        return try await withCheckedThrowingContinuation({
-            (continuation: CheckedContinuation<(APIResult<UIImage, ServerError>), Error>) in
-           
-            cancellable = self.loadImageWithError(for: url).sink(
-                receiveCompletion: { completion in
-                    switch completion {
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                        print("❗️ failure: \(error)")
-                    case .finished:
-                            if !self.didReceiveValue {
-                                continuation.resume(
-                                    throwing: ServerError.badData
-                                )
-                            }
-                        print("🏁 finished")
-                    }
-                },
-                receiveValue: { image in
-                    DispatchQueue.main.async {
-                        guard !self.didReceiveValue else { return }
-                        
-                        self.cancellable?.cancel()
-                        self.didReceiveValue = true
-                        continuation.resume(returning: APIResult.success(image))
-                    }
-                }
-            )
-        })
+    func downloadWithConcurrencyCombineErrorHandler(url: URL) async throws -> APIResult<UIImage, ServerError> {
+        do {
+            let image = try await self.loadImageWithError(for: url).singleResult()
+            
+            return APIResult.success(image)
+            
+        } catch {
+            return APIResult.failure(error as? ServerError ?? ServerError.invalidImage)
+        }
     }
     
     @available(iOS 14.0.0, *)

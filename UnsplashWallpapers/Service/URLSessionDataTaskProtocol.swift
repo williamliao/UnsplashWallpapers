@@ -22,6 +22,9 @@ protocol URLSessionProtocol {
     func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) async -> URLSessionDataTaskProtocol
     
     @available(iOS 13.0.0, *)
+    func dataTask(with url: URL) async -> URLSessionDataTaskProtocol
+    
+    @available(iOS 13.0.0, *)
     func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) async -> URLSessionDataTaskProtocol
     
     @available(iOS 13.0.0, *)
@@ -29,6 +32,11 @@ protocol URLSessionProtocol {
 }
 
 extension URLSession: URLSessionProtocol {
+    
+    @available(iOS 13.0.0, *)
+    func dataTask(with url: URL) async -> URLSessionDataTaskProtocol {
+        return (dataTask(with: url) as URLSessionDataTask) as URLSessionDataTaskProtocol
+    }
     
     @available(iOS 13.0.0, *)
     func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) async -> URLSessionDataTaskProtocol   {
