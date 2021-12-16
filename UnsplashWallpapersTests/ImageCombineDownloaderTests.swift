@@ -18,9 +18,15 @@ class ImageCombineDownloaderTests: XCTestCase {
     var mockSession: MockURLSession!
     var downloader: ImageLoader!
     let networkMonitor = NetworkConnectivityManager()
+    
+    var viewModel: DetailViewModel!
+    private var networking: MockConcurrencyURLSession!
 
     override func setUpWithError() throws {
         networkMonitor.start()
+        
+        viewModel = DetailViewModel()
+        
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
 
@@ -164,6 +170,35 @@ extension ImageCombineDownloaderTests {
         let image = imageLoader.getCacheImage(url: url2)
         
         XCTAssertNotNil(image)
+    }
+    
+    func testDownloadImage() async throws {
+        
+        let url = URL(string: "https://ichef.bbci.co.uk/news/976/cpsprodpb/12A9B/production/_111434467_gettyimages-1143489763.jpg")!
+        
+        let data = try? Data(contentsOf: url)
+        
+        guard let data = data else {
+            return
+        }
+        
+        networking = createMockConcurrencySession(data: data, andStatusCode: 200, andError: nil)
+
+        let dataTask = MockConcurrencyURLSessionDataTask()
+        networking.dataTask = dataTask
+        
+        networking.result = .success(data)
+        
+        let result = try await viewModel.downloader.downloadWithConcurrencyCombineErrorHandler(url: url)
+        
+        switch result {
+            case .success(let image):
+          
+            XCTAssertEqual(image.size, UIImage(data: data)?.size)
+                
+            case .failure(let error):
+                print("configureImage error \(error)")
+        }
     }
 }
 

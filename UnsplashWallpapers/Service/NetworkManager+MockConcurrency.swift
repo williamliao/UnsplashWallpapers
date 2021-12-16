@@ -19,10 +19,10 @@ class MockConcurrencyURLSessionDataTask: URLSessionDataTaskProtocol {
 
 class MockConcurrencyURLSession: URLSessionProtocol {
     
-    
-   
     private (set) var lastURL: URL?
     
+    var result = Result<Data, Error>.success(Data())
+
     var nextData: Data?
     var nextResponse: URLResponse?
     var nextError: Error?
@@ -62,5 +62,16 @@ class MockConcurrencyURLSession: URLSessionProtocol {
         nextResponse = self.completionHandler.1
         nextError = self.completionHandler.2
         return dataTask as URLSessionDataTaskProtocol
+    }
+    
+    func data(from url: URL, delegate: URLSessionTaskDelegate?) async throws -> URLSessionDataTaskProtocol {
+        return try (result.get(), URLResponse()) as! URLSessionDataTaskProtocol
+    }
+    
+    func data(
+        from url: URL,
+        delegate: URLSessionTaskDelegate?
+    ) async throws -> (Data, URLResponse) {
+        try (result.get(), URLResponse())
     }
 }

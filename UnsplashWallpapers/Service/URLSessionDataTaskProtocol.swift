@@ -29,9 +29,20 @@ protocol URLSessionProtocol {
     
     @available(iOS 13.0.0, *)
     func dataTaskWithURL(_ url: URL, completion: @escaping DataTaskResult) async -> URLSessionDataTaskProtocol
+    
+    @available(iOS 15.0.0, *)
+    func data(
+        from url: URL,
+        delegate: URLSessionTaskDelegate?
+    ) async throws -> URLSessionDataTaskProtocol
 }
 
 extension URLSession: URLSessionProtocol {
+    
+    @available(iOS 15.0.0, *)
+    func data(from url: URL, delegate: URLSessionTaskDelegate?) async throws -> URLSessionDataTaskProtocol {
+        try await data(from: url, delegate: nil) as (Data, URLResponse) as! URLSessionDataTaskProtocol
+    }
     
     @available(iOS 13.0.0, *)
     func dataTask(with url: URL) async -> URLSessionDataTaskProtocol {
@@ -58,5 +69,26 @@ extension URLSession: URLSessionProtocol {
     func dataTaskWithURL(_ url: URL, completion completionHandler: @escaping DataTaskResult) async
           -> URLSessionDataTaskProtocol {
         return (dataTask(with: url, completionHandler: completionHandler) as URLSessionDataTask) as URLSessionDataTaskProtocol
+    }
+}
+
+
+protocol NetworkingMock {
+    
+    @available(iOS 13.0.0, *)
+    func data(
+        from url: URL,
+        delegate: URLSessionTaskDelegate?
+    ) async throws -> (Data, URLResponse)
+}
+
+extension NetworkingMock {
+    // If we want to avoid having to always pass 'delegate: nil'
+    // at call sites where we're not interested in using a delegate,
+    // we also have to add the following convenience API (which
+    // URLSession itself provides when using it directly):
+    @available(iOS 13.0.0, *)
+    func data(from url: URL) async throws -> (Data, URLResponse) {
+        try await data(from: url, delegate: nil)
     }
 }

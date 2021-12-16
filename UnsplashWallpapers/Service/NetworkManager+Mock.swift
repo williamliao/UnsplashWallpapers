@@ -24,7 +24,7 @@ class MockURLSession: URLSessionProtocol {
     var nextData: Data?
     var nextResponse: URLResponse?
     var nextError: Error?
-    
+    var result = Result<Data, Error>.success(Data())
     var dataTask = MockURLSessionDataTask()
     var completionHandler: (Data?, URLResponse?, Error?)
 
@@ -59,6 +59,17 @@ class MockURLSession: URLSessionProtocol {
         nextResponse = self.completionHandler.1
         nextError = self.completionHandler.2
         return dataTask
+    }
+    
+    func data(from url: URL, delegate: URLSessionTaskDelegate?) async throws -> URLSessionDataTaskProtocol {
+        return try (result.get(), URLResponse()) as! URLSessionDataTaskProtocol
+    }
+    
+    func data(
+        from url: URL,
+        delegate: URLSessionTaskDelegate?
+    ) async throws -> (Data, URLResponse) {
+        try (result.get(), URLResponse())
     }
 }
 
