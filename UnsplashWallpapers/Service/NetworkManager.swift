@@ -410,164 +410,267 @@ class NetworkManager {
     @available(iOS 13.0.0, *)
     func queryWithRandom<T: Decodable>(query: String, pageRequest: UnsplashPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError>  {
         
+        if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
+            throw ServerError.noAuth
+        }
+        
         let components = prepareURLComponents()
         
         try Task.checkCancellation()
-        return try await withCheckedThrowingContinuation({
-            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-            
-            guard let url = components?.url else {
-                continuation.resume(returning: APIResult.failure(ServerError.badURL))
-                return
-            }
-            
-            createRequestWithURL(url: url, decode: decode) { result in
-                continuation.resume(returning: result)
-            }
-        })
         
-        //createRequestWithURL(url: url, decode: decode, completion: completion)
+        do {
+            return try await withCheckedThrowingContinuation({
+                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+                
+                guard let url = components?.url else {
+                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                    return
+                }
+                
+                createRequestWithURL(url: url, decode: decode) { result in
+                    continuation.resume(returning: result)
+                }
+            })
+        } catch ServerError.noAuth  {
+            return APIResult.failure(ServerError.noAuth)
+        } catch ServerError.timeOut  {
+            return APIResult.failure(ServerError.timeOut)
+        } catch {
+            print("queryWithConcurrency error \(error)")
+            return APIResult.failure(ServerError.unKnown)
+        }
     }
     
     @available(iOS 13.0.0, *)
     func query<T: Decodable>(pageRequest: UnsplashSearchPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
+        if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
+            throw ServerError.noAuth
+        }
+        
         let components = prepareURLComponents()
         
         try Task.checkCancellation()
-        return try await withCheckedThrowingContinuation({
-            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-            
-            guard let url = components?.url else {
-                continuation.resume(returning: APIResult.failure(ServerError.badURL))
-                return
-            }
-            
-            createRequestWithURL(url: url, decode: decode) { result in
-                continuation.resume(returning: result)
-            }
-        })
         
+        do {
+            return try await withCheckedThrowingContinuation({
+                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+                
+                guard let url = components?.url else {
+                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                    return
+                }
+                
+                createRequestWithURL(url: url, decode: decode) { result in
+                    continuation.resume(returning: result)
+                }
+            })
+        } catch ServerError.noAuth  {
+            return APIResult.failure(ServerError.noAuth)
+        } catch ServerError.timeOut  {
+            return APIResult.failure(ServerError.timeOut)
+        } catch {
+            print("queryWithConcurrency error \(error)")
+            return APIResult.failure(ServerError.unKnown)
+        }
     }
     
     @available(iOS 13.0.0, *)
     func topic<T: Decodable>(id: String, pageRequest: UnsplashTopicRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
+        if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
+            throw ServerError.noAuth
+        }
+        
         let components = prepareURLComponents()
         
         try Task.checkCancellation()
-        return try await withCheckedThrowingContinuation({
-            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-            
-            guard let url = components?.url else {
-                continuation.resume(returning: APIResult.failure(ServerError.badURL))
-                return
-            }
-            
-            createRequestWithURL(url: url, decode: decode) { result in
-                continuation.resume(returning: result)
-            }
-        })
+        do {
+            return try await withCheckedThrowingContinuation({
+                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+                
+                guard let url = components?.url else {
+                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                    return
+                }
+                
+                createRequestWithURL(url: url, decode: decode) { result in
+                    continuation.resume(returning: result)
+                }
+            })
+        } catch ServerError.noAuth  {
+            return APIResult.failure(ServerError.noAuth)
+        } catch ServerError.timeOut  {
+            return APIResult.failure(ServerError.timeOut)
+        } catch {
+            print("queryWithConcurrency error \(error)")
+            return APIResult.failure(ServerError.unKnown)
+        }
     }
     
     @available(iOS 13.0.0, *)
     func topicPhotos<T: Decodable>(id: String, pageRequest: UnsplashTopicRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
+        if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
+            throw ServerError.noAuth
+        }
+        
         let components = prepareURLComponents()
         
         try Task.checkCancellation()
-        return try await withCheckedThrowingContinuation({
-            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-            
-            guard let url = components?.url else {
-                continuation.resume(returning: APIResult.failure(ServerError.badURL))
-                return
-            }
-            
-            createRequestWithURL(url: url, decode: decode) { result in
-                continuation.resume(returning: result)
-            }
-        })
+        do {
+            return try await withCheckedThrowingContinuation({
+                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+                
+                guard let url = components?.url else {
+                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                    return
+                }
+                
+                createRequestWithURL(url: url, decode: decode) { result in
+                    continuation.resume(returning: result)
+                }
+            })
+        } catch ServerError.noAuth  {
+            return APIResult.failure(ServerError.noAuth)
+        } catch ServerError.timeOut  {
+            return APIResult.failure(ServerError.timeOut)
+        } catch {
+            print("queryWithConcurrency error \(error)")
+            return APIResult.failure(ServerError.unKnown)
+        }
     }
     
     @available(iOS 13.0.0, *)
     func get_Collection<T: Decodable>(pageRequest: UnsplashCollectionRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
+        if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
+            throw ServerError.noAuth
+        }
+        
         let components = prepareURLComponents()
         
         try Task.checkCancellation()
-        return try await withCheckedThrowingContinuation({
-            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-            
-            guard let url = components?.url else {
-                continuation.resume(returning: APIResult.failure(ServerError.badURL))
-                return
-            }
-            
-            createRequestWithURL(url: url, decode: decode) { result in
-                continuation.resume(returning: result)
-            }
-        })
+        do {
+            return try await withCheckedThrowingContinuation({
+                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+                
+                guard let url = components?.url else {
+                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                    return
+                }
+                
+                createRequestWithURL(url: url, decode: decode) { result in
+                    continuation.resume(returning: result)
+                }
+            })
+        } catch ServerError.noAuth  {
+            return APIResult.failure(ServerError.noAuth)
+        } catch ServerError.timeOut  {
+            return APIResult.failure(ServerError.timeOut)
+        } catch {
+            print("queryWithConcurrency error \(error)")
+            return APIResult.failure(ServerError.unKnown)
+        }
     }
     
     @available(iOS 13.0.0, *)
     func listUserData<T: Decodable>(pageRequest: UnsplashUserListRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
+        if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
+            throw ServerError.noAuth
+        }
+        
         let components = prepareURLComponents()
         
         try Task.checkCancellation()
-        return try await withCheckedThrowingContinuation({
-            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-            
-            guard let url = components?.url else {
-                continuation.resume(returning: APIResult.failure(ServerError.badURL))
-                return
-            }
-            
-            createRequestWithURL(url: url, decode: decode) { result in
-                continuation.resume(returning: result)
-            }
-        })
+        do {
+            return try await withCheckedThrowingContinuation({
+                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+                
+                guard let url = components?.url else {
+                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                    return
+                }
+                
+                createRequestWithURL(url: url, decode: decode) { result in
+                    continuation.resume(returning: result)
+                }
+            })
+        } catch ServerError.noAuth  {
+            return APIResult.failure(ServerError.noAuth)
+        } catch ServerError.timeOut  {
+            return APIResult.failure(ServerError.timeOut)
+        } catch {
+            print("queryWithConcurrency error \(error)")
+            return APIResult.failure(ServerError.unKnown)
+        }
     }
     
     @available(iOS 13.0.0, *)
     func getPhotoInfo<T: Decodable>(pageRequest: UnsplashUserPhotoRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
+        if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
+            throw ServerError.noAuth
+        }
+        
         let components = prepareURLComponents()
         
         try Task.checkCancellation()
-        return try await withCheckedThrowingContinuation({
-            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-            
-            guard let url = components?.url else {
-                continuation.resume(returning: APIResult.failure(ServerError.badURL))
-                return
-            }
-            
-            createRequestWithURL(url: url, decode: decode) { result in
-                continuation.resume(returning: result)
-            }
-        })
+        do {
+            return try await withCheckedThrowingContinuation({
+                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+                
+                guard let url = components?.url else {
+                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                    return
+                }
+                
+                createRequestWithURL(url: url, decode: decode) { result in
+                    continuation.resume(returning: result)
+                }
+            })
+        } catch ServerError.noAuth  {
+            return APIResult.failure(ServerError.noAuth)
+        } catch ServerError.timeOut  {
+            return APIResult.failure(ServerError.timeOut)
+        } catch {
+            print("queryWithConcurrency error \(error)")
+            return APIResult.failure(ServerError.unKnown)
+        }
     }
     
     @available(iOS 13.0.0, *)
     func getAlbum<T: Decodable>(pageRequest: UnsplashAlbumsRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
+        if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
+            throw ServerError.noAuth
+        }
+        
         let components = prepareURLComponents()
         
         try Task.checkCancellation()
-        return try await withCheckedThrowingContinuation({
-            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-            
-            guard let url = components?.url else {
-                continuation.resume(returning: APIResult.failure(ServerError.badURL))
-                return
-            }
-            
-            createRequestWithURL(url: url, decode: decode) { result in
-                continuation.resume(returning: result)
-            }
-        })
+        do {
+            return try await withCheckedThrowingContinuation({
+                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+                
+                guard let url = components?.url else {
+                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                    return
+                }
+                
+                createRequestWithURL(url: url, decode: decode) { result in
+                    continuation.resume(returning: result)
+                }
+            })
+        } catch ServerError.noAuth  {
+            return APIResult.failure(ServerError.noAuth)
+        } catch ServerError.timeOut  {
+            return APIResult.failure(ServerError.timeOut)
+        } catch {
+            print("queryWithConcurrency error \(error)")
+            return APIResult.failure(ServerError.unKnown)
+        }
     }
 
     @available(iOS 13.0.0, *)
@@ -922,29 +1025,59 @@ extension NetworkManager {
     @available(iOS 13.0.0, *)
     func fetchDataWithConcurrency<T: Decodable>(method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         try Task.checkCancellation()
-        return try await withCheckedThrowingContinuation({
-            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-            fetchWithConcurrency(method: method, decode: decode) { result in
-                continuation.resume(returning: result)
-            }
-        })
+        
+        if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
+            throw ServerError.noAuth
+        }
+        
+        do {
+            return try await withCheckedThrowingContinuation({
+                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+                fetchWithConcurrency(method: method, decode: decode) { result in
+                    continuation.resume(returning: result)
+                }
+            })
+        } catch ServerError.noAuth  {
+            return APIResult.failure(ServerError.noAuth)
+        } catch ServerError.timeOut  {
+            return APIResult.failure(ServerError.timeOut)
+        } catch {
+            print("fetchDataWithConcurrency error \(error)")
+            return APIResult.failure(ServerError.unKnown)
+        }
     }
-    
+
     @available(iOS 13.0.0, *)
     func queryWithConcurrency<T: Decodable>(pageRequest: UnsplashSearchPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
+        
+        if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
+            throw ServerError.noAuth
+        }
         
         let components = prepareURLComponents()
         
         try Task.checkCancellation()
-        return try await withCheckedThrowingContinuation({
-            (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-            
-            if let url = components?.url {
-                createRequestWithURL(url: url, decode: decode) { result in
-                    continuation.resume(returning: result)
+        
+        do {
+            return try await withCheckedThrowingContinuation({
+                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+                
+                if let url = components?.url {
+                    createRequestWithURL(url: url, decode: decode) { result in
+                        continuation.resume(returning: result)
+                    }
+                } else {
+                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
                 }
-            }
-        })
+            })
+        } catch ServerError.noAuth  {
+            return APIResult.failure(ServerError.noAuth)
+        } catch ServerError.timeOut  {
+            return APIResult.failure(ServerError.timeOut)
+        } catch {
+            print("queryWithConcurrency error \(error)")
+            return APIResult.failure(ServerError.unKnown)
+        }
     }
     
 }
