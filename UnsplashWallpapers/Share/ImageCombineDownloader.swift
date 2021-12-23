@@ -16,7 +16,6 @@ protocol ImageDownLoader {
 
 
 class ImageCombineDownloader: ImageDownLoader {
-    
     private var cancellable: AnyCancellable?
     var didReceiveValue = false
     
@@ -59,7 +58,9 @@ class ImageCombineDownloader: ImageDownLoader {
     @available(iOS 14.0.0, *)
     func downloadWithConcurrencyCombineErrorHandler(url: URL) async throws -> APIResult<UIImage, ServerError> {
         do {
-            let image = try await self.loadImageWithError(for: url).singleResult()
+            let image = try await self.loadImageWithError(for: url)
+                .retry(1)
+                .singleResult()
             
             return APIResult.success(image)
             
@@ -71,7 +72,9 @@ class ImageCombineDownloader: ImageDownLoader {
     @available(iOS 14.0.0, *)
     func downloadWithErrorHandler(url: URL, completionHandler: @escaping (UIImage?, Error?) -> Void) {
         
-        cancellable = self.loadImageWithError(for: url).sink(receiveCompletion: { (completion) in
+        cancellable = self.loadImageWithError(for: url)
+            .retry(1)
+            .sink(receiveCompletion: { (completion) in
 
             switch completion {
                 case .finished:
