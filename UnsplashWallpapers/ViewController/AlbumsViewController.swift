@@ -94,10 +94,13 @@ class AlbumsViewController: BaseViewController {
             Task {
                 //await downloadWithMultipleSource()
                 
-                let taskResults = try await fetchAlbums(descriptors: [Descriptor(id: UUID(), type: .featured),
-                                                        Descriptor(id: UUID(), type: .shared),
-                                                        Descriptor(id: UUID(), type: .all)]
-                )
+                let operations = [
+                     Descriptor(id: UUID(), type: .featured),
+                     Descriptor(id: UUID(), type: .shared),
+                     Descriptor(id: UUID(), type: .all)
+                ]
+                
+                let taskResults = try await fetchAlbums(descriptors: operations)
                 
                 for task in taskResults {
                     switch task {
@@ -207,7 +210,7 @@ class AlbumsViewController: BaseViewController {
         try await withThrowingTaskGroup(of: TaskResult.self) { [unowned self] taskGroup in
 
             for descriptor in descriptors {
-            
+                try Task.checkCancellation()
                 taskGroup.addTask {
                     switch descriptor.type {
                         case .featured:
@@ -234,10 +237,10 @@ class AlbumsViewController: BaseViewController {
             for try await result in taskGroup {
                 results.append(result)
             }
-
+            print("👍🏻 Task group completed with result: \(results)")
             return results
-            
         }
+        
     }
     
     override func viewDidDisappear(_ animated: Bool) {

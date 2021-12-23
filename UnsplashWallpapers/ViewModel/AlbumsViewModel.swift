@@ -305,6 +305,7 @@ extension AlbumsViewModel {
     }
     
     func handleError(error: ServerError) {
+        service.cancelTask()
         switch error {
             case .statusCodeError(let code):
                 print(code)
