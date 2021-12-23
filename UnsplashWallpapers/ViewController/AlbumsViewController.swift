@@ -207,39 +207,52 @@ class AlbumsViewController: BaseViewController {
     @available(iOS 13.0.0, *)
     func fetchAlbums(descriptors: [Descriptor]) async throws -> [TaskResult] {
         
-        try await withThrowingTaskGroup(of: TaskResult.self) { [unowned self] taskGroup in
+        var results = [TaskResult]()
+        
+        do {
+            try await withThrowingTaskGroup(of: TaskResult.self) { [unowned self] taskGroup in
 
-            for descriptor in descriptors {
-                try Task.checkCancellation()
-                taskGroup.addTask {
-                    switch descriptor.type {
-                        case .featured:
-                            await self.viewModel.getFeaturedAlbums {  (success) in
-                                
-                            }
-                            return TaskResult.featured(descriptor.id)
-                        case .shared:
-                            await self.viewModel.getSharedAlbums {  (success) in
+                for descriptor in descriptors {
+                    
+                    if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
+                        throw ServerError.noAuth
+                    }
+                    
+                    try Task.checkCancellation()
+                    taskGroup.addTask {
+                        switch descriptor.type {
+                            case .featured:
+                                await self.viewModel.getFeaturedAlbums {  (success) in
+                                    
+                                }
+                                return TaskResult.featured(descriptor.id)
+                            case .shared:
+                                await self.viewModel.getSharedAlbums {  (success) in
 
-                            }
-                            return TaskResult.shared(descriptor.id)
-                        case .all:
-                            await self.viewModel.getAllAlbums {  (success) in
+                                }
+                                return TaskResult.shared(descriptor.id)
+                            case .all:
+                                await self.viewModel.getAllAlbums {  (success) in
 
-                            }
-                            return TaskResult.all(descriptor.id)
+                                }
+                                return TaskResult.all(descriptor.id)
+                        }
                     }
                 }
+                
+                for try await result in taskGroup {
+                    results.append(result)
+                }
+                
             }
             
-            var results = [TaskResult]()
-
-            for try await result in taskGroup {
-                results.append(result)
-            }
             print("👍🏻 Task group completed with result: \(results)")
-            return results
+            
+        } catch  {
+            print("👎🏻 Task group throws error: \(error)")
         }
+        
+        return results
         
     }
     
