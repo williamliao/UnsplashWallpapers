@@ -7,6 +7,23 @@
 
 import UIKit
 
+enum AlbumType {
+    case featured
+    case shared
+    case all
+}
+
+struct Descriptor {
+    let id: UUID
+    let type: AlbumType
+}
+
+enum TaskResult {
+    case featured(UUID)
+    case shared(UUID)
+    case all(UUID)
+}
+
 class AlbumsViewController: BaseViewController {
     
     var viewModel: AlbumsViewModel!
@@ -67,7 +84,23 @@ class AlbumsViewController: BaseViewController {
         
         if #available(iOS 13.0.0, *) {
             Task {
-                await downloadWithMultipleSource()
+                //await downloadWithMultipleSource()
+                
+                let taskResults = await fetchAlbums(descriptors: [Descriptor(id: UUID(), type: .featured),
+                                                        Descriptor(id: UUID(), type: .shared),
+                                                        Descriptor(id: UUID(), type: .all)]
+                )
+                
+                for task in taskResults {
+                    switch task {
+                        case .featured(let id):
+                            print("featured task id \(id)")
+                        case .shared(let id):
+                            print("shared task id \(id)")
+                        case .all(let id):
+                            print("all task id \(id)")
+                    }
+                }
             }
             
         } else {
@@ -158,6 +191,44 @@ class AlbumsViewController: BaseViewController {
             print("AlbumView For loop completed")
         })
         print("AlbumView After task group")
+    }
+    
+    @available(iOS 13.0.0, *)
+    func fetchAlbums(descriptors: [Descriptor]) async -> [TaskResult] {
+        
+        await withTaskGroup(of: TaskResult.self) { taskGroup in
+
+            for descriptor in descriptors {
+                taskGroup.addTask {
+                    switch descriptor.type {
+                        case .featured:
+                            await self.viewModel.getFeaturedAlbums {  (success) in
+                                
+                            }
+                            return TaskResult.featured(descriptor.id)
+                        case .shared:
+                            await self.viewModel.getSharedAlbums {  (success) in
+
+                            }
+                            return TaskResult.shared(descriptor.id)
+                        case .all:
+                            await self.viewModel.getAllAlbums {  (success) in
+
+                            }
+                            return TaskResult.all(descriptor.id)
+                    }
+                }
+            }
+            
+            var results = [TaskResult]()
+
+            for await result in taskGroup {
+                results.append(result)
+            }
+
+            return results
+            
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
