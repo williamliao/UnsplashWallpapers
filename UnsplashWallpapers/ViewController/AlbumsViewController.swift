@@ -204,7 +204,7 @@ class AlbumsViewController: BaseViewController {
     @available(iOS 13.0.0, *)
     func fetchAlbums(descriptors: [Descriptor]) async throws -> [TaskResult] {
         
-        try await withThrowingTaskGroup(of: TaskResult.self) { taskGroup in
+        try await withThrowingTaskGroup(of: TaskResult.self) { [unowned self] taskGroup in
 
             for descriptor in descriptors {
             
