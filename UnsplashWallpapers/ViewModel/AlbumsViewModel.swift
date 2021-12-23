@@ -16,7 +16,7 @@ class AlbumsViewModel {
     var sharedAlbumsRespone: Observable<[AlbumItem]> = Observable([])
     
     var isLoading: Observable<Bool> = Observable(false)
-    var error: Observable<Error?> = Observable(nil)
+    var error: Observable<ServerError?> = Observable(nil)
     
     var service: UnsplashService = UnsplashService()
     
@@ -102,7 +102,7 @@ extension AlbumsViewModel {
                         completionHandler(true)
                         
                     case .failure(let error):
-                        
+
                         self.handleError(error: error)
                         completionHandler(false)
                 }
@@ -309,6 +309,7 @@ extension AlbumsViewModel {
             case .statusCodeError(let code):
                 print(code)
             default:
+                
                 self.error.value = error
         }
     }

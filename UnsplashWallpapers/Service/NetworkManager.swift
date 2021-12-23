@@ -17,6 +17,8 @@ public enum ServerError: Error {
     case encounteredError(Error)
     case statusCodeError(Error)
     case statusCode(NSInteger)
+    case statusClientCode(NSInteger)
+    case statusBackendCode(NSInteger)
     case badRequest
     case forbidden
     case notFound
@@ -29,8 +31,13 @@ public enum ServerError: Error {
     case badData
     case invalidURL
     case invalidImage
+    case invalidResponse
     case noHTTPResponse
-    
+    case noInternetConnect
+    case noAuth
+    case networkConnectionLost
+    case unKnown
+
     static func map(_ error: Error) -> ServerError {
         return (error as? ServerError) ?? .encounteredError(error)
     }
@@ -62,13 +69,27 @@ public enum ServerError: Error {
         case .statusCodeError(let error):
             return NSLocalizedString("statusCodeError:\(error.localizedDescription)", comment: "")
         case .statusCode(let code):
-            return NSLocalizedString("statusCode:\(code)", comment: "")
+            return NSLocalizedString("Error With Status Code:\(code)", comment: "")
+        case .statusClientCode(let code):
+            return NSLocalizedString("Client Error With Status Code:\(code)", comment: "")
+        case .statusBackendCode(let code):
+            return NSLocalizedString("Backend Error With Status Code:\(code)", comment: "")
         case .invalidURL:
             return NSLocalizedString("invalidURL", comment: "")
         case .invalidImage:
             return NSLocalizedString("invalidImage", comment: "")
+        case .invalidResponse:
+            return NSLocalizedString("badServerResponse", comment: "")
         case .noHTTPResponse:
             return NSLocalizedString("noHTTPResponse", comment: "")
+        case .noInternetConnect:
+            return NSLocalizedString("notConnectedToInternet", comment: "")
+        case .noAuth:
+            return NSLocalizedString("userAuthenticationRequired", comment: "")
+        case .networkConnectionLost:
+            return NSLocalizedString("networkConnectionLost", comment: "")
+        case .unKnown:
+            return NSLocalizedString("unknown", comment: "")
         }
     }
 }
@@ -124,7 +145,8 @@ class NetworkManager {
     }()
     
     private var successCodes: CountableRange<Int> = 200..<299
-    private var failureCodes: CountableRange<Int> = 400..<499
+    private var failureClientCodes: CountableRange<Int> = 400..<499
+    private var failureBackendCodes: CountableRange<Int> = 500..<511
     var timeoutInterval = 30.0
     private var task: URLSessionDataTaskProtocol?
     
@@ -839,17 +861,20 @@ extension NetworkManager {
                     completion(nil, ServerError.encounteredError(error))
                 }
                 
-            } else if self.failureCodes.contains(httpResponse.statusCode) {
-                if let data = data, let responseBody = try? JSONSerialization.jsonObject(with: data, options: []) {
-                    debugPrint(responseBody)
+            } else if self.failureClientCodes.contains(httpResponse.statusCode) {
+                
+                switch httpResponse.statusCode {
+                    case 408:
+                        completion(nil, ServerError.timeOut)
+                    case 401:
+                        completion(nil, ServerError.noAuth)
+                    default:
+                        completion(nil, ServerError.statusClientCode(httpResponse.statusCode))
                 }
+            } else if self.failureBackendCodes.contains(httpResponse.statusCode) {
                 
-                let info = [
-                    NSLocalizedDescriptionKey: "Failure statusCode \(httpResponse.statusCode)",
-                ]
-                let error = NSError(domain: "NetworkService", code: httpResponse.statusCode, userInfo: info)
+                completion(nil, ServerError.statusBackendCode(httpResponse.statusCode))
                 
-                completion(nil, ServerError.statusCodeError(error))
             } else {
                 // Server returned response with status code different than expected `successCodes`.
                 let info = [

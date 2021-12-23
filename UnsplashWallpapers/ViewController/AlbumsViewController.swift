@@ -31,7 +31,7 @@ class AlbumsViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         albumsView = AlbumsView(viewModel: viewModel, coordinator: viewModel.coordinator)
         albumsView.translatesAutoresizingMaskIntoConstraints = false
         albumsView.configureCollectionView()
@@ -76,6 +76,14 @@ class AlbumsViewController: BaseViewController {
             
         }
         
+        viewModel.error.bind { error in
+            
+            guard let error = error else {
+                return
+            }
+            print("showError \(error)")
+        }
+        
         multipleAsyncOperations()
         
     }
@@ -86,7 +94,7 @@ class AlbumsViewController: BaseViewController {
             Task {
                 //await downloadWithMultipleSource()
                 
-                let taskResults = await fetchAlbums(descriptors: [Descriptor(id: UUID(), type: .featured),
+                let taskResults = try await fetchAlbums(descriptors: [Descriptor(id: UUID(), type: .featured),
                                                         Descriptor(id: UUID(), type: .shared),
                                                         Descriptor(id: UUID(), type: .all)]
                 )
@@ -194,11 +202,12 @@ class AlbumsViewController: BaseViewController {
     }
     
     @available(iOS 13.0.0, *)
-    func fetchAlbums(descriptors: [Descriptor]) async -> [TaskResult] {
+    func fetchAlbums(descriptors: [Descriptor]) async throws -> [TaskResult] {
         
-        await withTaskGroup(of: TaskResult.self) { taskGroup in
+        try await withThrowingTaskGroup(of: TaskResult.self) { taskGroup in
 
             for descriptor in descriptors {
+            
                 taskGroup.addTask {
                     switch descriptor.type {
                         case .featured:
@@ -222,7 +231,7 @@ class AlbumsViewController: BaseViewController {
             
             var results = [TaskResult]()
 
-            for await result in taskGroup {
+            for try await result in taskGroup {
                 results.append(result)
             }
 

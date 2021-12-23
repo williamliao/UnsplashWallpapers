@@ -75,13 +75,13 @@ public final class ImageLoader {
 //                    return image
 //                }
                 .tryMap { response -> Data in
-                  guard
-                    let httpURLResponse = response.response as? HTTPURLResponse,
-                    httpURLResponse.statusCode == 200
-                    else {
-                        let httpURLResponse = response.response as? HTTPURLResponse
-                        throw ServerError.statusCode(httpURLResponse?.statusCode ?? 500)
-                  }
+                    guard let httpResponse = response.response as? HTTPURLResponse else {
+                          throw ServerError.invalidResponse
+                    }
+                    
+                    if httpResponse.statusCode != 200 {
+                        throw ServerError.statusCode(httpResponse.statusCode)
+                    }
                   
                   return response.data
                 }
@@ -207,6 +207,7 @@ extension Publisher {
         var didReceiveValue = false
 
         return try await withCheckedThrowingContinuation { continuation in
+            
             cancellable = sink(
                 receiveCompletion: { completion in
                     switch completion {
