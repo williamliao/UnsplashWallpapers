@@ -132,8 +132,13 @@ public final class ImageLoader {
     func awaitAsync(for url: URL) async throws -> UIImage {
         let (data, response) = try await urlSession.data(from: url)
         guard (response as? HTTPURLResponse)?.statusCode == 200 else {
-            let httpURLResponse = response as? HTTPURLResponse
-            throw ServerError.statusCode(httpURLResponse?.statusCode ?? 500)
+            
+            if let httpURLResponse = response as? HTTPURLResponse {
+                throw ServerError.statusCode(httpURLResponse.statusCode)
+            } else {
+                throw ServerError.invalidResponse
+            }
+            
         }
         guard let image = UIImage(data: data) else { throw ServerError.invalidImage }
         cache[url] = image

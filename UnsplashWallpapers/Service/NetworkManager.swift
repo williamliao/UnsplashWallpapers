@@ -784,6 +784,10 @@ extension NetworkManager {
                     continuation.resume(returning: APIResult.failure(ServerError.invalidURL))
                 }
             })
+        } catch ServerError.unAuthorized  {
+            return APIResult.failure(ServerError.unAuthorized)
+        } catch ServerError.timeOut  {
+            return APIResult.failure(ServerError.timeOut)
         } catch {
             print("queryWithConcurrency error \(error)")
             return APIResult.failure(ServerError.unKnown)
