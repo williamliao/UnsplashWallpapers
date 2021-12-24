@@ -120,17 +120,17 @@ extension UserProfileView {
     func makeDateSourceForCollectionView() {
         if #available(iOS 13.0, *) {
            
-            if (!firstLoad) {
-                dataSource = makeUserListPhotosDataSource()
-                collectionView.dataSource = dataSource
-                return
-            }
+//            if (!firstLoad) {
+//                dataSource = makeUserListPhotosDataSource()
+//                collectionView.dataSource = dataSource
+//                return
+//            }
             
             collectionView.dataSource = dataSource
-            firstLoad = false
+           // firstLoad = false
             
         } else {
-            //collectionView.dataSource = self
+            collectionView.dataSource = self
         }
     }
     
@@ -151,6 +151,8 @@ extension UserProfileView {
                 guard let count = viewModel.userPhotosResponse.value?.count  else {
                     return
                 }
+            
+                dataSource = makeUserListPhotosDataSource()
                 
                 if count == 0 {
                     viewModel.fetchUserPhotos(username: viewModel.userProfileInfo.userName)
@@ -164,7 +166,7 @@ extension UserProfileView {
                 guard let count = viewModel.userLikesResponse.value?.count  else {
                     return
                 }
-                
+                likeDataSource = makeUserLikesPhotosDataSource()
                 if count == 0 {
                     viewModel.fetchUserLikePhotos(username: viewModel.userProfileInfo.userName)
                 } else {
@@ -176,7 +178,7 @@ extension UserProfileView {
                 guard let count = viewModel.userCollectionsResponse.value?.count  else {
                     return
                 }
-                
+                collectionsDataSource = makeUserCollectionsDataSource()
                 if count == 0 {
                     viewModel.fetchUserCollectons(username: viewModel.userProfileInfo.userName)
                 } else {
@@ -269,10 +271,10 @@ extension UserProfileView {
     @available(iOS 13.0, *)
     func applyInitialSnapshots() {
         
-        var snapshot = NSDiffableDataSourceSnapshot<Section, CollectionResponse>()
+        //var snapshot = NSDiffableDataSourceSnapshot<Section, CollectionResponse>()
         
         //Append available sections
-        Section.allCases.forEach { snapshot.appendSections([$0]) }
+        //Section.allCases.forEach { snapshot.appendSections([$0]) }
         
         switch viewModel.section {
             case .photos:
@@ -280,7 +282,7 @@ extension UserProfileView {
 
                 //Append available sections
                 Section.allCases.forEach { snapshot.appendSections([$0]) }
-                dataSource = getUserListPhotosDatasource()
+                //dataSource = getUserListPhotosDatasource()
 
                 guard let results = viewModel.userPhotosResponse.value else {
                     return
@@ -301,7 +303,7 @@ extension UserProfileView {
 
                 //Append available sections
                 Section.allCases.forEach { snapshot.appendSections([$0]) }
-                likeDataSource = getUserLikesPhotosDatasource()
+                //likeDataSource = getUserLikesPhotosDatasource()
               
                 guard let results = viewModel.userLikesResponse.value else {
                     return

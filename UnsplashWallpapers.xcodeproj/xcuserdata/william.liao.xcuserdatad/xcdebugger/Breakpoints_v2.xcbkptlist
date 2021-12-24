@@ -87,22 +87,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "20241544-7421-46CB-A321-E8DFEA153538"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "UnsplashWallpapers/View/UserProfileView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "169"
-            endingLineNumber = "169"
-            landmarkName = "segmentAction(_:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "06AA7272-AFDD-4A74-8272-6C701622BDCB"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -567,16 +551,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "06C35627-A6BD-4F85-A2FD-36891A21FBA7"
-            shouldBeEnabled = "Yes"
+            uuid = "C60D5179-5A04-4234-B2DF-484DF90E9AD9"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "UnsplashWallpapers/Service/NetworkManager.swift"
+            filePath = "UnsplashWallpapers/View/UserProfileView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1065"
-            endingLineNumber = "1065"
-            landmarkName = "queryWithConcurrency(pageRequest:method:decode:)"
+            startingLineNumber = "287"
+            endingLineNumber = "287"
+            landmarkName = "applyInitialSnapshots()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
