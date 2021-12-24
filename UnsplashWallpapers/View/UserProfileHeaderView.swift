@@ -35,7 +35,7 @@ extension UserProfileHeaderView {
         
         titleLabel = UILabel()
         titleLabel.font = UIFont.systemFont(ofSize: 16)
-        titleLabel.textColor = .white
+        titleLabel.textColor = .label
         titleLabel.textAlignment = .left
      
         avatarImageView = UIImageView()
