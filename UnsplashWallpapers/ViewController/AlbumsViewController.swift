@@ -52,7 +52,11 @@ class AlbumsViewController: BaseViewController {
          
         ])
        
-        viewModel.featuredAlbumsRespone.bind { [weak self] (_) in
+        viewModel.featuredAlbumsRespone.bind { [weak self] (result) in
+          
+            if (result.count == 0) {
+                return
+            }
             
             DispatchQueue.main.async {
                 self?.albumsView.configureDataSource()
@@ -60,7 +64,11 @@ class AlbumsViewController: BaseViewController {
             
         }
         
-        viewModel.allAlbumsRespone.bind { [weak self] (_) in
+        viewModel.allAlbumsRespone.bind { [weak self] (result) in
+            
+            if (result.count == 0) {
+                return
+            }
             
             DispatchQueue.main.async {
                 self?.albumsView.configureDataSource()
@@ -68,7 +76,11 @@ class AlbumsViewController: BaseViewController {
             
         }
         
-        viewModel.sharedAlbumsRespone.bind { [weak self] (_) in
+        viewModel.sharedAlbumsRespone.bind { [weak self] (result) in
+           
+            if (result.count == 0) {
+                return
+            }
             
             DispatchQueue.main.async {
                 self?.albumsView.configureDataSource()

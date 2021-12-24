@@ -25,7 +25,7 @@ public final class ImageLoader {
         self.urlSession = urlSession
         self.cache = cache
     }
-
+    
     public func loadImage(from url: URL) -> AnyPublisher<UIImage?, Never> {
         if let image = cache[url] {
             //print("load form cache")
@@ -150,8 +150,8 @@ public final class ImageLoader {
         }
     }
     
-    func awaitAsyncWithCompletion(for url: URL, completion: @escaping (Result<UIImage, Error>) -> ()) async throws {
-        let task = await urlSession.dataTask(with: url) { data, response, error in
+    func awaitAsyncWithCompletion(for url: URL, completion: @escaping (Result<UIImage, Error>) -> ()) {
+        let task = urlSession.dataTask(with: url) { data, response, error in
             guard let responseData = data, error == nil else {
                 completion(.failure(error ?? ServerError.badData))
                 return
@@ -170,6 +170,33 @@ public final class ImageLoader {
             }
         }
         task.resume()
+    }
+    
+    @available(iOS 13.0.0, *)
+    func downloadImageConcurrency(from imageUrl: URL) async throws -> APIResult<UIImage, ServerError> {
+       
+        do {
+            
+            if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
+                throw ServerError.unAuthorized
+            }
+            
+            return try await withCheckedThrowingContinuation({
+                (continuation: CheckedContinuation<(APIResult<UIImage, ServerError>), Error>) in
+                
+                awaitAsyncWithCompletion(for: imageUrl) { result in
+                    
+                    switch result {
+                    case .success(let image):
+                        continuation.resume(returning: APIResult.success(image))
+                    case .failure(_):
+                        continuation.resume(returning: APIResult.failure(ServerError.invalidImage))
+                    }
+                }
+            })
+        } catch  {
+            return APIResult.failure(ServerError.unKnown)
+        }
     }
     
     func getCacheImage(url: URL) -> UIImage? {

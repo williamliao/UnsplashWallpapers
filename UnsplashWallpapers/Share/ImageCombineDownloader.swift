@@ -55,9 +55,8 @@ class ImageCombineDownloader: ImageDownLoader {
         
     }
     
-    @available(iOS 14.0.0, *)
     func downloadWithConcurrencyCombineErrorHandler(url: URL) async throws -> APIResult<UIImage, ServerError> {
-        do {
+       /* do {
             let image = try await self.loadImageWithError(for: url)
                 .retry(1)
                 .singleResult()
@@ -66,7 +65,28 @@ class ImageCombineDownloader: ImageDownLoader {
             
         } catch {
             return APIResult.failure(error as? ServerError ?? ServerError.invalidImage)
-        }
+        } */
+        
+        let session = URLSession(configuration: .default, delegate: nil, delegateQueue: nil)
+        let downloader = ImageLoader(urlSession: session)
+        
+        do {
+            let result = try await downloader.downloadImageConcurrency(from: url)
+           
+           switch result {
+           case .success(let image):
+               
+               return APIResult.success(image)
+               
+           case .failure(let error):
+               print("configureImage error \(error)")
+               
+               return APIResult.failure(error)
+           }
+             
+         } catch {
+             return APIResult.failure(error as? ServerError ?? ServerError.invalidImage)
+         }
     }
     
     @available(iOS 14.0.0, *)

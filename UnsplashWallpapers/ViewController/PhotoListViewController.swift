@@ -40,7 +40,15 @@ class PhotoListViewController: BaseViewController {
             photoListView.section = .collections
         }
         
-        viewModel.respone.bind { [weak self] (_) in
+        viewModel.respone.bind { [weak self] (result) in
+            
+            guard let result = result else {
+                return
+            }
+            
+            if (result.count == 0) {
+                return
+            }
             
             self?.photoListView.hideCollectionView(hide: false)
             
@@ -91,7 +99,10 @@ class PhotoListViewController: BaseViewController {
             }
         }
 
+        viewModel.reset()
         viewModel.fetchDataWithConcurrency()
+        photoListView.section = .random
+        viewModel.segmentedIndex = .random
     }
     
     override func viewDidDisappear(_ animated: Bool) {

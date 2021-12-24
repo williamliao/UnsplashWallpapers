@@ -102,28 +102,20 @@ extension PhotoListCollectionViewCell {
         DispatchQueue.global().async { [weak self] in
             
             guard let self = self else { return }
-          
-            if #available(iOS 14.0.0, *) {
-                Task {
-                    let result = try await self.downloader.downloadWithConcurrencyCombineErrorHandler(url: url)
+            
+            Task {
+                let result = try await self.downloader.downloadWithConcurrencyCombineErrorHandler(url: url)
+                
+                switch result {
+                case .success(let image):
+                    self.isLoading(isLoading: false)
+                    self.showImage(image: image)
                     
-                    switch result {
-                    case .success(let image):
-                        self.isLoading(isLoading: false)
-                        self.showImage(image: image)
-                        
-                    case .failure(let error):
-                        self.isLoading(isLoading: false)
-                        print("configureImage error \(error)")
-                    }
-                    
+                case .failure(let error):
+                    self.isLoading(isLoading: false)
+                    print("configureImage error \(error)")
                 }
-            } else {
-                // Fallback on earlier versions
-                _ = self.downloader.loadImage(for: url).sink { [weak self] image in
-                    self?.isLoading(isLoading: false)
-                    self?.showImage(image: image)
-                }
+                
             }
         }
     }

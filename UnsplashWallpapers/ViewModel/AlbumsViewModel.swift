@@ -261,6 +261,7 @@ extension AlbumsViewModel {
     }
     
     func handleAllRespone(respone: SearchRespone) {
+        
         for index in 0...respone.results.count - 1 {
             
             var albumDetailItems:[AlbumDetailItem] = [AlbumDetailItem]()
