@@ -43,14 +43,14 @@ extension UnsplashService {
     }
     
     @available(iOS 13.0.0, *)
-    func searchWithConcurrency(pageRequest: UnsplashSearchPagedRequest, completion: @escaping (APIResult<SearchRespone, ServerError>) -> Void) {
+    func searchWithConcurrency(completion: @escaping (APIResult<SearchRespone, ServerError>) -> Void) {
         
         guard loadingTask == nil else {
             return
         }
         
         loadingTask = Task {
-            let result = try? await queryWithConcurrency(pageRequest: pageRequest, method: .get, decode: { json -> SearchRespone? in
+            let result = try? await query(method: .get, decode: { json -> SearchRespone? in
                 guard let feedResult = json as? SearchRespone else { return  nil }
                 return feedResult
             })
@@ -62,14 +62,14 @@ extension UnsplashService {
         loadingTask = nil
     }
     
-    func search(pageRequest: UnsplashSearchPagedRequest, completion: @escaping (APIResult<SearchRespone, ServerError>) -> Void) {
+    func search(completion: @escaping (APIResult<SearchRespone, ServerError>) -> Void) {
         
         guard loadingTask == nil else {
             return
         }
         
         loadingTask = Task {
-            let result = try? await query(pageRequest: pageRequest, method: .get, decode: { json -> SearchRespone? in
+            let result = try? await query(method: .get, decode: { json -> SearchRespone? in
                 guard let feedResult = json as? SearchRespone else { return  nil }
                 return feedResult
             })
@@ -81,14 +81,14 @@ extension UnsplashService {
         loadingTask = nil
     }
     
-    func topic(id: String, pageRequest: UnsplashTopicRequest, completion: @escaping (APIResult<Topic, ServerError>) -> Void) {
+    func topic(completion: @escaping (APIResult<Topic, ServerError>) -> Void) {
         
         guard loadingTask == nil else {
             return
         }
         
         loadingTask = Task {
-            let result = try? await topic(id: id, pageRequest: pageRequest, method: .get, decode: { json -> Topic? in
+            let result = try? await query(method: .get, decode: { json -> Topic? in
                 guard let feedResult = json as? Topic else { return  nil }
                 return feedResult
             })
@@ -100,13 +100,13 @@ extension UnsplashService {
         loadingTask = nil
     }
     
-    func topicPhotos(id: String, pageRequest: UnsplashTopicRequest, completion: @escaping (APIResult<Topic, ServerError>) -> Void) {
+    func topicPhotos(completion: @escaping (APIResult<Topic, ServerError>) -> Void) {
         guard loadingTask == nil else {
             return
         }
         
         loadingTask = Task {
-            let result = try? await topic(id: id, pageRequest: pageRequest, method: .get, decode: { json -> Topic? in
+            let result = try? await query(method: .get, decode: { json -> Topic? in
                 guard let feedResult = json as? Topic else { return  nil }
                 return feedResult
             })
@@ -118,12 +118,12 @@ extension UnsplashService {
         loadingTask = nil
     }
     
-    func listUserPhotos(pageRequest: UnsplashUserListRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
+    func listUserPhotos(completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
         guard loadingTask == nil else {
             return
         }
         loadingTask = Task {
-            let result = try? await listUserData(pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
+            let result = try? await query(method: .get, decode: { json -> [CollectionResponse]? in
                 guard let feedResult = json as? [CollectionResponse] else { return  nil }
                 return feedResult
             })
@@ -134,14 +134,14 @@ extension UnsplashService {
         loadingTask = nil
     }
     
-    func listUserLikePhotos(username: String, pageRequest: UnsplashUserListRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
+    func listUserLikePhotos(completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
         
         guard loadingTask == nil else {
             return
         }
         
         loadingTask = Task {
-            let result = try? await listUserData(pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
+            let result = try? await query(method: .get, decode: { json -> [CollectionResponse]? in
                 guard let feedResult = json as? [CollectionResponse] else { return  nil }
                 return feedResult
             })
@@ -152,14 +152,14 @@ extension UnsplashService {
         loadingTask = nil
     }
     
-    func listUserCollections(username: String, pageRequest: UnsplashUserListRequest, completion: @escaping (APIResult<[UserCollectionRespone], ServerError>) -> Void) {
+    func listUserCollections(completion: @escaping (APIResult<[UserCollectionRespone], ServerError>) -> Void) {
         
         guard loadingTask == nil else {
             return
         }
         
         loadingTask = Task {
-            let result = try? await listUserData(pageRequest: pageRequest, method: .get, decode: { json -> [UserCollectionRespone]? in
+            let result = try? await query(method: .get, decode: { json -> [UserCollectionRespone]? in
                 guard let feedResult = json as? [UserCollectionRespone] else { return  nil }
                 return feedResult
             })
@@ -170,14 +170,14 @@ extension UnsplashService {
         loadingTask = nil
     }
     
-    func collection(pageRequest: UnsplashCollectionRequest, completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
+    func collection(completion: @escaping (APIResult<[CollectionResponse], ServerError>) -> Void) {
         
         guard loadingTask == nil else {
             return
         }
         
         loadingTask = Task {
-            let result = try? await get_Collection(pageRequest: pageRequest, method: .get, decode: { json -> [CollectionResponse]? in
+            let result = try? await query(method: .get, decode: { json -> [CollectionResponse]? in
                 guard let feedResult = json as? [CollectionResponse] else { return  nil }
                 return feedResult
             })
@@ -188,14 +188,14 @@ extension UnsplashService {
         loadingTask = nil
     }
     
-    func getPhotoInfo(pageRequest: UnsplashUserPhotoRequest, completion: @escaping (APIResult<UnsplashPhotoInfo, ServerError>) -> Void) {
+    func getPhotoInfo(completion: @escaping (APIResult<UnsplashPhotoInfo, ServerError>) -> Void) {
         
         guard loadingTask == nil else {
             return
         }
         
         loadingTask = Task {
-            let result = try? await getPhotoInfo(pageRequest: pageRequest, method: .get, decode: { json -> UnsplashPhotoInfo? in
+            let result = try? await query(method: .get, decode: { json -> UnsplashPhotoInfo? in
                 guard let feedResult = json as? UnsplashPhotoInfo else { return  nil }
                 return feedResult
             })
@@ -206,14 +206,14 @@ extension UnsplashService {
         loadingTask = nil
     }
     
-    func getAllAlbum(pageRequest: UnsplashAlbumsRequest, completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
+    func getAllAlbum(completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
         
         guard loadingTask == nil else {
             return
         }
         
         loadingTask = Task {
-            let result = try? await getAlbum(pageRequest: pageRequest, method: .get, decode: { json -> [Response]? in
+            let result = try? await query(method: .get, decode: { json -> [Response]? in
                 guard let feedResult = json as? [Response] else { return  nil }
                 return feedResult
             })
@@ -224,14 +224,15 @@ extension UnsplashService {
         loadingTask = nil
     }
     
-    func fetchRandomWithQuery(query: String, pageRequest: UnsplashPagedRequest, completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
+    func fetchRandomWithQuery(completion: @escaping (APIResult<[Response], ServerError>) -> Void) {
         
         guard loadingTask == nil else {
             return
         }
-      
+
         loadingTask = Task {
-            let result = try? await queryWithRandom(query: query, pageRequest: pageRequest, method: .get, decode: { json -> [Response]? in
+            
+            let result = try? await query(method: .get, decode: { json -> [Response]? in
                 guard let feedResult = json as? [Response] else { return  nil }
                 return feedResult
             })

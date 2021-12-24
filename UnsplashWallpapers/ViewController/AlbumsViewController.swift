@@ -215,7 +215,7 @@ class AlbumsViewController: BaseViewController {
                 for descriptor in descriptors {
                     
                     if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
-                        throw ServerError.noAuth
+                        throw ServerError.unAuthorized
                     }
                     
                     try Task.checkCancellation()

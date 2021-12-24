@@ -51,7 +51,7 @@ extension DetailViewModel {
         
         service = UnsplashService(endPoint: .photoDetail(photoInfo.id))
         
-        service.getPhotoInfo(pageRequest: unsplashUserPhotosdRequest) { (result) in
+        service.getPhotoInfo() { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):

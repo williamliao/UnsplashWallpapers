@@ -75,7 +75,7 @@ extension SearchViewModel {
         
         }
         
-        service.searchWithConcurrency(pageRequest: unsplashSearchPagedRequest) { (result) in
+        service.searchWithConcurrency() { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):
@@ -140,7 +140,7 @@ extension SearchViewModel {
         
         }
         
-        service.search(pageRequest: unsplashSearchPagedRequest) { (result) in
+        service.search() { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):
@@ -193,7 +193,7 @@ extension SearchViewModel {
         
         isLoading.value = true
         
-        service.searchWithConcurrency(pageRequest: unsplashSearchPagedRequest) { [weak self] (result) in
+        service.searchWithConcurrency() { [weak self] (result) in
             self?.isLoading.value = false
             
             switch result {

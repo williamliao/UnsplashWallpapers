@@ -42,7 +42,7 @@ extension CollectionListViewModel {
         
         service = UnsplashService(endPoint: .get_collection(id, unsplashCollectionRequest))
         
-        service.collection(pageRequest: unsplashCollectionRequest) { (result) in
+        service.collection() { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):
@@ -72,7 +72,7 @@ extension CollectionListViewModel {
         
         service = UnsplashService(endPoint: .get_collection(query, unsplashCollectionRequest))
         
-        service.collection(pageRequest: unsplashCollectionRequest) { [weak self] (result) in
+        service.collection() { [weak self] (result) in
             self?.isLoading.value = false
             switch result {
                 case .success(let respone):

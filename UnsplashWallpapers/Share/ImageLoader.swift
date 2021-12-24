@@ -53,7 +53,7 @@ public final class ImageLoader {
 //                """,
 //                NSURLErrorFailingURLErrorKey: url
 //            ]))
-            return Fail(error: ServerError.badURL)
+            return Fail(error: ServerError.invalidURL)
             //.receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
         }
@@ -74,16 +74,30 @@ public final class ImageLoader {
 //                    }
 //                    return image
 //                }
-                .tryMap { response -> Data in
+                .tryMap { response -> (data: Data, response: URLResponse) in
                     guard let httpResponse = response.response as? HTTPURLResponse else {
                           throw ServerError.invalidResponse
+                    }
+                    
+                    if httpResponse.statusCode == 429 {
+                        throw ServerError.rateLimitted
+                    }
+
+                    if httpResponse.statusCode == 503 {
+                        throw ServerError.serverUnavailable
+                    }
+                    
+                    if httpResponse.statusCode == 408 {
+                        throw ServerError.timeOut
                     }
                     
                     if httpResponse.statusCode != 200 {
                         throw ServerError.statusCode(httpResponse.statusCode)
                     }
+                    
+                    let imageData = response.data
                   
-                  return response.data
+                    return (imageData, httpResponse)
                 }
 //                .tryMap { data -> UIImage in
 //                  guard let image = UIImage(data: data) else {
@@ -95,7 +109,8 @@ public final class ImageLoader {
 //                    guard let image = UIImage(data: data) else {
 //                        throw ServerError.invalidImage
 //                    }
-                    guard let image = UIImage(data: data) else { throw ServerError.invalidImage }
+                    
+                    guard let image = UIImage(data: data.data) else { throw ServerError.invalidImage }
                     cache[url] = image
                     
                     if let cacheImage = cache[url] {

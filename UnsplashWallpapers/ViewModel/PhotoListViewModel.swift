@@ -73,38 +73,6 @@ extension PhotoListViewModel {
         }
     }
     
-    func fetchData() {
-        
-        service = UnsplashService(endPoint: .random)
-        
-        isLoading.value = true
-        
-        service.fetchDataWithNetworkManager() { (result) in
-            self.isLoading.value = false
-            
-            switch result {
-                case .success(let respone):
-                   
-                    self.respone.value = respone
-        
-                case .failure(let error):
-                    
-                    switch error {
-                        case .statusCodeError(let code):
-                            print("fetchData statusCodeError \(code)")
-                            
-                        case .encounteredError(let error):
-                            self.error.value = error
-                        default:
-                            
-                            self.error.value = error
-                    }
-            }
-        }
-        
-        
-    }
-    
     func fetchNature() {
         service = UnsplashService(endPoint: .search("nature", unsplashNaturePagedRequest))
         
@@ -115,7 +83,7 @@ extension PhotoListViewModel {
             unsplashNaturePagedRequest = UnsplashSearchPagedRequest(with: fetchNatureCursor)
         }
         
-        service.search(pageRequest: unsplashNaturePagedRequest) { (result) in
+        service.search() { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):
@@ -146,7 +114,7 @@ extension PhotoListViewModel {
             unsplashWallpaperPagedRequest = UnsplashSearchPagedRequest(with: fetchWallpapersCursor)
         }
         
-        service.search(pageRequest: unsplashWallpaperPagedRequest) { (result) in
+        service.search() { (result) in
             self.isLoading.value = false
             switch result {
                 case .success(let respone):
@@ -230,7 +198,7 @@ extension PhotoListViewModel {
                 unsplashNaturePagedRequest = UnsplashSearchPagedRequest(with: fetchNatureCursor)
                 service = UnsplashService(endPoint: .search("nature", unsplashNaturePagedRequest))
             
-            service.searchWithConcurrency(pageRequest: unsplashNaturePagedRequest) { [weak self] (result) in
+            service.searchWithConcurrency() { [weak self] (result) in
                 
                 self?.isLoading.value = false
                 self?.isFetchingNextPage = false
@@ -286,7 +254,7 @@ extension PhotoListViewModel {
                 
                 //print("fetchWallpapersCursor \(unsplashWallpaperPagedRequest.cursor)")
             
-            service.searchWithConcurrency(pageRequest: unsplashWallpaperPagedRequest) { [weak self] (result) in
+            service.searchWithConcurrency() { [weak self] (result) in
                 self?.isLoading.value = false
                 self?.isFetchingNextPage = false
                 

@@ -91,14 +91,7 @@ class PhotoListViewController: BaseViewController {
             }
         }
 
-        if #available(iOS 15.0.0, *) {
-
-            viewModel.fetchDataWithConcurrency()
-            
-        } else {
-            // Fallback on earlier versions
-            viewModel.fetchData()
-        }
+        viewModel.fetchDataWithConcurrency()
     }
     
     override func viewDidDisappear(_ animated: Bool) {

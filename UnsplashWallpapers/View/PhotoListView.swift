@@ -173,12 +173,7 @@ extension PhotoListView {
                 dataSource = makeDataSource()
                 collectionView.dataSource = dataSource
                 viewModel.reset()
-                if #available(iOS 15.0.0, *) {
-                    viewModel.fetchDataWithConcurrency()
-                } else {
-                    // Fallback on earlier versions
-                    viewModel.fetchData()
-                }
+                viewModel.fetchDataWithConcurrency()
                 section = .random
                 viewModel.segmentedIndex = .random
                 

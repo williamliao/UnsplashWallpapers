@@ -19,25 +19,29 @@ public enum ServerError: Error {
     case statusCode(NSInteger)
     case statusClientCode(NSInteger)
     case statusBackendCode(NSInteger)
-    case badRequest
-    case forbidden
-    case notFound
-    case methodNotAllowed
-    case timeOut
-    case serverError
-    case serverUnavailable
+    case badRequest //400
+    case unAuthorized //401
+    case forbidden //403
+    case notFound //404
+    case methodNotAllowed // 405
+    case timeOut //408
+    case unSupportedMediaType //415
+    case rateLimitted //429
+    case serverError //500
+    case serverUnavailable //503
+    case gatewayTimeout //504
+    case networkAuthenticationRequired //511
+    case httpVersionNotSupported
     case jsonDecodeFailed
-    case badURL
     case badData
     case invalidURL
     case invalidImage
     case invalidResponse
     case noHTTPResponse
     case noInternetConnect
-    case noAuth
     case networkConnectionLost
     case unKnown
-
+    
     static func map(_ error: Error) -> ServerError {
         return (error as? ServerError) ?? .encounteredError(error)
     }
@@ -49,15 +53,21 @@ public enum ServerError: Error {
         case .notFound:
             return NSLocalizedString("notFound", comment: "")
         case .serverError:
-            return NSLocalizedString("serverError", comment: "")
+            return NSLocalizedString("Internal Server Error", comment: "")
         case .serverUnavailable:
-            return NSLocalizedString("serverUnavailable", comment: "")
+            return NSLocalizedString("server Unavailable", comment: "")
+        case .gatewayTimeout:
+            return NSLocalizedString("Gateway Timeout", comment: "")
+        case .httpVersionNotSupported:
+            return NSLocalizedString("HTTP Version Not Supported", comment: "")
+        case .networkAuthenticationRequired:
+            return NSLocalizedString("Network Authentication Required", comment: "")
         case .timeOut:
             return NSLocalizedString("timeOut", comment: "")
+        case .unSupportedMediaType:
+            return NSLocalizedString("The media format of the requested data is not supported by the server, so the server is rejecting the request.", comment: "")
         case .jsonDecodeFailed:
             return NSLocalizedString("jsonDecodeFailed", comment: "")
-        case .badURL:
-            return NSLocalizedString("Bad Url", comment: "")
         case .badRequest:
             return NSLocalizedString("badRequest", comment: "")
         case .methodNotAllowed:
@@ -84,10 +94,12 @@ public enum ServerError: Error {
             return NSLocalizedString("noHTTPResponse", comment: "")
         case .noInternetConnect:
             return NSLocalizedString("notConnectedToInternet", comment: "")
-        case .noAuth:
-            return NSLocalizedString("userAuthenticationRequired", comment: "")
         case .networkConnectionLost:
             return NSLocalizedString("networkConnectionLost", comment: "")
+        case .rateLimitted:
+            return NSLocalizedString("Too Many Requests", comment: "")
+        case .unAuthorized:
+            return NSLocalizedString("Unauthorized, client must authenticate itself to get the requested response", comment: "")
         case .unKnown:
             return NSLocalizedString("unknown", comment: "")
         }
@@ -371,320 +383,6 @@ class NetworkManager {
     
     // MARK: - Help Method
     
-   /* func fetch<T: Decodable>(method: RequestType, decode: @escaping (Decodable) -> T?, completion: @escaping (APIResult<T, ServerError>) -> Void) {
-        
-        guard var request = try? createURLRequest(method: method) else {
-            completion(APIResult.failure(ServerError.invalidURL))
-            return
-        }
-        //request.setValue("v1", forKey: "Accept-Version")
-        request.httpMethod = method.rawValue
-
-        request.allHTTPHeaderFields = prepareHeaders()
-        
-        if UserDefaults.standard.object(forKey: "ETag") != nil {
-            let tag = UserDefaults.standard.string(forKey: "ETag")
-            if let etag = tag {
-                request.addValue(etag, forHTTPHeaderField: "If-None-Match")
-            }
-        }
-        
-        let task = decodingTaskWithConcurrency(with: request, decodingType: T.self) { (json , error) in
-            
-            DispatchQueue.main.async {
-                guard let json = json else {
-                    if let error = error {
-                        completion(APIResult.failure(error))
-                    }
-                    return
-                }
-
-                if let value = decode(json) {
-                    completion(.success(value))
-                }
-            }
-        }
-        task?.resume()
-    }*/
-    
-    @available(iOS 13.0.0, *)
-    func queryWithRandom<T: Decodable>(query: String, pageRequest: UnsplashPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError>  {
-        
-        if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
-            throw ServerError.noAuth
-        }
-        
-        let components = prepareURLComponents()
-        
-        try Task.checkCancellation()
-        
-        do {
-            return try await withCheckedThrowingContinuation({
-                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-                
-                guard let url = components?.url else {
-                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
-                    return
-                }
-                
-                createRequestWithURL(url: url, decode: decode) { result in
-                    continuation.resume(returning: result)
-                }
-            })
-        } catch ServerError.noAuth  {
-            return APIResult.failure(ServerError.noAuth)
-        } catch ServerError.timeOut  {
-            return APIResult.failure(ServerError.timeOut)
-        } catch {
-            print("queryWithConcurrency error \(error)")
-            return APIResult.failure(ServerError.unKnown)
-        }
-    }
-    
-    @available(iOS 13.0.0, *)
-    func query<T: Decodable>(pageRequest: UnsplashSearchPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
-       
-        do {
-            
-            if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
-                throw ServerError.noAuth
-            }
-            
-            let components = prepareURLComponents()
-             
-            try Task.checkCancellation()
-             
-            return try await withCheckedThrowingContinuation({
-                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-                
-                guard let url = components?.url else {
-                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
-                    return
-                }
-                
-                createRequestWithURL(url: url, decode: decode) { result in
-                    continuation.resume(returning: result)
-                }
-            })
-        } catch ServerError.noAuth  {
-            return APIResult.failure(ServerError.noAuth)
-        } catch ServerError.timeOut  {
-            return APIResult.failure(ServerError.timeOut)
-        } catch {
-            print("queryWithConcurrency error \(error)")
-            return APIResult.failure(ServerError.unKnown)
-        }
-    }
-    
-    @available(iOS 13.0.0, *)
-    func topic<T: Decodable>(id: String, pageRequest: UnsplashTopicRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
-       
-        do {
-            
-            if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
-                throw ServerError.noAuth
-            }
-            
-            let components = prepareURLComponents()
-            
-            try Task.checkCancellation()
-        
-            return try await withCheckedThrowingContinuation({
-                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-                
-                guard let url = components?.url else {
-                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
-                    return
-                }
-                
-                createRequestWithURL(url: url, decode: decode) { result in
-                    continuation.resume(returning: result)
-                }
-            })
-        } catch ServerError.noAuth  {
-            return APIResult.failure(ServerError.noAuth)
-        } catch ServerError.timeOut  {
-            return APIResult.failure(ServerError.timeOut)
-        } catch {
-            print("queryWithConcurrency error \(error)")
-            return APIResult.failure(ServerError.unKnown)
-        }
-    }
-    
-    @available(iOS 13.0.0, *)
-    func topicPhotos<T: Decodable>(id: String, pageRequest: UnsplashTopicRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
-      
-        do {
-            
-            if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
-                throw ServerError.noAuth
-            }
-            
-            let components = prepareURLComponents()
-            
-            try Task.checkCancellation()
-            
-            return try await withCheckedThrowingContinuation({
-                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-                
-                guard let url = components?.url else {
-                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
-                    return
-                }
-                
-                createRequestWithURL(url: url, decode: decode) { result in
-                    continuation.resume(returning: result)
-                }
-            })
-        } catch ServerError.noAuth  {
-            return APIResult.failure(ServerError.noAuth)
-        } catch ServerError.timeOut  {
-            return APIResult.failure(ServerError.timeOut)
-        } catch {
-            print("queryWithConcurrency error \(error)")
-            return APIResult.failure(ServerError.unKnown)
-        }
-    }
-    
-    @available(iOS 13.0.0, *)
-    func get_Collection<T: Decodable>(pageRequest: UnsplashCollectionRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
-      
-        do {
-            
-            if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
-                throw ServerError.noAuth
-            }
-            
-            let components = prepareURLComponents()
-            
-            try Task.checkCancellation()
-            
-            return try await withCheckedThrowingContinuation({
-                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-                
-                guard let url = components?.url else {
-                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
-                    return
-                }
-                
-                createRequestWithURL(url: url, decode: decode) { result in
-                    continuation.resume(returning: result)
-                }
-            })
-        } catch ServerError.noAuth  {
-            return APIResult.failure(ServerError.noAuth)
-        } catch ServerError.timeOut  {
-            return APIResult.failure(ServerError.timeOut)
-        } catch {
-            print("queryWithConcurrency error \(error)")
-            return APIResult.failure(ServerError.unKnown)
-        }
-    }
-    
-    @available(iOS 13.0.0, *)
-    func listUserData<T: Decodable>(pageRequest: UnsplashUserListRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
-     
-        do {
-            
-            if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
-                throw ServerError.noAuth
-            }
-            
-            let components = prepareURLComponents()
-            
-            try Task.checkCancellation()
-            
-            return try await withCheckedThrowingContinuation({
-                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-                
-                guard let url = components?.url else {
-                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
-                    return
-                }
-                
-                createRequestWithURL(url: url, decode: decode) { result in
-                    continuation.resume(returning: result)
-                }
-            })
-        } catch ServerError.noAuth  {
-            return APIResult.failure(ServerError.noAuth)
-        } catch ServerError.timeOut  {
-            return APIResult.failure(ServerError.timeOut)
-        } catch {
-            print("queryWithConcurrency error \(error)")
-            return APIResult.failure(ServerError.unKnown)
-        }
-    }
-    
-    @available(iOS 13.0.0, *)
-    func getPhotoInfo<T: Decodable>(pageRequest: UnsplashUserPhotoRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
-        
-        do {
-            
-            if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
-                throw ServerError.noAuth
-            }
-            
-            let components = prepareURLComponents()
-            
-            try Task.checkCancellation()
-            
-            return try await withCheckedThrowingContinuation({
-                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-                
-                guard let url = components?.url else {
-                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
-                    return
-                }
-                
-                createRequestWithURL(url: url, decode: decode) { result in
-                    continuation.resume(returning: result)
-                }
-            })
-        } catch ServerError.noAuth  {
-            return APIResult.failure(ServerError.noAuth)
-        } catch ServerError.timeOut  {
-            return APIResult.failure(ServerError.timeOut)
-        } catch {
-            print("queryWithConcurrency error \(error)")
-            return APIResult.failure(ServerError.unKnown)
-        }
-    }
-    
-    @available(iOS 13.0.0, *)
-    func getAlbum<T: Decodable>(pageRequest: UnsplashAlbumsRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
-        do {
-            
-            if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
-                throw ServerError.noAuth
-            }
-            
-            let components = prepareURLComponents()
-            
-            try Task.checkCancellation()
-            
-            return try await withCheckedThrowingContinuation({
-                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
-                
-                guard let url = components?.url else {
-                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
-                    return
-                }
-                
-                createRequestWithURL(url: url, decode: decode) { result in
-                    continuation.resume(returning: result)
-                }
-            })
-        } catch ServerError.noAuth  {
-            return APIResult.failure(ServerError.noAuth)
-        } catch ServerError.timeOut  {
-            return APIResult.failure(ServerError.timeOut)
-        } catch {
-            print("queryWithConcurrency error \(error)")
-            return APIResult.failure(ServerError.unKnown)
-        }
-    }
-
     @available(iOS 13.0.0, *)
     func get(completion: @escaping DataTaskResult) {
         
@@ -696,7 +394,7 @@ class NetworkManager {
         
         let task = URLSession.shared.dataTask(with: url) { (data, _, error) -> Void in
             if let _ = error {
-                completion(nil, nil, ServerError.badURL)
+                completion(nil, nil, ServerError.invalidURL)
             } else {
                 completion(data, nil, nil)
             }
@@ -715,7 +413,7 @@ class NetworkManager {
         
         let task = await session.dataTaskWithURL(url) { (data, _, error) -> Void in
             if let _ = error {
-                completion(nil, nil, ServerError.badURL)
+                completion(nil, nil, ServerError.invalidURL)
             } else {
                 completion(data, nil, nil)
             }
@@ -771,21 +469,20 @@ class NetworkManager {
                 task?.resume()
             } catch  {
                 
+                print(error)
+                
+                if let error = error as? ServerError {
+                    completion(APIResult.failure(error))
+                } else {
+                    completion(APIResult.failure(ServerError.unKnown))
+                }
+                
             }
         }
     }
     
     func createURLRequest(params: Dictionary<String, AnyObject>? = nil, method: RequestType ) throws -> URLRequest {
-        
-        //        request.allHTTPHeaderFields = prepareHeaders()
-        //
-        //        if UserDefaults.standard.object(forKey: "ETag") != nil {
-        //            let tag = UserDefaults.standard.string(forKey: "ETag")
-        //            if let etag = tag {
-        //                request.addValue(etag, forHTTPHeaderField: "If-None-Match")
-        //            }
-        //        }
-        
+     
         guard let url = prepareURLComponents()?.url else {
             throw ServerError.invalidURL
         }
@@ -828,6 +525,36 @@ class NetworkManager {
         }
     }
     
+    func query<T: Decodable>(method: RequestType, decode: @escaping (Decodable) -> T?) async throws ->
+    APIResult<T, ServerError> {
+        do {
+            
+            if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
+                throw ServerError.unAuthorized
+            }
+            
+            let components = prepareURLComponents()
+             
+            try Task.checkCancellation()
+             
+            return try await withCheckedThrowingContinuation({
+                (continuation: CheckedContinuation<(APIResult<T, ServerError>), Error>) in
+                
+                guard let url = components?.url else {
+                    continuation.resume(returning: APIResult.failure(ServerError.invalidURL))
+                    return
+                }
+                
+                createRequestWithURL(url: url, decode: decode) { result in
+                    continuation.resume(returning: result)
+                }
+            })
+        } catch {
+            print("queryWithConcurrency error \(error)")
+            return APIResult.failure(ServerError.unKnown)
+        }
+    }
+    
     func cancel() {
         task?.cancel()
     }
@@ -836,77 +563,7 @@ class NetworkManager {
 // MARK: - Base URLSession
 
 extension NetworkManager {
-   /* private func decodingTask<T: Decodable>(with request: URLRequest, decodingType: T.Type, completionHandler completion: @escaping JSONTaskCompletionHandler) -> URLSessionDataTaskProtocol? {
-        
-        let decoder = JSONDecoder()
-        
-        task = session.dataTask(with: request) { data, response, error in
-            
-            guard error == nil else {
-                if let error = error {
-                    
-                    let errorCode = (error as NSError).code
-                    
-                    switch errorCode {
-                        case NSURLErrorTimedOut:
-                            completion(nil, ServerError.timeOut)
-                        default:
-                            completion(nil, ServerError.encounteredError(error))
-                    }
-                    return
-                }
-                return
-            }
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                completion(nil, ServerError.noHTTPResponse)
-                return
-            }
-            
-            if self.successCodes.contains(httpResponse.statusCode) {
-                guard let data = data else {
-                    completion(nil, ServerError.badData)
-                    return
-                }
-                
-//                guard let object = try? JSONSerialization.jsonObject(with: data, options: []),
-//                let responeData = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),
-//                let prettyPrintedString = NSString(data: responeData, encoding: String.Encoding.utf8.rawValue) else { return }
-//                
-//                print(prettyPrintedString)
-                
-                do {
-                    let genericModel = try decoder.decode(decodingType, from: data)
-                    completion(genericModel, nil)
-                } catch(let error) {
-                    completion(nil, ServerError.encounteredError(error))
-                }
-                
-            } else if self.failureCodes.contains(httpResponse.statusCode) {
-                if let data = data, let responseBody = try? JSONSerialization.jsonObject(with: data, options: []) {
-                    debugPrint(responseBody)
-                }
-                
-                let info = [
-                    NSLocalizedDescriptionKey: "Failure statusCode \(httpResponse.statusCode)",
-                ]
-                let error = NSError(domain: "NetworkService", code: httpResponse.statusCode, userInfo: info)
-                
-                completion(nil, ServerError.statusCodeError(error))
-            } else {
-                // Server returned response with status code different than expected `successCodes`.
-                let info = [
-                    NSLocalizedDescriptionKey: "Request failed with code \(httpResponse.statusCode)",
-                    NSLocalizedFailureReasonErrorKey: "Wrong handling logic, wrong endpoing mapping or backend bug."
-                ]
-                let error = NSError(domain: "NetworkService", code: httpResponse.statusCode, userInfo: info)
-                completion(nil, ServerError.encounteredError(error))
-            }
-        }
-        
-        return task
-    }*/
-
+    
     private func queryParameters(_ parameters: [String: Any]?, urlEncoded: Bool = false) -> String {
         var allowedCharacterSet = CharacterSet.alphanumerics
         allowedCharacterSet.insert(charactersIn: ".-_")
@@ -922,6 +579,76 @@ extension NetworkManager {
             query = "\(query)\(key)=\(encodedValue)&"
         }
         return query
+    }
+    
+    private func jsonPrettyPrint(data: Data) {
+        guard let object = try? JSONSerialization.jsonObject(with: data, options: []),
+        let responeData = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),
+        let prettyPrintedString = NSString(data: responeData, encoding: String.Encoding.utf8.rawValue) else { return }
+        print(prettyPrintedString)
+    }
+    
+    private func handleHTTPResponse(statusCode: Int) -> ServerError {
+       
+        if self.failureClientCodes.contains(statusCode) { //400..<499
+            switch statusCode {
+                case 401:
+                    return ServerError.unAuthorized
+                case 403:
+                    return ServerError.forbidden
+                case 404:
+                    return ServerError.notFound
+                case 405:
+                    return ServerError.methodNotAllowed
+                case 408:
+                    return ServerError.timeOut
+                case 415:
+                    return ServerError.unSupportedMediaType
+                case 429:
+                    return ServerError.rateLimitted
+                default:
+                    return ServerError.statusClientCode(statusCode)
+            }
+            
+        } else if self.failureBackendCodes.contains(statusCode) { //500..<511
+            switch statusCode {
+                case 500:
+                    return ServerError.serverError
+                case 503:
+                    return ServerError.serverUnavailable
+                case 504:
+                    return ServerError.gatewayTimeout
+                case 511:
+                    return ServerError.networkAuthenticationRequired
+                default:
+                    return ServerError.statusClientCode(statusCode)
+            }
+        } else {
+            // Server returned response with status code different than expected `successCodes`.
+            let info = [
+                NSLocalizedDescriptionKey: "Request failed with code \(statusCode)",
+                NSLocalizedFailureReasonErrorKey: "Wrong handling logic, wrong endpoint mapping or backend bug."
+            ]
+            let error = NSError(domain: "NetworkService", code: statusCode, userInfo: info)
+            return ServerError.encounteredError(error)
+        }
+    }
+    
+    func handleETag(url: URL, timeoutInterval: TimeInterval) -> URLRequest {
+        
+        var request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: timeoutInterval)
+        
+        request.allHTTPHeaderFields = prepareHeaders()
+
+        if UserDefaults.standard.object(forKey: "ETag") != nil {
+            let tag = UserDefaults.standard.string(forKey: "ETag")
+            if let etag = tag {
+                request.addValue(etag, forHTTPHeaderField: "If-None-Match")
+            }
+        }
+        
+        return request
+        
     }
 }
 
@@ -958,46 +685,21 @@ extension NetworkManager {
             }
             
             if self.successCodes.contains(httpResponse.statusCode) {
+                
                 guard let data = data else {
                     completion(nil, ServerError.badData)
                     return
                 }
-                
-//                guard let object = try? JSONSerialization.jsonObject(with: data, options: []),
-//                let responeData = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),
-//                let prettyPrintedString = NSString(data: responeData, encoding: String.Encoding.utf8.rawValue) else { return }
-//
-//                print(prettyPrintedString)
-                
+
                 do {
                     let genericModel = try decoder.decode(decodingType, from: data)
                     completion(genericModel, nil)
-                } catch(let error) {
+                } catch {
                     completion(nil, ServerError.encounteredError(error))
                 }
                 
-            } else if self.failureClientCodes.contains(httpResponse.statusCode) {
-                
-                switch httpResponse.statusCode {
-                    case 408:
-                        completion(nil, ServerError.timeOut)
-                    case 401:
-                        completion(nil, ServerError.noAuth)
-                    default:
-                        completion(nil, ServerError.statusClientCode(httpResponse.statusCode))
-                }
-            } else if self.failureBackendCodes.contains(httpResponse.statusCode) {
-                
-                completion(nil, ServerError.statusBackendCode(httpResponse.statusCode))
-                
             } else {
-                // Server returned response with status code different than expected `successCodes`.
-                let info = [
-                    NSLocalizedDescriptionKey: "Request failed with code \(httpResponse.statusCode)",
-                    NSLocalizedFailureReasonErrorKey: "Wrong handling logic, wrong endpoing mapping or backend bug."
-                ]
-                let error = NSError(domain: "NetworkService", code: httpResponse.statusCode, userInfo: info)
-                completion(nil, ServerError.encounteredError(error))
+                completion(nil, self.handleHTTPResponse(statusCode: httpResponse.statusCode))
             }
         }
         
@@ -1039,7 +741,7 @@ extension NetworkManager {
         try Task.checkCancellation()
         
         if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
-            throw ServerError.noAuth
+            throw ServerError.unAuthorized
         }
         
         do {
@@ -1049,8 +751,8 @@ extension NetworkManager {
                     continuation.resume(returning: result)
                 }
             })
-        } catch ServerError.noAuth  {
-            return APIResult.failure(ServerError.noAuth)
+        } catch ServerError.unAuthorized  {
+            return APIResult.failure(ServerError.unAuthorized)
         } catch ServerError.timeOut  {
             return APIResult.failure(ServerError.timeOut)
         } catch {
@@ -1063,7 +765,7 @@ extension NetworkManager {
     func queryWithConcurrency<T: Decodable>(pageRequest: UnsplashSearchPagedRequest, method: RequestType, decode: @escaping (Decodable) -> T?) async throws -> APIResult<T, ServerError> {
         
         if UnsplashAPI.secretKey.isEmpty && UnsplashAPI.accessKey.isEmpty {
-            throw ServerError.noAuth
+            throw ServerError.unAuthorized
         }
         
         let components = prepareURLComponents()
@@ -1079,13 +781,9 @@ extension NetworkManager {
                         continuation.resume(returning: result)
                     }
                 } else {
-                    continuation.resume(returning: APIResult.failure(ServerError.badURL))
+                    continuation.resume(returning: APIResult.failure(ServerError.invalidURL))
                 }
             })
-        } catch ServerError.noAuth  {
-            return APIResult.failure(ServerError.noAuth)
-        } catch ServerError.timeOut  {
-            return APIResult.failure(ServerError.timeOut)
         } catch {
             print("queryWithConcurrency error \(error)")
             return APIResult.failure(ServerError.unKnown)

@@ -45,7 +45,7 @@ extension AlbumsViewModel {
         isLoading.value = true
         
         if #available(iOS 15.0.0, *) {
-            service.searchWithConcurrency(pageRequest: unsplashAllPagedRequest) { (result) in
+            service.searchWithConcurrency() { (result) in
                 self.isLoading.value = false
                 switch result {
                     case .success(let respone):
@@ -62,7 +62,7 @@ extension AlbumsViewModel {
                 }
             }
         } else {
-            service.search(pageRequest: unsplashAllPagedRequest) { (result) in
+            service.search() { (result) in
                 self.isLoading.value = false
                 switch result {
                     case .success(let respone):
@@ -93,7 +93,7 @@ extension AlbumsViewModel {
         isLoading.value = true
         
         if #available(iOS 15.0.0, *) {
-            service.searchWithConcurrency(pageRequest: unsplashFeaturePagedRequest) { (result) in
+            service.searchWithConcurrency() { (result) in
                 self.isLoading.value = false
                 switch result {
                     case .success(let respone):
@@ -108,7 +108,7 @@ extension AlbumsViewModel {
                 }
             }
         } else {
-            service.search(pageRequest: unsplashFeaturePagedRequest) { (result) in
+            service.search() { (result) in
                 self.isLoading.value = false
                 switch result {
                     case .success(let respone):
@@ -137,7 +137,7 @@ extension AlbumsViewModel {
         isLoading.value = true
         
         if #available(iOS 15.0.0, *) {
-            service.searchWithConcurrency(pageRequest: unsplashSharePagedRequest) { (result) in
+            service.searchWithConcurrency() { (result) in
                 self.isLoading.value = false
                 switch result {
                     case .success(let respone):
@@ -152,7 +152,7 @@ extension AlbumsViewModel {
                 }
             }
         } else {
-            service.search(pageRequest: unsplashSharePagedRequest) { (result) in
+            service.search() { (result) in
                 self.isLoading.value = false
                 switch result {
                     case .success(let respone):
