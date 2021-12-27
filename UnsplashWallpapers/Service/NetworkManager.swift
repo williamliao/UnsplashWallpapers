@@ -193,7 +193,7 @@ class NetworkManager {
     
     public static var urlSessionConfiguration: URLSessionConfiguration = {
         let sessionConfiguration = URLSessionConfiguration.default
-        sessionConfiguration.requestCachePolicy = .returnCacheDataElseLoad
+        sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalCacheData
         sessionConfiguration.timeoutIntervalForRequest = 3.0
         sessionConfiguration.timeoutIntervalForResource = 15.0
         sessionConfiguration.urlCache = cache
