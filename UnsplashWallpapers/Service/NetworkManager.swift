@@ -37,6 +37,7 @@ public enum ServerError: Error {
     case invalidURL
     case invalidImage
     case invalidResponse
+    case invalidCacheResponse
     case noHTTPResponse
     case noInternetConnect
     case networkConnectionLost
@@ -100,6 +101,8 @@ public enum ServerError: Error {
             return NSLocalizedString("Too Many Requests", comment: "")
         case .unAuthorized:
             return NSLocalizedString("Unauthorized, client must authenticate itself to get the requested response", comment: "")
+        case .invalidCacheResponse:
+            return NSLocalizedString("invalidCacheResponse", comment: "")
         case .unKnown:
             return NSLocalizedString("unknown", comment: "")
         }
@@ -633,33 +636,7 @@ extension NetworkManager {
             return ServerError.encounteredError(error)
         }
     }
-    
-    func ladETagIfExist(url: URL, timeoutInterval: TimeInterval) -> URLRequest {
-        
-        var request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: timeoutInterval)
-        
-        request.allHTTPHeaderFields = prepareHeaders()
 
-        if UserDefaults.standard.object(forKey: "ETag") != nil {
-            let tag = UserDefaults.standard.string(forKey: "ETag")
-            if let etag = tag {
-                request.addValue(etag, forHTTPHeaderField: "If-None-Match")
-            }
-        }
-        
-        return request
-        
-    }
-    
-    func saveETag(httpResponse: HTTPURLResponse) {
-        let headers = httpResponse.allHeaderFields
-        let etag = headers["Etag"] ?? "-"
-        let cc = headers["Cache-Control"] ?? "-"
-     
-        UserDefaults.standard.set(etag, forKey: "ETag")
-        UserDefaults.standard.set(cc, forKey: "Cache-Control")
-    }
-        
     func saveRequestCache(request: URLRequest, data: Data, httpResponse: HTTPURLResponse) {
         
         guard let cache = NetworkManager.urlSessionConfiguration.urlCache else {
@@ -671,13 +648,15 @@ extension NetworkManager {
         }
     }
         
-    func loadRequestCacheIfExist(request: URLRequest, data: Data, httpResponse: HTTPURLResponse) -> Data? {
+    func loadRequestCacheIfExist(request: URLRequest) -> ImageCacheRespone? {
         if let cachedResponse = NetworkManager.urlSessionConfiguration.urlCache?.cachedResponse(for: request),
             let httpResponse = cachedResponse.response as? HTTPURLResponse,
             let etag = httpResponse.value(forHTTPHeaderField: "Etag"),
             let date = httpResponse.value(forHTTPHeaderField: "Date") {
+            
+            let model = ImageCacheRespone(httpResponse: httpResponse, data:cachedResponse.data , date: date, etag: etag)
             print("etag \(etag) data \(date)")
-            return cachedResponse.data
+            return model
         } else {
             return nil
         }
@@ -692,8 +671,16 @@ extension NetworkManager {
     private func decodingTaskWithConcurrency<T: Decodable>(with request: URLRequest, decodingType: T.Type, completionHandler completion: @escaping JSONTaskCompletionHandler) async throws -> URLSessionDataTaskProtocol? {
         
         let decoder = JSONDecoder()
+       
+        let saveData = loadRequestCacheIfExist(request: request)
         
-        task = await session.dataTask(with: request) { data, response, error in
+        var mutableRequest = request
+        
+        if let saveData = saveData {
+            mutableRequest.addValue(saveData.etag, forHTTPHeaderField: "If-None-Match")
+        }
+        
+        task = await session.dataTask(with: mutableRequest) { data, response, error in
             
             guard error == nil else {
                 if let error = error {
@@ -722,7 +709,23 @@ extension NetworkManager {
                     completion(nil, ServerError.badData)
                     return
                 }
+                
+                self.saveRequestCache(request: request , data: data, httpResponse: httpResponse)
 
+                do {
+                    let genericModel = try decoder.decode(decodingType, from: data)
+                    completion(genericModel, nil)
+                } catch {
+                    completion(nil, ServerError.encounteredError(error))
+                }
+                
+            } else if httpResponse.statusCode == 304 {
+                
+                guard let data = saveData?.data else{
+                    completion(nil, ServerError.invalidCacheResponse)
+                    return
+                }
+                
                 do {
                     let genericModel = try decoder.decode(decodingType, from: data)
                     completion(genericModel, nil)
@@ -745,7 +748,7 @@ extension NetworkManager {
             completion(APIResult.failure(ServerError.invalidURL))
             return
         }
-     
+        
         Task {
             let task = try await decodingTaskWithConcurrency(with: request, decodingType: T.self) { (json , error) in
                 
@@ -764,8 +767,6 @@ extension NetworkManager {
             }
             task?.resume()
         }
-        
-        
     }
     
     @available(iOS 13.0.0, *)

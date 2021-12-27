@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C80657DA2733C6BB0068E38B /* DiffableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C80657D92733C6BB0068E38B /* DiffableDataSource.swift */; };
+		C810799C27799E5A00BBC01B /* ImageCacheRespone.swift in Sources */ = {isa = PBXBuildFile; fileRef = C810799B27799E5A00BBC01B /* ImageCacheRespone.swift */; };
 		C8284D7D264B69420032B7D3 /* UnsplashApiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8284D7C264B69420032B7D3 /* UnsplashApiTests.swift */; };
 		C8325C4326D5ED60008A16D7 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8325C4226D5ED60008A16D7 /* SettingViewController.swift */; };
 		C8325C4826D5ED77008A16D7 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8325C4726D5ED77008A16D7 /* SettingView.swift */; };
@@ -156,6 +157,7 @@
 
 /* Begin PBXFileReference section */
 		C80657D92733C6BB0068E38B /* DiffableDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffableDataSource.swift; sourceTree = "<group>"; };
+		C810799B27799E5A00BBC01B /* ImageCacheRespone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCacheRespone.swift; sourceTree = "<group>"; };
 		C8284D7C264B69420032B7D3 /* UnsplashApiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsplashApiTests.swift; sourceTree = "<group>"; };
 		C8325C4226D5ED60008A16D7 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		C8325C4726D5ED77008A16D7 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
@@ -429,6 +431,7 @@
 				C8AC46FF263A50D500178411 /* UserCollectionRespone.swift */,
 				C8AC470E263A889A00178411 /* UnsplashPhotoInfo.swift */,
 				C89D68F9263F967000CA8617 /* AlbumItem.swift */,
+				C810799B27799E5A00BBC01B /* ImageCacheRespone.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -739,6 +742,7 @@
 				C8AE36F026390D9600AF57C4 /* UserProfileInfo.swift in Sources */,
 				C89A72B626034DE0003E188F /* Urls.swift in Sources */,
 				C8AC470A263A825400178411 /* PhotoExifView.swift in Sources */,
+				C810799C27799E5A00BBC01B /* ImageCacheRespone.swift in Sources */,
 				C89A72C92603521E003E188F /* EndPoint.swift in Sources */,
 				C89A71FB260347F2003E188F /* ViewController.swift in Sources */,
 				C8A8FD2D263168A000C38FAF /* FavoriteViewController.swift in Sources */,
