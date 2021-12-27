@@ -140,10 +140,12 @@ class NetworkManager {
         let diskPath = "unsplash"
         
         if #available(iOS 13.0, *) {
+            let cachesURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            let diskCacheURL = cachesURL.appendingPathComponent(diskPath)
             return URLCache(
                 memoryCapacity: memoryCapacity,
                 diskCapacity: diskCapacity,
-                directory: URL(fileURLWithPath: diskPath, isDirectory: true)
+                directory: diskCacheURL
             )
         }
         else {
@@ -644,7 +646,7 @@ extension NetworkManager {
         }
         
         if cache.cachedResponse(for: request) == nil {
-            cache.storeCachedResponse(CachedURLResponse(response: httpResponse, data: data), for: request)
+            cache.storeCachedResponse(CachedURLResponse(response: httpResponse, data: data, userInfo: [:], storagePolicy: .allowed), for: request)
         }
     }
         
