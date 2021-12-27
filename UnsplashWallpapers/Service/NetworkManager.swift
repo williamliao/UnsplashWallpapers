@@ -621,20 +621,20 @@ extension NetworkManager {
                 case 511:
                     return ServerError.networkAuthenticationRequired
                 default:
-                    return ServerError.statusClientCode(statusCode)
+                    return ServerError.statusBackendCode(statusCode)
             }
         } else {
             // Server returned response with status code different than expected `successCodes`.
             let info = [
                 NSLocalizedDescriptionKey: "Request failed with code \(statusCode)",
-                NSLocalizedFailureReasonErrorKey: "Wrong handling logic, wrong endpoint mapping or backend bug."
+                NSLocalizedFailureReasonErrorKey: "Wrong handling logic, wrong endpoint mapping."
             ]
             let error = NSError(domain: "NetworkService", code: statusCode, userInfo: info)
             return ServerError.encounteredError(error)
         }
     }
     
-    func handleETag(url: URL, timeoutInterval: TimeInterval) -> URLRequest {
+    func ladETagIfExist(url: URL, timeoutInterval: TimeInterval) -> URLRequest {
         
         var request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: timeoutInterval)
         
@@ -649,6 +649,38 @@ extension NetworkManager {
         
         return request
         
+    }
+    
+    func saveETag(httpResponse: HTTPURLResponse) {
+        let headers = httpResponse.allHeaderFields
+        let etag = headers["Etag"] ?? "-"
+        let cc = headers["Cache-Control"] ?? "-"
+     
+        UserDefaults.standard.set(etag, forKey: "ETag")
+        UserDefaults.standard.set(cc, forKey: "Cache-Control")
+    }
+        
+    func saveRequestCache(request: URLRequest, data: Data, httpResponse: HTTPURLResponse) {
+        
+        guard let cache = NetworkManager.urlSessionConfiguration.urlCache else {
+            return
+        }
+        
+        if cache.cachedResponse(for: request) == nil {
+            cache.storeCachedResponse(CachedURLResponse(response: httpResponse, data: data), for: request)
+        }
+    }
+        
+    func loadRequestCacheIfExist(request: URLRequest, data: Data, httpResponse: HTTPURLResponse) -> Data? {
+        if let cachedResponse = NetworkManager.urlSessionConfiguration.urlCache?.cachedResponse(for: request),
+            let httpResponse = cachedResponse.response as? HTTPURLResponse,
+            let etag = httpResponse.value(forHTTPHeaderField: "Etag"),
+            let date = httpResponse.value(forHTTPHeaderField: "Date") {
+            print("etag \(etag) data \(date)")
+            return cachedResponse.data
+        } else {
+            return nil
+        }
     }
 }
 

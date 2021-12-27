@@ -10,6 +10,7 @@ import Foundation
 typealias DataTaskResult = (Data?, URLResponse?, Error?) -> Void
 
 protocol URLSessionDataTaskProtocol {
+   
     func resume()
     func cancel()
 }
