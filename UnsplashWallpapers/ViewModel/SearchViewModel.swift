@@ -256,7 +256,7 @@ extension SearchViewModel {
         isSearching.value = false
         //query = ""
         isLoading.value = false
-        canFetchMore = false
+        canFetchMore = true
         searchCursor = nil
         collectionsCursor = nil
         usersCursor = nil
