@@ -99,8 +99,8 @@ class PhotoListViewController: BaseViewController {
             }
         }
 
-        viewModel.reset()
-        viewModel.fetchDataWithConcurrency()
+        //viewModel.reset()
+        //viewModel.fetchDataWithConcurrency()
         photoListView.section = .random
         viewModel.segmentedIndex = .random
     }

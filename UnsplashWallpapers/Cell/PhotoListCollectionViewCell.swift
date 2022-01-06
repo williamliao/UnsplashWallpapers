@@ -62,8 +62,8 @@ extension PhotoListCollectionViewCell {
 
         contentView.addSubview(thumbnailImageView)
         thumbnailImageView.addSubview(blurEffectView)
-        contentView.addSubview(act)
         thumbnailImageView.addSubview(titleLabel)
+        contentView.addSubview(act)
     }
     
     func configureConstraints() {
@@ -97,25 +97,17 @@ extension PhotoListCollectionViewCell {
 extension PhotoListCollectionViewCell {
     
     func configureImage(with url: URL) {
-        isLoading(isLoading: true)
-        
-        DispatchQueue.global().async { [weak self] in
-            
-            guard let self = self else { return }
-            
+       
+        if #available(iOS 15.0, *) {
             Task {
-                let result = try await self.downloader.downloadWithConcurrencyCombineErrorHandler(url: url)
-                
-                switch result {
-                case .success(let image):
-                    self.isLoading(isLoading: false)
-                    self.showImage(image: image)
-                    
-                case .failure(let error):
-                    self.isLoading(isLoading: false)
-                    print("configureImage error \(error)")
-                }
-                
+                let publisher = self.downloader.imagePublisher(for: url)
+                try await self.showImage(image: publisher.value)
+            }
+        } else {
+            // Fallback on earlier versions
+            Task {
+                let image = await self.downloader.imagePublisherBackwardCompatibility(for: url)
+                self.showImage(image: image)
             }
         }
     }
@@ -126,7 +118,7 @@ extension PhotoListCollectionViewCell {
             guard let image = image else {
                 return
             }
-            
+            self.isLoading(isLoading: false)
             //let resizeImage = self.resizedImage(at: image, for: CGSize(width: UIScreen.main.bounds.size.width, height: image.size.height))
             self.thumbnailImageView.image = image
         }

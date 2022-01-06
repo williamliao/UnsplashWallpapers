@@ -175,5 +175,29 @@ class ImageCombineDownloader: ImageDownLoader {
         }
     }
   
+    @available(iOS 15.0, *)
+    func imagePublisher(for url: URL) -> Future<UIImage, Error> {
+        Future {
+            try await self.loadImageWithConcurrency(for: url)
+        }
+    }
     
+    func imagePublisherBackwardCompatibility(for url: URL) async -> UIImage {
+        
+        do {
+            return try await withCheckedThrowingContinuation({
+                (continuation: CheckedContinuation<UIImage, Error>) in
+                
+                downloadImage(from: url) { image in
+                    if let image = image {
+                        continuation.resume(returning: image)
+                    } else {
+                        continuation.resume(throwing: ServerError.invalidImage)
+                    }
+                }
+            })
+        } catch  {
+            return UIImage()
+        }
+    }
 }

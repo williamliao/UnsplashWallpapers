@@ -115,14 +115,7 @@ extension PhotoListView {
         }
         
         self.addSubview(collectionView)
-        
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Response>()
-        Section.allCases.forEach { snapshot.appendSections([$0]) }
-        viewModel.respone.value?.forEach { (respone) in
-            snapshot.appendItems([respone], toSection: .main)
-        }
-        dataSource.apply(snapshot, animatingDifferences: true)
-        
+
         NSLayoutConstraint.activate([
             collectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
@@ -139,7 +132,10 @@ extension PhotoListView {
 //                collectionView.dataSource = dataSource
 //                return
 //            }
+            dataSource = makeDataSource()
             collectionView.dataSource = dataSource
+            viewModel.reset()
+            viewModel.fetchDataWithConcurrency()
 
         } else {
             collectionView.dataSource = self
@@ -453,7 +449,7 @@ extension PhotoListView {
             
                 UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveLinear) {
                     self.collectionDataSource.reloadData(snapshot: snapshot)
-                    self.reloadCollectionData()
+                    //self.reloadCollectionData()
                 } completion: { success in
                 
             }
@@ -512,9 +508,9 @@ extension PhotoListView: UICollectionViewDataSourcePrefetching {
                 
                 for indexPath in indexPaths {
 
-                    if let _ = imageLoadOperations[indexPath] {
-                        continue
-                    }
+//                    if let _ = imageLoadOperations[indexPath] {
+//                        continue
+//                    }
                     
                     let urls = res[indexPath.row].urls
                     
@@ -523,40 +519,7 @@ extension PhotoListView: UICollectionViewDataSourcePrefetching {
                         imageLoadQueue?.addOperation(imageLoadOperation)
                         imageLoadOperations[indexPath] = imageLoadOperation
                     }
-                    
-                   /* if section == .random {
-                        let res = viewModel.respone.value
-                        let height = res?[indexPath.row].height
-                        let width = res?[indexPath.row].width
-                        
-                        if let safeHeight = height, let safeWidth = width {
-                            
-                            if safeHeight > safeWidth {
-                                imageHeightDictionary?[indexPath] = "v"
-                            } else {
-                                imageHeightDictionary?[indexPath] = "h"
-                            }
-                            
-                        } else {
-                            imageHeightDictionary?[indexPath] = "h"
-                        }
-                    } else {
-                        let res = viewModel.searchRespone.value
-                        let height = res?.results[indexPath.row].height
-                        let width = res?.results[indexPath.row].width
-                        
-                        if let safeHeight = height, let safeWidth = width {
-                            
-                            if safeHeight > safeWidth {
-                                imageHeightDictionary?[indexPath] = "v"
-                            } else {
-                                imageHeightDictionary?[indexPath] = "h"
-                            }
-                            
-                        } else {
-                            imageHeightDictionary?[indexPath] = "h"
-                        }
-                    }*/
+                   
                 }
 
             case .nature, .wallpapers:
@@ -731,20 +694,6 @@ extension PhotoListView: UICollectionViewDelegate {
         dataLoader.cancel()
         imageLoadOperations.removeValue(forKey: indexPath)
     }
-    
-    private func reloadCollectionData() {
-//            self.collectionView.setNeedsLayout()
-//            let context = UICollectionViewFlowLayoutInvalidationContext()
-//            context.invalidateFlowLayoutAttributes = false
-//            self.collectionView.collectionViewLayout.invalidateLayout(with: context)
-//            self.collectionView.layoutIfNeeded()
-
-       // UIView.performWithoutAnimation {
-            
-       // }
-        
-
-    }
 }
 
 // MARK: - RefreshControll
@@ -780,36 +729,31 @@ extension PhotoListView {
        
         cell.titleLabel.text = respone.user?.name
         
-       /* let updateCellClosure: (UIImage?) -> Void = { [weak self] image in
+        let updateCellClosure: (UIImage?) -> Void = { [weak self] image in
             guard let self = self else {
               return
             }
-            //cell.updateAppearanceFor(emojiRating, animated: true)
-            cell.isLoading(isLoading: false)
+            //cell.isLoading(isLoading: false)
             cell.showImage(image: image)
             self.imageLoadOperations.removeValue(forKey: indexPath)
         }
         
         if let dataLoader = imageLoadOperations[indexPath] {
-           // cell.isLoading(isLoading: true)
             if let image = dataLoader.image {
-                cell.isLoading(isLoading: false)
-               cell.showImage(image: image)
+                //cell.isLoading(isLoading: false)
+                cell.showImage(image: image)
                 imageLoadOperations.removeValue(forKey: indexPath)
             } else {
-               // cell.isLoading(isLoading: true)
                 dataLoader.completionHandler = updateCellClosure
             }
         } else {
-            
-        }*/
-        
-        if let url = URL(string: respone.urls.small) {
-//            let imageLoadOperation = ImageLoadOperation(imgUrl: url)
-//            imageLoadQueue?.addOperation(imageLoadOperation)
-//            imageLoadOperations[indexPath] = imageLoadOperation
-            
-            cell.configureImage(with: url)
+            cell.isLoading(isLoading: true)
+            if let url = URL(string: respone.urls.small) {
+                let imageLoadOperation = ImageLoadOperation(imgUrl: url)
+                imageLoadQueue?.addOperation(imageLoadOperation)
+                imageLoadOperations[indexPath] = imageLoadOperation
+                cell.configureImage(with: url)
+            }
         }
     }
     
@@ -840,44 +784,36 @@ extension PhotoListView {
             cell.titleLabel.text = "Wallpapers"
         }
         
-       /* let updateCellClosure: (UIImage?) -> Void = { [weak self] image in
+        let updateCellClosure: (UIImage?) -> Void = { [weak self] image in
             guard let self = self else {
               return
             }
-            //cell.updateAppearanceFor(emojiRating, animated: true)
             cell.isLoading(isLoading: false)
             cell.showImage(image: image)
             self.imageLoadOperations.removeValue(forKey: indexPath)
         }
       
         if let dataLoader = imageLoadOperations[indexPath] {
-            //cell.isLoading(isLoading: true)
             if let image = dataLoader.image {
                 cell.isLoading(isLoading: false)
                 cell.showImage(image: image)
                 self.imageLoadOperations.removeValue(forKey: indexPath)
             } else {
-                //cell.isLoading(isLoading: true)
                 dataLoader.completionHandler = updateCellClosure
             }
         } else {
             
-            
-            
-            
-        }*/
-        
-        guard let urls = respone.urls else {
-            return
-        }
-        
-        if let url = URL(string: urls.small) {
-            let imageLoadOperation = ImageLoadOperation(imgUrl: url)
-            imageLoadQueue?.addOperation(imageLoadOperation)
-            imageLoadOperations[indexPath] = imageLoadOperation
-            cell.configureImage(with: url)
-        }
+            guard let urls = respone.urls else {
+                return
+            }
 
+            if let url = URL(string: urls.small) {
+                let imageLoadOperation = ImageLoadOperation(imgUrl: url)
+                imageLoadQueue?.addOperation(imageLoadOperation)
+                imageLoadOperations[indexPath] = imageLoadOperation
+                cell.configureImage(with: url)
+            }
+        }
     }
    
     func configureTopicCellOld(collectionView: UICollectionView, respone: Results, indexPath: IndexPath) -> PhotoListCollectionViewCell? {
@@ -899,9 +835,9 @@ extension PhotoListView {
         }
         
         if let url = URL(string: urls.small) {
-//            let imageLoadOperation = ImageLoadOperation(imgUrl: url)
-//            imageLoadQueue?.addOperation(imageLoadOperation)
-//            imageLoadOperations[indexPath] = imageLoadOperation
+            let imageLoadOperation = ImageLoadOperation(imgUrl: url)
+            imageLoadQueue?.addOperation(imageLoadOperation)
+            imageLoadOperations[indexPath] = imageLoadOperation
             cell?.configureImage(with: url)
         }
 

@@ -16,6 +16,7 @@
 		C879403727479A370030D99B /* NetworkManager+MockConcurrency.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879403627479A370030D99B /* NetworkManager+MockConcurrency.swift */; };
 		C890C7772732160D00945A19 /* SettingMainItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C890C7762732160D00945A19 /* SettingMainItemCell.swift */; };
 		C890C77927321CAA00945A19 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C890C77827321CAA00945A19 /* ThemeManager.swift */; };
+		C89949C92786EFDE00B71FDC /* Publishers.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89949C82786EFDE00B71FDC /* Publishers.swift */; };
 		C89A71F7260347F2003E188F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89A71F6260347F2003E188F /* AppDelegate.swift */; };
 		C89A71F9260347F2003E188F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89A71F8260347F2003E188F /* SceneDelegate.swift */; };
 		C89A71FB260347F2003E188F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89A71FA260347F2003E188F /* ViewController.swift */; };
@@ -165,6 +166,7 @@
 		C879403627479A370030D99B /* NetworkManager+MockConcurrency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkManager+MockConcurrency.swift"; sourceTree = "<group>"; };
 		C890C7762732160D00945A19 /* SettingMainItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingMainItemCell.swift; sourceTree = "<group>"; };
 		C890C77827321CAA00945A19 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
+		C89949C82786EFDE00B71FDC /* Publishers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Publishers.swift; sourceTree = "<group>"; };
 		C89A71F3260347F2003E188F /* UnsplashWallpapers.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnsplashWallpapers.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C89A71F6260347F2003E188F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C89A71F8260347F2003E188F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -512,6 +514,7 @@
 				C8A67502275DA1E900140AAE /* BaseCollectionViewCell.swift */,
 				C8A67504275DA4BF00140AAE /* BaseSegmentedControl.swift */,
 				C8A67506275DA97E00140AAE /* BaseTableView.swift */,
+				C89949C82786EFDE00B71FDC /* Publishers.swift */,
 			);
 			path = Share;
 			sourceTree = "<group>";
@@ -796,6 +799,7 @@
 				C879403727479A370030D99B /* NetworkManager+MockConcurrency.swift in Sources */,
 				C8BF2AAC263695ED00BE7C51 /* UnsplashTopicRequest.swift in Sources */,
 				C8D36F69272A836E006F2614 /* imageText.swift in Sources */,
+				C89949C92786EFDE00B71FDC /* Publishers.swift in Sources */,
 				C89A723C260348BD003E188F /* AppCoordinator.swift in Sources */,
 				C8AC471A263AB08A00178411 /* PhotoExifViewModel.swift in Sources */,
 				C89D6923263FE64D00CA8617 /* AlbumDetailViewController.swift in Sources */,
